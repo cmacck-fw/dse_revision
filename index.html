@@ -1,0 +1,2697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSE Physics Quest - Book 1: Heat & Gases</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#faf5ff', // Energetic pale violet tint
+              card: '#ffffff',
+              border: '#e9d5ff', // Soft purple border
+              textDark: '#1e1b4b', // Deep rich indigo
+              textMuted: '#6b21a8', // Rich violet
+              teal: '#8b5cf6', // Vivid Electric Violet (Primary Action)
+              teallight: '#7c3aed', // Deeper energetic violet
+              amber: '#06b6d4', // Vibrant Cyber Cyan (Secondary Action)
+              amberlight: '#0891b2', // Deeper cyan
+              coral: '#f43f5e', // Neon Rose Pink (Vivid Accent)
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering physics symbols and formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- FontAwesome for calculator and UI icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(139, 92, 246, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.4);
+    }
+    /* Draggable calculator style on desktop */
+    @media (min-width: 768px) {
+      #calculator-widget {
+        touch-action: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-violet-50/40 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-brand-coral selection:text-white pb-20">
+
+  <!-- TOP NAV BAR -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-violet-100 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+        <div class="bg-gradient-to-tr from-brand-teal to-brand-coral p-2.5 rounded-xl shadow-md shadow-violet-500/10">
+          <i class="fa-solid fa-fire-flame-curved text-white text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg md:text-xl font-extrabold text-brand-textDark tracking-tight">DSE Physics Mastermind</h1>
+          <p class="text-xs text-brand-teal font-semibold">Book 1: Heat & Gases • S4 - S6 Exam Prep</p>
+        </div>
+      </div>
+      
+      <!-- Quick Score & Progress Stats -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">Overall Progress</span>
+          <div class="flex items-center space-x-2">
+            <div class="w-24 bg-violet-100 h-2 rounded-full overflow-hidden">
+              <div id="global-progress-bar" class="bg-brand-teal h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="global-progress-text" class="text-xs font-bold text-brand-teal">0%</span>
+          </div>
+        </div>
+        <div class="bg-violet-50 border border-violet-100 rounded-xl px-3 py-1.5 flex items-center space-x-2 shadow-inner">
+          <i class="fa-solid fa-trophy text-brand-coral text-sm"></i>
+          <span id="global-score-badge" class="font-bold text-sm text-brand-textDark">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-4 flex-grow flex flex-col gap-6 mb-24">
+    
+    <!-- DASHBOARD: TOPICS & LEVELS SELECTOR -->
+    <div id="dashboard-section" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEFT: TOPIC SELECTOR -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white border border-violet-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-teal rounded-full"></span>
+            <span>1. Select Curriculum Topic</span>
+          </h2>
+          <div class="space-y-3" id="topic-list-container">
+            <!-- Topics generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LEVEL SELECTOR & PERFORMANCE INSIGHTS -->
+      <div class="space-y-6">
+        <div class="bg-white border border-violet-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-amber rounded-full"></span>
+            <span>2. Select Difficulty Level</span>
+          </h2>
+          <div class="grid grid-cols-1 gap-3" id="level-list-container">
+            <!-- Levels generated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- MOTIVATION & INSTRUCTION BOARD -->
+        <div class="bg-violet-50/50 border border-violet-200/50 rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-brand-teal/5 rounded-full blur-2xl"></div>
+          <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest mb-2 flex items-center">
+            <i class="fa-solid fa-circle-info mr-2 text-brand-coral"></i>DSE Textbook Standard
+          </h3>
+          <p class="text-sm text-slate-600 leading-relaxed font-medium">
+            Topics 1.1 to 1.5 feature 150 updated, non-repeating questions aligned with common S4–S6 textbooks. Levels are organized from simple terms to standard DSE examination styles.
+          </p>
+          <div class="mt-4 pt-3 border-t border-violet-100 flex justify-between items-center text-xs text-slate-500 font-medium">
+            <span>Syllabus Calibration</span>
+            <span class="text-brand-teal font-bold animate-pulse"><i class="fa-solid fa-check-double mr-1"></i>Topic 1.5 Gas Laws Loaded</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVE QUIZ CONTAINER (Hidden by default) -->
+    <div id="quiz-section" class="hidden flex-col gap-6">
+      
+      <!-- Top Status Card -->
+      <div class="bg-white border border-violet-100 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+        <button onclick="goHome()" class="flex items-center space-x-2 text-slate-600 hover:text-brand-textDark hover:bg-violet-50 bg-slate-50 px-3.5 py-2 rounded-xl border border-violet-100 transition duration-200">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="text-sm font-bold">Change Topic / Level</span>
+        </button>
+        <div class="flex items-center space-x-3">
+          <span id="quiz-meta-topic" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-violet-50 text-brand-teal border border-violet-100">Topic</span>
+          <span id="quiz-meta-level" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-cyan-50 text-brand-amber border border-cyan-100 font-mono">Level</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-xs text-slate-500 font-semibold">Quiz Progress</div>
+            <div class="text-sm font-extrabold text-slate-800" id="quiz-progress-text">Question 1 of 10</div>
+          </div>
+          <div class="h-10 w-10 rounded-full border-2 border-brand-teal/30 flex items-center justify-center font-bold text-brand-teal text-sm bg-violet-50/50" id="quiz-percentage">
+            10%
+          </div>
+        </div>
+      </div>
+
+      <!-- Question and Options Arena -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Question Presentation -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+          <div class="bg-white border border-violet-100 rounded-2xl p-6 md:p-8 shadow-sm relative min-h-[350px] flex flex-col justify-between">
+            <div>
+              <!-- Progress Meter Bar -->
+              <div class="w-full bg-violet-50 h-1.5 rounded-full mb-6 overflow-hidden">
+                <div id="quiz-step-progress" class="bg-brand-teal h-full transition-all duration-300" style="width: 10%"></div>
+              </div>
+
+              <!-- Question Header -->
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs uppercase tracking-wider text-slate-505 font-bold">Question Box</span>
+                <span class="text-xs px-2.5 py-1 rounded bg-violet-50 border border-violet-100 text-brand-teal font-mono font-bold" id="question-index-display">Q1/10</span>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="text-slate-800 text-sm md:text-base leading-relaxed font-semibold mb-6 tex2jax_process animate-fade-in" id="question-statement-box">
+                Loading physics problem statement...
+              </div>
+            </div>
+
+            <!-- Interactive Options Grid -->
+            <div class="grid grid-cols-1 gap-3" id="options-grid-container">
+              <!-- Options elements will be rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Bottom Nav Bar for Current Question -->
+          <div class="flex justify-between items-center bg-white p-4 border border-violet-100 rounded-2xl shadow-sm">
+            <button id="btn-prev-question" class="opacity-50 cursor-not-allowed bg-slate-50 hover:bg-violet-50 text-slate-500 px-4 py-2.5 rounded-xl text-sm font-bold border border-violet-100 transition flex items-center space-x-2" disabled>
+              <i class="fa-solid fa-chevron-left text-xs"></i> <span>Previous</span>
+            </button>
+            <button id="btn-next-question" class="hidden bg-brand-teal hover:bg-brand-teallight text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-md shadow-violet-700/10 flex items-center space-x-2">
+              <span>Next Question</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+            <button id="btn-check-answer" class="bg-brand-coral hover:bg-rose-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md shadow-rose-700/10 flex items-center space-x-2">
+              <span>Submit Answer</span> <i class="fa-solid fa-circle-check text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Explanation Pane -->
+        <div class="lg:col-span-5 flex flex-col" id="explanation-pane-anchor">
+          <div class="bg-white border border-violet-100 rounded-2xl p-6 shadow-sm flex-grow flex flex-col justify-between min-h-[300px]">
+            <div>
+              <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-brand-amber mr-2"></i> DSE Solution Guide
+              </h3>
+              
+              <!-- Placeholder State -->
+              <div id="explanation-placeholder" class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-lightbulb text-4xl mb-3 animate-pulse text-brand-teal/40"></i>
+                <p class="text-sm font-bold">Submit your answer to unlock the textbook-aligned physics explanation.</p>
+              </div>
+
+              <!-- Explanation Content Area -->
+              <div id="explanation-content-area" class="hidden space-y-4 text-sm leading-relaxed tex2jax_process">
+                <div id="explanation-feedback" class="p-3.5 rounded-xl font-extrabold flex items-center space-x-2 border">
+                  <!-- Dynamic status -->
+                </div>
+                <div class="bg-violet-50/50 p-4 rounded-xl border border-violet-200">
+                  <h4 class="text-xs font-bold text-brand-teal uppercase mb-2 tracking-wider">Step-by-Step Logic:</h4>
+                  <div id="explanation-body-text" class="text-slate-700 space-y-3 font-medium">
+                    <!-- Complete derivations / option evaluations -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concept Reference Code -->
+            <div class="mt-6 pt-4 border-t border-violet-100 flex items-center justify-between text-xs text-slate-500 font-bold">
+              <span>Syllabus Target:</span>
+              <span id="syllabus-reference-code" class="font-mono bg-violet-100 px-2.5 py-1 rounded text-slate-600 border border-violet-200">PHY-1.1</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- REVIEW BOARD / PERFORMANCE STATS (Hidden by default) -->
+    <div id="review-section" class="hidden flex-col gap-6">
+      <div class="bg-white border border-violet-150 rounded-3xl p-8 text-center shadow-md relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-teal via-brand-amber to-brand-coral"></div>
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-brand-textDark">Quiz Completed!</h2>
+        <p class="text-slate-500 mt-2 max-w-md mx-auto text-sm md:text-base font-medium">Outstanding dedication! Let's analyze your textbook physics performance metrics below.</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mt-8">
+          <div class="bg-violet-50/40 p-4 rounded-2xl border border-violet-100">
+            <div class="text-slate-500 text-xs font-bold">Total Score</div>
+            <div class="text-2xl font-black text-brand-textDark mt-1" id="review-score">0 / 10</div>
+          </div>
+          <div class="bg-violet-50/40 p-4 rounded-2xl border border-violet-100">
+            <div class="text-slate-500 text-xs font-bold">Accuracy</div>
+            <div class="text-2xl font-black text-brand-teal mt-1" id="review-accuracy">0%</div>
+          </div>
+          <div class="bg-violet-50/40 p-4 rounded-2xl border border-violet-100">
+            <div class="text-slate-500 text-xs font-bold">Level Cleared</div>
+            <div class="text-2xl font-black text-brand-amber mt-1 font-mono" id="review-level">Level --</div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+          <button id="btn-review-restart" class="bg-brand-teal hover:bg-brand-teallight text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 shadow-md shadow-violet-700/10">
+            Try This Level Again
+          </button>
+          <button onclick="goHome()" class="bg-slate-100 hover:bg-violet-50 text-slate-700 font-extrabold px-6 py-3 rounded-xl border border-violet-100 transition duration-200">
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-violet-100 px-4 py-2 flex justify-around items-center z-45 shadow-lg">
+    <button onclick="goHome()" class="flex flex-col items-center p-2 text-slate-500 hover:text-brand-teal transition duration-200 font-sans">
+      <i class="fa-solid fa-house text-lg font-normal"></i>
+      <span class="text-[10px] mt-1 font-bold">Home</span>
+    </button>
+    <button id="btn-calc-toggle" class="relative -top-5 bg-gradient-to-tr from-brand-amber to-brand-teal text-white h-14 w-14 rounded-full flex items-center justify-center shadow-lg shadow-brand-teal/30 hover:scale-105 transition duration-250 active:scale-95 font-sans">
+      <i class="fa-solid fa-calculator text-2xl font-normal"></i>
+    </button>
+    <button onclick="resetStats()" class="flex flex-col items-center p-2 text-slate-500 hover:text-brand-coral transition duration-200 font-sans">
+      <i class="fa-solid fa-rotate-left text-lg font-normal"></i>
+      <span class="text-[10px] mt-1 font-bold">Reset</span>
+    </button>
+  </nav>
+
+  <!-- DRAGGABLE / SLIDE-UP SCIENTIFIC CALCULATOR -->
+  <div id="calculator-widget" class="hidden fixed bottom-16 right-0 left-0 md:left-auto md:right-4 md:bottom-20 w-full md:w-80 bg-white border-t md:border border-violet-200 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-hidden z-50 select-none animate-fade-in">
+    
+    <!-- Calculator Header -->
+    <div class="bg-slate-100 px-4 py-3 md:py-2.5 flex items-center justify-between border-b border-slate-200 cursor-move" id="calculator-header">
+      <div class="flex items-center space-x-2 text-slate-700">
+        <i class="fa-solid fa-calculator text-brand-amber text-xs animate-pulse"></i>
+        <span class="text-xs font-bold font-mono tracking-wide">DSE SCIENTIFIC CALC</span>
+      </div>
+      <button id="btn-close-calc" class="text-slate-400 hover:text-slate-900 transition p-1" onclick="toggleCalc()">
+        <i class="fa-solid fa-xmark text-lg md:text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Calculator Display Screen -->
+    <div class="p-4 md:p-3 bg-slate-50 text-right space-y-1 border-b border-slate-200">
+      <div id="calc-expression-display" class="text-slate-400 text-xs font-mono truncate h-4 min-h-[1rem]"></div>
+      <div id="calc-screen-display" class="text-slate-900 text-2xl md:text-xl font-mono truncate h-8 min-h-[1.75rem] font-bold">0</div>
+    </div>
+
+    <!-- Calculator Button Grid -->
+    <div class="p-3 md:p-2.5 grid grid-cols-5 gap-1.5 bg-slate-100/50">
+      <!-- Scientific Trigonometry & Operations -->
+      <button onclick="calcPress('sin')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">sin</button>
+      <button onclick="calcPress('cos')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">cos</button>
+      <button onclick="calcPress('tan')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">tan</button>
+      <button onclick="calcPress('sqrt')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">√</button>
+      <button onclick="calcPress('pi')" class="bg-slate-200 hover:bg-slate-300 text-brand-amber py-1.5 rounded text-xs font-mono font-bold">π</button>
+
+      <!-- Inverse Trigonometry Keys -->
+      <button onclick="calcPress('asin')" class="bg-violet-50 hover:bg-violet-100 text-brand-teal py-1.5 rounded text-xs font-mono font-bold font-sans">sin⁻¹</button>
+      <button onclick="calcPress('acos')" class="bg-violet-50 hover:bg-violet-100 text-brand-teal py-1.5 rounded text-xs font-mono font-bold font-sans">cos⁻¹</button>
+      <button onclick="calcPress('atan')" class="bg-violet-50 hover:bg-violet-100 text-brand-teal py-1.5 rounded text-xs font-mono font-bold font-sans">tan⁻¹</button>
+      <button onclick="calcPress('^2')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x²</button>
+      <button onclick="calcPress('^')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x^y</button>
+
+      <!-- Standard Operations & Numbers -->
+      <button onclick="calcPress('(')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">(</button>
+      <button onclick="calcPress(')')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">)</button>
+      <button onclick="calcPress('exp')" class="bg-slate-200 hover:bg-slate-300 text-brand-amber py-1.5 rounded text-xs font-mono font-bold">EXP</button>
+      <button onclick="calcPress('DEL')" class="bg-rose-100 hover:bg-rose-200 text-rose-600 py-1.5 rounded font-mono font-bold text-xs">DEL</button>
+      <button onclick="calcPress('AC')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 rounded font-mono font-bold text-xs">AC</button>
+
+      <button onclick="calcPress('7')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">7</button>
+      <button onclick="calcPress('8')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">8</button>
+      <button onclick="calcPress('9')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">9</button>
+      <button onclick="calcPress('*')" class="bg-slate-200 hover:bg-slate-300 text-brand-teal py-2.5 rounded font-mono font-bold text-sm">×</button>
+      <button onclick="calcPress('/')" class="bg-slate-200 hover:bg-slate-300 text-brand-teal py-2.5 rounded font-mono font-bold text-sm font-sans">÷</button>
+
+      <button onclick="calcPress('4')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">4</button>
+      <button onclick="calcPress('5')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">5</button>
+      <button onclick="calcPress('6')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">6</button>
+      <button onclick="calcPress('+')" class="bg-slate-200 hover:bg-slate-300 text-brand-teal py-2.5 rounded font-mono font-bold text-sm">+</button>
+      <button onclick="calcPress('-')" class="bg-slate-200 hover:bg-slate-300 text-brand-teal py-2.5 rounded font-mono font-bold text-sm">-</button>
+
+      <button onclick="calcPress('1')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">1</button>
+      <button onclick="calcPress('2')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">2</button>
+      <button onclick="calcPress('3')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">3</button>
+      <button onclick="calcEvaluate()" class="col-span-2 row-span-2 bg-gradient-to-r from-brand-teal to-brand-amber hover:from-brand-amber hover:to-brand-teal text-white py-2.5 rounded font-mono font-extrabold text-lg shadow-md shadow-violet-700/20">=</button>
+
+      <button onclick="calcPress('0')" class="col-span-2 bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">0</button>
+      <button onclick="calcPress('.')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-slate-200 font-mono font-extrabold text-sm shadow-sm">.</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM INTERACTIVE OVERLAY MODAL -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white border border-violet-200 rounded-2xl max-w-sm w-full p-6 shadow-2xl transition duration-300">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="p-2.5 bg-brand-amber/10 text-brand-amber rounded-xl" id="modal-icon-container">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-slate-900 font-sans" id="modal-title">Reset Progress</h3>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed mb-6 font-medium font-sans" id="modal-message">Are you sure you want to clear your metrics?</p>
+      <div class="flex items-center justify-end space-x-3">
+        <button id="modal-cancel-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition font-sans">Cancel</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md shadow-rose-950/20 font-sans">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE MACHINE ---
+    const APP_ID = 'dse-physics-book1';
+    let currentState = {
+      selectedTopicIndex: 0,
+      selectedLevel: 1, // 1: Easy, 2: Average, 3: Difficult
+      currentQuestionIndex: 0,
+      scores: {}, // Key: 'topicIndex-level' -> { completed: bool, score: int, responses: array }
+      currentQuizAnswers: [] // Stores active test choices
+    };
+
+    // --- CURRICULUM DATA ---
+    const topics = [
+      { id: '1.1', title: '1.1 Temperature and Thermometers' },
+      { id: '1.2', title: '1.2 Internal Energy, Heat and Transfer Processes' },
+      { id: '1.3', title: '1.3 Temperature Change and Heat Capacity' },
+      { id: '1.4', title: '1.4 Change of State' },
+      { id: '1.5', title: '1.5 Gases and Gas Laws' }
+    ];
+
+    // --- GENUINE HIGH-QUALITY HKDSE ALIGNED PHYSICS QUESTIONS ---
+    const questionBank = {
+      "1.1": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "Two bodies are in <b>thermal equilibrium</b>. Which of the following physical quantities must be the same for both?",
+            options: [
+              "Total internal energy",
+              "Temperature",
+              "Specific heat capacity",
+              "Mass"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> By definition, thermal equilibrium is reached when two interacting bodies have the same temperature. At this point, there is no net transfer of heat between them."
+          },
+          {
+            statement: "Which of the following is <b>NOT</b> a suitable thermometric property for constructing a thermometer?",
+            options: [
+              "The resistance of a platinum wire",
+              "The pressure of a fixed mass of gas at constant volume",
+              "The mass of a solid copper block",
+              "The volume of a fixed mass of liquid"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> A thermometric property must change continuously and uniquely with temperature. The mass of a copper block remains constant as temperature changes, so it cannot be used."
+          },
+          {
+            statement: "Why is water <b>unsuitable</b> as a liquid inside a liquid-in-glass thermometer to measure temperatures from $0^{\\circ}\\text{C}$ to $10^{\\circ}\\text{C}$?",
+            options: [
+              "Water has a very low boiling point.",
+              "Water does not expand linearly and contracts between $0^{\\circ}\\text{C}$ and $4^{\\circ}\\text{C}$.",
+              "Water cannot wet the glass surface.",
+              "Water has a very low thermal expansion rate."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Water exhibits anomalous expansion: it contracts from $0^{\\circ}\\text{C}$ to $4^{\\circ}\\text{C}$ (reaching maximum density at $4^{\\circ}\\text{C}$) and then expands. This means a single volume value could correspond to two different temperatures, causing calibration ambiguity."
+          },
+          {
+            statement: "What is the main advantage of a <b>thermocouple thermometer</b> over a standard liquid-in-glass thermometer?",
+            options: [
+              "It can measure temperature without any physical contact.",
+              "It has a much smaller heat capacity, giving it a faster speed of response.",
+              "It does not require any calibration.",
+              "Its reading is always perfectly linear."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> The active measuring junction of a thermocouple is extremely small, giving it a very small heat capacity. It absorbs/releases very little heat to reach thermal equilibrium, yielding a near-instantaneous speed of response."
+          },
+          {
+            statement: "What is the function of the <b>constriction</b> in a clinical thermometer?",
+            options: [
+              "To increase the sensitivity of the thermometer.",
+              "To prevent the mercury column from dropping back into the bulb when removed from the patient.",
+              "To make the mercury expand more rapidly when heated.",
+              "To extend the temperature measurement range."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> When the thermometer is removed from the patient into cooler air, the mercury in the bulb contracts immediately. The constriction breaks the mercury thread, holding the column at its peak level to allow an accurate reading until shaken down manually."
+          },
+          {
+            statement: "How can the <b>sensitivity</b> of a liquid-in-glass thermometer be increased?",
+            options: [
+              "Use a smaller bulb and a wider capillary tube.",
+              "Use a larger bulb and a narrower capillary tube.",
+              "Thicken the protective glass wall of the bulb.",
+              "Use a liquid with a lower boiling point."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> A larger bulb contains more liquid, yielding a larger absolute volume change $\\Delta V$ for a given temperature rise. Forcing this larger volume change into a narrower capillary tube forces the liquid column to rise significantly higher, increasing sensitivity."
+          },
+          {
+            statement: "What is the absolute zero temperature on the Celsius scale?",
+            options: [
+              "$-100^{\\circ}\\text{C}$",
+              "$-273^{\\circ}\\text{C}$",
+              "$-373^{\\circ}\\text{C}$",
+              "$0^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Absolute zero ($0\\text{ K}$) is the theoretical minimum temperature where molecular motion reaches its minimum. This is equivalent to approximately $-273.15^{\\circ}\\text{C}$ (commonly rounded to $-273^{\\circ}\\text{C}$ in standard textbook syllabi)."
+          },
+          {
+            statement: "Why should a thermometer bulb have a <b>small heat capacity</b>?",
+            options: [
+              "To prevent it from breaking at high temperatures.",
+              "To avoid significantly altering the temperature of the object being measured.",
+              "To increase the structural strength of the bulb.",
+              "To make the thermometer easier to calibrate."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> When placed in contact with a test object, heat flows between them. If the thermometer has a large heat capacity, it will absorb or release a significant amount of heat, changing the true temperature of the test object."
+          },
+          {
+            statement: "If the temperature of a gas increases, what happens microscopically to its molecules?",
+            options: [
+              "The average kinetic energy of the molecules increases.",
+              "The average potential energy of the molecules decreases.",
+              "The molecules expand in size.",
+              "The total mass of the molecules increases."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Macroscopic temperature is a direct measure of the microscopic average kinetic energy of the random motion of its molecules ($T \\propto K.E._{avg}$)."
+          },
+          {
+            statement: "Which of the following describes the relationship between the Kelvin scale ($T$) and Celsius scale ($\\theta$)?",
+            options: [
+              "$T = \\theta + 273$",
+              "$T = \\theta - 273$",
+              "$T = 273 \\theta$",
+              "$T = \\theta / 273$"
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> The Kelvin thermodynamic temperature scale is shifted by $273.15$ units: $T(\\text{K}) = \\theta(^{\\circ}\\text{C}) + 273$."
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "When calibrating a thermometer at $0^{\\circ}\\text{C}$, why is it placed in a mixture of <b>crushed melting ice and water</b> rather than pure ice block?",
+            options: [
+              "Melting ice is much colder than solid ice blocks.",
+              "A crushed ice-water mixture ensures good thermal contact and maintains a stable $0^{\\circ}\\text{C}$ temperature throughout.",
+              "Crushed ice prevents the glass bulb from cracking due to thermal shock.",
+              "Water accelerates the rate of thermal expansion of the thermometer bulb."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Crushed wet ice creates maximum surface contact area with the thermometer bulb, ensuring the bulb reaches the stable equilibrium temperature of melting ice ($0^{\\circ}\\text{C}$) rapidly."
+          },
+          {
+            statement: "Why is it important to <b>stir</b> the liquid inside a calibration bath when measuring its temperature?",
+            options: [
+              "To speed up the rate of heat transfer through the liquid.",
+              "To ensure the temperature of the liquid is uniform throughout.",
+              "To increase the boiling point of the liquid.",
+              "To prevent the thermometer from touching the sides of the container."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Liquid without stirring can develop localized hot or cold pockets. Continuous stirring ensures a completely uniform temperature distribution throughout the bath."
+          },
+          {
+            statement: "How can a student avoid <b>parallax error</b> when reading a liquid-in-glass thermometer?",
+            options: [
+              "Always read the thermometer from a high angle above the scale.",
+              "Keep the line of sight perpendicular to the thermometer stem at the level of the liquid meniscus.",
+              "Read the thermometer while holding it under bright direct sunlight.",
+              "Read the thermometer through a magnifying glass from an angle."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Parallax error is avoided by ensuring your line of sight is horizontal and perpendicular to the glass stem, directly level with the top of the meniscus."
+          },
+          {
+            statement: "What are the standard <b>fixed points</b> used for calibrating a Celsius thermometer in a standard laboratory?",
+            options: [
+              "The freezing point of salt water and the boiling point of pure water.",
+              "The temperature of pure melting ice and pure boiling water, both at standard atmospheric pressure ($1\\text{ atm}$).",
+              "Absolute zero and the triple point of pure water.",
+              "The room temperature and the human body core temperature."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> The Celsius scale is defined using two easily reproducible physical states at standard atmospheric pressure: pure melting ice ($0^{\\circ}\\text{C}$) and pure boiling water steam ($100^{\\circ}\\text{C}$)."
+          },
+          {
+            statement: "A thermometer bulb is covered with a <b>very thick glass wall</b>. How does this affect its performance?",
+            options: [
+              "It increases the sensitivity of the thermometer.",
+              "It increases the measurement range of the thermometer.",
+              "It slows down the speed of response because glass is a poor conductor of heat.",
+              "It makes the liquid column rise higher for the same temperature change."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Thick glass creates high thermal resistance. Since glass is a poor thermal conductor, it takes longer for heat to transfer from the outside into the thermometric liquid, increasing response time."
+          },
+          // Calculations
+          {
+            statement: "An uncalibrated thermometer has a mercury column of length $2.0\\text{ cm}$ in melting ice ($0^{\\circ}\\text{C}$) and $22.0\\text{ cm}$ in steam ($100^{\\circ}\\text{C}$). Calculate the temperature when the mercury column length is $12.0\\text{ cm}$.",
+            options: [
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$",
+              "$55^{\\circ}\\text{C}$",
+              "$60^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- $L_0 = 2.0\\text{ cm}$<br>- $L_{100} = 22.0\\text{ cm}$<br>- $L_t = 12.0\\text{ cm}$<br><br><b>Formula:</b><br>$$T = \\frac{L_t - L_0}{L_{100} - L_0} \\times 100$$<br><br><b>Substitution:</b><br>$$T = \\frac{12.0 - 2.0}{22.0 - 2.0} \\times 100$$<br>$$T = \\frac{10.0}{20.0} \\times 100 = 50^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "A platinum resistance thermometer has a resistance of $10.0\\ \\Omega$ in melting ice and $30.0\\ \\Omega$ in steam. Calculate the temperature when its resistance is measured to be $15.0\\ \\Omega$.",
+            options: [
+              "$20^{\\circ}\\text{C}$",
+              "$25^{\\circ}\\text{C}$",
+              "$30^{\\circ}\\text{C}$",
+              "$35^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- $R_0 = 10.0\\ \\Omega$<br>- $R_{100} = 30.0\\ \\Omega$<br>- $R_t = 15.0\\ \\Omega$<br><br><b>Formula:</b><br>$$T = \\frac{R_t - R_0}{R_{100} - R_0} \\times 100$$<br><br><b>Substitution:</b><br>$$T = \\frac{15.0 - 10.0}{30.0 - 10.0} \\times 100$$<br>$$T = \\frac{5.0}{20.0} \\times 100 = 25^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "A linear thermocouple produces a voltage of $0.0\\text{ mV}$ at $0^{\\circ}\\text{C}$ and $8.0\\text{ mV}$ at $100^{\\circ}\\text{C}$. Find the output voltage when the temperature is $60^{\\circ}\\text{C}$.",
+            options: [
+              "$4.0\\text{ mV}$",
+              "$4.8\\text{ mV}$",
+              "$5.2\\text{ mV}$",
+              "$5.6\\text{ mV}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- $V_0 = 0.0\\text{ mV}$<br>- $V_{100} = 8.0\\text{ mV}$<br>- $T = 60^{\\circ}\\text{C}$<br><br><b>Formula:</b><br>$$V_t = V_0 + \\left(\\frac{T}{100}\\right)(V_{100} - V_0)$$<br><br><b>Substitution:</b><br>$$V_t = 0.0 + \\left(\\frac{60}{100}\\right)(8.0) = 4.8\\text{ mV}$$"
+          },
+          {
+            statement: "The temperature of a liquid nitrogen flask is $-196^{\\circ}\\text{C}$. Express this temperature on the Kelvin scale.",
+            options: [
+              "$77\\text{ K}$",
+              "$87\\text{ K}$",
+              "$97\\text{ K}$",
+              "$177\\text{ K}$"
+            ],
+            answer: 0,
+            explanation: "<b>Given:</b><br>- $\\theta = -196^{\\circ}\\text{C}$<br><br><b>Formula:</b><br>$$T = \\theta + 273$$<br><br><b>Substitution:</b><br>$$T = -196 + 273 = 77\\text{ K}$$"
+          },
+          {
+            statement: "A constant-volume gas thermometer registers a gas pressure of $1.0 \\times 10^5\\text{ Pa}$ at $0^{\\circ}\\text{C}$ ($273\\text{ K}$). If the gas pressure is directly proportional to absolute temperature, find the pressure at $273^{\\circ}\\text{C}$ ($546\\text{ K}$).",
+            options: [
+              "$1.5 \\times 10^5\\text{ Pa}$",
+              "$2.0 \\times 10^5\\text{ Pa}$",
+              "$2.5 \\times 10^5\\text{ Pa}$",
+              "$3.0 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- $P_1 = 1.0 \\times 10^5\\text{ Pa}$ at $T_1 = 273\\text{ K}$<br>- $T_2 = 546\\text{ K}$<br><br><b>Formula:</b><br>$$P_2 = P_1 \\times \\frac{T_2}{T_1}$$<br><br><b>Substitution:</b><br>$$P_2 = (1.0 \\times 10^5) \\times \\frac{546}{273} = 2.0 \\times 10^5\\text{ Pa}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "Ice melts at $-2^{\\circ}\\text{C}$ due to salt. Water boils at $98^{\\circ}\\text{C}$ due to low pressure. Which of the following is/are correct?<br>(1) The melting point is lower than standard.<br>(2) The boiling point is lower than standard.<br>(3) The boiling point of water is independent of pressure.",
+            options: [
+              "(1) only",
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 1,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Pure ice melts at $0^{\\circ}\\text{C}$. Salt lowers the melting point to $-2^{\\circ}\\text{C}$.<br><b>Evaluate Statement (2):</b> Correct. Pure water boils at $100^{\\circ}\\text{C}$ at $1\\text{ atm}$. Lower pressure drops the boiling point to $98^{\\circ}\\text{C}$.<br><b>Evaluate Statement (3):</b> Incorrect. Boiling point depends directly on surrounding pressure."
+          },
+          {
+            statement: "Which of the following statements about thermocouple thermometers are correct?<br>(1) They respond very quickly to temperature changes.<br>(2) They are suitable for spot measurements.<br>(3) They require a constant cold reference junction.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. The junction mass is tiny, enabling quick thermal response.<br><b>Evaluate Statement (2):</b> Correct. It measures temperature at the exact point where two wires intersect.<br><b>Evaluate Statement (3):</b> Correct. It measures temperature differences, so the cold reference junction must be kept at a known, constant temperature."
+          },
+          {
+            statement: "Thermometer $X$ has capillary diameter $d$. Thermometer $Y$ has capillary diameter $2d$. They have identical bulbs. What is the ratio of their sensitivity ($X : Y$)?",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 3,
+            explanation: "<b>Given:</b> Bulb volumes are equal. Diameter ratio is $1 : 2$.<br><br><b>Formula:</b><br>Sensitivity $\\propto \\frac{1}{\\text{Cross-Sectional Area}} \\propto \\frac{1}{d^2}$.<br><br><b>Substitution:</b><br>$$\\frac{\\text{Sensitivity}_X}{\\text{Sensitivity}_Y} = \\frac{(2d)^2}{d^2} = \\frac{4}{1}$$"
+          },
+          {
+            statement: "When a thermometer is placed in hot water, the liquid level drops slightly before rising. Why?<br>(1) The glass bulb expands first before heat reaches the liquid.<br>(2) Glass conducts heat slower than the liquid inside.<br>(3) The liquid contracts when heated.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. The glass envelope expands first, increasing the bulb cavity volume.<br><b>Evaluate Statement (2):</b> Correct. Glass is a poor thermal conductor, causing a time delay before heat reaches the inner liquid.<br><b>Evaluate Statement (3):</b> Incorrect. The liquid only expands when heated."
+          },
+          {
+            statement: "A thermocouple produces $10\\text{ mV}$ for a temperature difference of $100^{\\circ}\\text{C}$. What e.m.f. is produced for a difference of $40^{\\circ}\\text{C}$?",
+            options: [
+              "$2\\text{ mV}$",
+              "$4\\text{ mV}$",
+              "$6\\text{ mV}$",
+              "$8\\text{ mV}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> $100^{\\circ}\\text{C}$ difference produces $10\\text{ mV}$.<br><br><b>Formula:</b><br>$$V = \\text{Sensitivity} \\times \\Delta T$$<br><br><b>Substitution:</b><br>$$V = \\left(\\frac{10\\text{ mV}}{100^{\\circ}\\text{C}}\\right) \\times 40^{\\circ}\\text{C} = 4\\text{ mV}$$"
+          },
+          {
+            statement: "A thermometer reads $-5^{\\circ}\\text{C}$ in melting ice and $95^{\\circ}\\text{C}$ in steam. What is the true temperature when it reads $45^{\\circ}\\text{C}$?",
+            options: [
+              "$40^{\\circ}\\text{C}$",
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$",
+              "$55^{\\circ}\\text{C}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> $L_0 = -5$, $L_{100} = 95$, $L_t = 45$.<br><br><b>Formula:</b><br>$$T_{\\text{true}} = \\frac{L_t - L_0}{L_{100} - L_0} \\times 100$$<br><br><b>Substitution:</b><br>$$T_{\\text{true}} = \\frac{45 - (-5)}{95 - (-5)} \\times 100 = \\frac{50}{100} \\times 100 = 50^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "A constant-volume gas thermometer registers $1.2 \\times 10^5\\text{ Pa}$ at $300\\text{ K}$. What is the absolute temperature when the pressure is $2.4 \\times 10^5\\text{ Pa}$?",
+            options: [
+              "$150\\text{ K}$",
+              "$450\\text{ K}$",
+              "$600\\text{ K}$",
+              "$1200\\text{ K}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> $P_1 = 1.2 \\times 10^5\\text{ Pa}$ at $T_1 = 300\\text{ K}$. $P_2 = 2.4 \\times 10^5\\text{ Pa}$.<br><br><b>Formula:</b><br>Since volume is constant, $T \\propto P$.<br><br><b>Substitution:</b><br>$$T_2 = T_1 \\times \\frac{P_2}{P_1} = 300 \\times \\frac{2.4 \\times 10^5}{1.2 \\times 10^5} = 600\\text{ K}$$"
+          },
+          {
+            statement: "A liquid-in-glass thermometer has bulb volume $V$ and capillary bore area $A$. Which of the following is proportional to its sensitivity?",
+            options: [
+              "$V \\times A$",
+              "$V / A$",
+              "$A / V$",
+              "$1 / (V \\times A)$"
+            ],
+            answer: 1,
+            explanation: "<b>Formula:</b> Sensitivity is proportional to the bulb volume $V$ (expanding liquid quantity) and inversely proportional to capillary bore area $A$ (forcing higher rise: $h \\propto V/A$)."
+          },
+          {
+            statement: "On a non-standard scale $\\theta$, temperature is related to property $X$ by $\\theta = 2X - 10$. What is the temperature $\\theta$ when $X = 30$?",
+            options: [
+              "$10$",
+              "$20$",
+              "$50$",
+              "$70$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> $\\theta = 2X - 10$ and $X = 30$.<br><br><b>Substitution:</b><br>$$\\theta = 2(30) - 10 = 60 - 10 = 50$$"
+          },
+          {
+            statement: "Which of the following statements about water are correct?<br>(1) It has maximum density at $4^{\\circ}\\text{C}$.<br>(2) It expands when cooled from $4^{\\circ}\\text{C}$ to $0^{\\circ}\\text{C}$.<br>(3) It is highly suitable for calibrating thermometers near the freezing point.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Water density peaks at $4^{\\circ}\\text{C}$.<br><b>Evaluate Statement (2):</b> Correct. Below $4^{\\circ}\\text{C}$, water expands anomalously when cooled.<br><b>Evaluate Statement (3):</b> Incorrect. Because expansion is not monotonic, one volume can correspond to two temperatures, making water completely unsuitable for calibration in this range."
+          }
+        ]
+      },
+      "1.2": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "What are the microscopic components of the <b>internal energy</b> of a substance?",
+            options: [
+              "Only the average translational kinetic energy of the molecules.",
+              "Only the intermolecular potential energy of the molecules.",
+              "The sum of random molecular kinetic energy and molecular potential energy.",
+              "The total gravitational potential energy of the substance."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Microscopic internal energy is defined as the sum of the random translational and vibrational kinetic energy of all individual molecules plus the intermolecular potential energy due to their bonding distances."
+          },
+          {
+            statement: "Heat is transferred from object $A$ to object $B$. What microscopic condition <b>must</b> be true initially?",
+            options: [
+              "Object $A$ has more total internal energy than $B$.",
+              "Object $A$ has a higher temperature than $B$.",
+              "Object $A$ has a larger mass than $B$.",
+              "Object $A$ has a higher specific heat capacity than $B$."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Heat energy only transfers spontaneously due to a difference in temperature, flowing from a region of higher temperature (higher average molecular kinetic energy) to lower temperature."
+          },
+          {
+            statement: "Which of the following describes the mechanism of <b>conduction</b> in a non-metallic solid?",
+            options: [
+              "The movement of free electrons diffusing through the lattice structure.",
+              "The physical upward buoyancy of hot material regions.",
+              "The transmission of electromagnetic waves through empty space.",
+              "The transmission of atomic vibrations through adjacent lattice structures."
+            ],
+            answer: 3,
+            explanation: "<b>Option D is Correct:</b> In non-metals, free conduction electrons are absent. Heat is conducted solely via lattice vibrations, where hotter, faster-vibrating atoms collide with and transfer energy to neighboring atoms."
+          },
+          {
+            statement: "Why is <b>convection</b> restricted to fluids (liquids and gases) and cannot occur inside solid copper?",
+            options: [
+              "Solids have too high a specific heat capacity.",
+              "The molecules of a solid are locked in fixed lattice positions and cannot move bulk-wise.",
+              "Solids absorb all infrared thermal radiation.",
+              "Solids have too many free conduction electrons."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Convection requires bulk fluid movement where density differences cause fluid to flow. Since solid molecules are locked in fixed crystal lattices, bulk migration of material is impossible."
+          },
+          {
+            statement: "Which of the following surfaces is the <b>best emitter</b> and also the <b>best absorber</b> of thermal radiation?",
+            options: [
+              "Shiny silver surface",
+              "Matte black surface",
+              "Shiny white surface",
+              "Matte white surface"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Matte black surfaces are excellent absorbers because they reflect almost no incident radiation, and by Kirchhoff's Law of Radiation, they are also highly efficient thermal emitters."
+          },
+          {
+            statement: "Why does a piece of metal feel colder to the touch than a piece of wood at the same room temperature ($20^{\\circ}\\text{C}$)?",
+            options: [
+              "Metal is naturally at a lower temperature than wood.",
+              "Metal has a higher specific heat capacity than wood.",
+              "Metal has a much higher thermal conductivity than wood, conducting heat away from our hand faster.",
+              "Wood has an internal heat source."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Since room temperature is lower than body temperature (~$37^{\\circ}\\text{C}$), heat flows from your hand to the material. Metal conducts heat away from your skin much faster than wood, making it feel colder."
+          },
+          {
+            statement: "Which process describes the drive of a <b>convection current</b> in a heated liquid?",
+            options: [
+              "Hotter liquid contracts, becomes denser, and rises.",
+              "Hotter liquid expands, becomes less dense, and is pushed upward by buoyant forces.",
+              "Conduction electrons carry hot particles directly to the surface.",
+              "Electromagnetic radiation pushes the molecules upward."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Heating causes localized thermal expansion. The expanded fluid has a lower density than the surrounding cooler fluid, so it is pushed upward by buoyant forces, establishing a convection loop."
+          },
+          {
+            statement: "How does thermal energy travel from the Sun to the Earth through the vacuum of outer space?",
+            options: [
+              "Conduction by free space protons",
+              "Convection currents in solar winds",
+              "Thermal radiation via electromagnetic waves",
+              "Molecular vibrations across interplanetary gas"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Thermal radiation is the only heat transfer mechanism that does not require a material medium, traveling as infrared electromagnetic waves through the vacuum of space."
+          },
+          {
+            statement: "Which feature of a vacuum flask is designed to stop heat transfer via <b>conduction and convection</b>?",
+            options: [
+              "The silvered inner glass walls.",
+              "The double-walled glass design with a vacuum gap between them.",
+              "The thick rubber base padding.",
+              "The reflective plastic outer casing."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Both conduction and convection require a physical medium (atoms or molecules) to transfer energy. A vacuum has no particles, completely stopping these two transfer processes."
+          },
+          {
+            statement: "What occurs microscopically to the molecules of a block of copper when it is heated from $20^{\\circ}\\text{C}$ to $50^{\\circ}\\text{C}$ without melting?",
+            options: [
+              "Their average vibrational kinetic energy increases.",
+              "They break free of their lattice positions and flow.",
+              "The physical size of each individual atom increases.",
+              "Their intermolecular potential energy drops to zero."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Heating a solid raises its temperature. Microscopically, this corresponds to an increase in the average kinetic energy of its particles, causing them to vibrate with greater amplitudes about their fixed positions."
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "A student holds a glass tube and a copper tube of equal thickness. Both are heated with a Bunsen burner. Why does the copper tube feel hot much faster?",
+            options: [
+              "Copper has a lower density than glass.",
+              "Copper is a good thermal conductor due to free electrons, while glass is a thermal insulator.",
+              "Glass conducts heat using free electrons instead of lattice vibrations.",
+              "Copper has a much lower melting point than glass."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Copper contains a high concentration of free conduction electrons which can easily diffuse through the metal lattice and rapidly transfer kinetic energy. Glass lacks these free electrons."
+          },
+          {
+            statement: "Why are domestic heating elements placed at the <b>bottom</b> of water kettles?",
+            options: [
+              "Water expands and becomes denser when heated.",
+              "Hot water at the bottom expands, becomes less dense, and rises, setting up a convection current to heat all the water.",
+              "Water is an excellent conductor of heat.",
+              "It prevents the heating element from melting."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Placing the element at the bottom ensures that the heated water rises, allowing natural convection to distribute thermal energy uniformly throughout the kettle."
+          },
+          {
+            statement: "How does the thin air gap in a <b>double-glazed window</b> reduce heat loss?",
+            options: [
+              "Air is an excellent thermal conductor.",
+              "The air gap acts as a vacuum to stop radiation.",
+              "Air is a very poor thermal conductor, and the narrow gap prevents large convection currents from forming.",
+              "The glass panes completely absorb all incoming thermal energy."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Air is a poor thermal conductor because its molecules are widely spaced. If the gap is kept narrow, air cannot circulate easily, suppressing convection loops."
+          },
+          {
+            statement: "Why are the cooling fins at the back of a domestic refrigerator painted <b>matte black</b>?",
+            options: [
+              "To absorb light from the kitchen to keep the compressor warm.",
+              "Matte black surfaces are highly efficient emitters of thermal radiation, maximizing heat loss.",
+              "Black paint prevents the metal from expanding.",
+              "To completely prevent convection from occurring around the fins."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Matte black surfaces are highly efficient emitters of thermal radiation, maximizing the rate at which heat is rejected from the hot refrigerant inside the fins to the cooler air outside."
+          },
+          {
+            statement: "A cup of hot tea is covered with a plastic lid. Which heat transfer process is primarily <b>suppressed</b> by the lid?",
+            options: [
+              "Conduction through the cup walls",
+              "Radiation from the outer surface",
+              "Evaporative heat loss and convection of hot air",
+              "Conduction through the bottom of the cup"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> The lid blocks escaping water vapor (stopping latent heat loss via evaporation) and traps the warm air directly above the tea, preventing natural convection currents from carrying the heat away."
+          },
+          // Calculations
+          {
+            statement: "A solar water heater receives solar energy at a rate of $800\\text{ W}$. If it runs for $120\\text{ seconds}$, how much thermal energy does the heater receive?",
+            options: [
+              "$6.67\\text{ kJ}$",
+              "$9.60\\text{ kJ}$",
+              "$96.0\\text{ kJ}$",
+              "$960\\text{ kJ}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Power $P = 800\\text{ W}$<br>- Time $t = 120\\text{ s}$<br><br><b>Formula:</b><br>$$Q = P \\times t$$<br><br><b>Substitution:</b><br>$$Q = 800 \\times 120 = 96000\\text{ J} = 96.0\\text{ kJ}$$"
+          },
+          {
+            statement: "A room loses heat at a rate of $300\\text{ J s}^{-1}$ through a glass window. Calculate the total heat lost through the window in $5.0\\text{ minutes}$.",
+            options: [
+              "$1.5\\text{ kJ}$",
+              "$15.0\\text{ kJ}$",
+              "$90.0\\text{ kJ}$",
+              "$150\\text{ kJ}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Power loss $P = 300\\text{ J s}^{-1} = 300\\text{ W}$<br>- Time $t = 5.0\\text{ mins} = 300\\text{ s}$<br><br><b>Formula:</b><br>$$Q = P \\times t$$<br><br><b>Substitution:</b><br>$$Q = 300 \\times 305 = 90000\\text{ J} = 90.0\\text{ kJ}$$"
+          },
+          {
+            statement: "An electrical heater of power $100\\text{ W}$ is used to heat a block of metal. If the heater is only $80\\%$ efficient, what is the actual rate of heat energy transferred to the block?",
+            options: [
+              "$20\\text{ W}$",
+              "$80\\text{ W}$",
+              "$100\\text{ W}$",
+              "$120\\text{ W}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Total power $P_{in} = 100\\text{ W}$<br>- Efficiency $\\eta = 80\\% = 0.80$<br><br><b>Formula:</b><br>$$P_{out} = P_{in} \\times \\eta$$<br><br><b>Substitution:</b><br>$$P_{out} = 100 \\times 0.80 = 80\\text{ W}$$"
+          },
+          {
+            statement: "Solar radiation falls vertically on a $2.0\\text{ m}^2$ solar panel. If the solar power intensity is $600\\text{ W m}^{-2}$, what is the total power received by the panel?",
+            options: [
+              "$300\\text{ W}$",
+              "$1200\\text{ W}$",
+              "$1800\\text{ W}$",
+              "$2400\\text{ W}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Intensity $I = 600\\text{ W m}^{-2}$<br>- Area $A = 2.0\\text{ m}^2$<br><br><b>Formula:</b><br>$$P = I \\times A$$<br><br><b>Substitution:</b><br>$$P = 600 \\times 2.0 = 1200\\text{ W}$$"
+          },
+          {
+            statement: "A hot solid block loses $500\\text{ J}$ of energy to its surroundings. If $150\\text{ J}$ is lost via radiation, what is the energy lost via conduction and convection combined?",
+            options: [
+              "$150\\text{ J}$",
+              "$350\\text{ J}$",
+              "$500\\text{ J}$",
+              "$650\\text{ J}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Total energy lost $Q_{total} = 500\\text{ J}$<br>- Radiation loss $Q_{rad} = 150\\text{ J}$<br><br><b>Formula:</b><br>$$Q_{cond+conv} = Q_{total} - Q_{rad}$$<br><br><b>Substitution:</b><br>$$Q_{cond+conv} = 500 - 150 = 350\\text{ J}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "Consider $1\\text{ kg}$ of water at $100^{\\circ}\\text{C}$ and $1\\text{ kg}$ of steam at $100^{\\circ}\\text{C}$. Which of the following statements is/are correct?<br>(1) Their molecules have the same average kinetic energy.<br>(2) Steam has more internal energy than water.<br>(3) Steam has more molecular potential energy than water.",
+            options: [
+              "(1) only",
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Temperature is the same ($100^{\\circ}\\text{C}$), so average molecular kinetic energy must be identical.<br><b>Evaluate Statement (2):</b> Correct. Steam requires latent heat to form, so it contains more total thermal energy.<br><b>Evaluate Statement (3):</b> Correct. In steam, molecules are much further apart, meaning the attractive intermolecular bonds have been broken/overcome, yielding higher potential energy."
+          },
+          {
+            statement: "Two cylindrical rods, $A$ and $B$, of the same metal are heated across the same temperature difference. Rod $A$ has double the cross-sectional area and the same length as Rod $B$. What is the ratio of their rate of heat conduction ($A : B$)?",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> Same material, same length, and same temperature difference. Area $A_A = 2 A_B$.<br><br><b>Formula:</b><br>$$\\text{Rate of heat flow } \\frac{Q}{t} \\propto \\text{Area } A$$<br><br><b>Substitution:</b><br>$$\\frac{\\text{Rate}_A}{\\text{Rate}_B} = \\frac{A_A}{A_B} = \\frac{2}{1}$$"
+          },
+          {
+            statement: "Which of the following factors affect the rate of thermal radiation emitted from an object?<br>(1) The absolute temperature of the object.<br>(2) The surface area of the object.<br>(3) The color and texture of the object's surface.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Power radiated is highly dependent on temperature ($P \\propto T^4$).<br><b>Evaluate Statement (2):</b> Correct. Larger surface area provides a larger region to emit electromagnetic waves.<br><b>Evaluate Statement (3):</b> Correct. Matte black surfaces emit radiation much more effectively than shiny white or silvered surfaces."
+          },
+          {
+            statement: "During a sea breeze in the daytime, hot air rises above the land. Which of the following statements are correct?<br>(1) Land heats up faster than the sea because land has a lower specific heat capacity.<br>(2) Air above the land expands and becomes less dense.<br>(3) Cool air flows from the land to the sea.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Land has a smaller specific heat capacity than water, warming up faster under sunlight.<br><b>Evaluate Statement (2):</b> Correct. The hot land heats the air directly above it, causing it to expand and rise due to buoyancy.<br><b>Evaluate Statement (3):</b> Incorrect. Cool air flows from the high-pressure sea to the low-pressure land (sea breeze), not the other way around."
+          },
+          {
+            statement: "Which of the following statements about a vacuum flask are correct?<br>(1) The vacuum reduces heat transfer via conduction.<br>(2) The vacuum reduces heat transfer via convection.<br>(3) The silvered walls reduce heat transfer via radiation.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate Statement (1) & (2):</b> Correct. Both conduction and convection require matter (atoms/molecules) to transfer heat. A vacuum contains no matter, stopping both processes.<br><b>Evaluate Statement (3):</b> Correct. Silvered surfaces are poor emitters and excellent reflectors of electromagnetic radiation, preventing radiative energy loss."
+          },
+          {
+            statement: "Two walls are made of the same material. Wall $X$ is double the thickness of Wall $Y$. What is the ratio of their rate of heat loss via conduction ($X : Y$)?",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> Same material, same area, and same temperature difference. Thickness $d_X = 2 d_Y$.<br><br><b>Formula:</b><br>$$\\text{Rate of heat flow } \\frac{Q}{t} \\propto \\frac{1}{\\text{Thickness } d}$$<br><br><b>Substitution:</b><br>$$\\frac{\\text{Rate}_X}{\\text{Rate}_Y} = \\frac{d_Y}{d_X} = \\frac{1}{2}$$"
+          },
+          {
+            statement: "An ideal gas is compressed rapidly inside an insulated container. Which of the following statements is/are correct?<br>(1) Work is done on the gas.<br>(2) The internal energy of the gas increases.<br>(3) The temperature of the gas increases.",
+            options: [
+              "(1) only",
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Compression requires pushing a piston, doing mechanical work on the gas molecules.<br><b>Evaluate Statement (2):</b> Correct. Because the container is insulated, no heat escapes ($Q = 0$). By the First Law of Thermodynamics ($\\Delta U = Q + W$), the work done increases the internal energy.<br><b>Evaluate Statement (3):</b> Correct. Since internal energy increases, the molecular kinetic energy and thus temperature increase."
+          },
+          {
+            statement: "Cup $A$ is painted matte black and Cup $B$ is painted shiny silver. Both are identical in shape and contain equal masses of boiling water at $100^{\\circ}\\text{C}$. Which of the following is correct?",
+            options: [
+              "Cup $B$ cools down faster than Cup $A$.",
+              "Cup $A$ cools down faster than Cup $B$ because black is a better emitter of radiation.",
+              "Both cups cool down at exactly the same rate.",
+              "Conduction through the air is faster for Cup $B$ than Cup $A$."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Matte black is a highly efficient thermal emitter of infrared radiation compared to shiny silver. Thus, Cup $A$ loses thermal energy via radiation much faster and cools down quicker."
+          },
+          {
+            statement: "Which of the following occurs microscopically when ice at $0^{\\circ}\\text{C}$ melts to water at $0^{\\circ}\\text{C}$?<br>(1) Average molecular kinetic energy increases.<br>(2) Intermolecular potential energy increases.<br>(3) The molecules are pulled further apart.",
+            options: [
+              "(2) only",
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate Statement (1):</b> Incorrect. The temperature remains constant at $0^{\\circ}\\text{C}$, so average molecular kinetic energy must be constant.<br><b>Evaluate Statement (2):</b> Correct. Absorbed latent heat is used to break down the intermolecular bonds, raising the potential energy of the molecules.<br><b>Evaluate Statement (3):</b> Incorrect. Water is anomalous: ice is actually less dense than liquid water, so molecules move slightly closer together when melting."
+          },
+          {
+            statement: "Two identical solar panels, $X$ and $Y$, receive the same solar energy per unit area. Panel $X$ is shiny silver (reflects $80\\%$ of light, absorbs $20\\%$) and Panel $Y$ is matte black (absorbs $100\\%$). What is the ratio of solar power absorbed by $X$ to that of $Y$ ($X : Y$)?",
+            options: [
+              "$1 : 5$",
+              "$1 : 4$",
+              "$4 : 1$",
+              "$5 : 1$"
+            ],
+            answer: 0,
+            explanation: "<b>Given:</b><br>- Panel $X$ absorption efficiency = $20\\% = 0.20$<br>- Panel $Y$ absorption efficiency = $100\\% = 1.00$<br><br><b>Substitution:</b><br>$$\\frac{\\text{Power}_X}{\\text{Power}_Y} = \\frac{0.20}{1.00} = \\frac{1}{5}$$"
+          }
+        ]
+      },
+      "1.3": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "Which of the following is the correct definition of the <b>heat capacity</b> of an object?",
+            options: [
+              "The thermal energy required to raise the temperature of the object by $1^{\\circ}\\text{C}$.",
+              "The thermal energy required to raise the temperature of $1\\text{ kg}$ of the substance by $1^{\\circ}\\text{C}$.",
+              "The total thermal energy contained inside the object.",
+              "The rate of heat transfer through the object per second."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Heat capacity $C$ is the thermal energy required to raise the temperature of the entire object by $1^{\\circ}\\text{C}$ or $1\\text{ K}$ ($C = Q / \\Delta T$). Option B refers to the *specific* heat capacity."
+          },
+          {
+            statement: "What is the physical meaning of a substance having a <b>high specific heat capacity</b>?",
+            options: [
+              "It heats up and cools down extremely quickly.",
+              "It requires a large amount of thermal energy to produce a small temperature change.",
+              "It melts at a very low temperature.",
+              "It is an excellent thermal conductor of heat."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Specific heat capacity $c$ is the energy needed to warm up $1\\text{ kg}$ of a substance by $1^{\\circ}\\text{C}$. A high value means it can absorb/store a lot of heat with only a small temperature rise."
+          },
+          {
+            statement: "Why is water widely used as a <b>coolant</b> in car engines and central heating systems?",
+            options: [
+              "Water has a very low freezing point.",
+              "Water has a exceptionally high specific heat capacity, carrying away large amounts of heat per unit mass.",
+              "Water density is lower than all other liquids.",
+              "Water expands linearly with temperature."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Due to its high specific heat capacity ($4200\\text{ J kg}^{-1}\\text{K}^{-1}$), water can absorb a significant amount of heat energy from the engine with only a moderate rise in temperature."
+          },
+          {
+            statement: "Two blocks, $A$ and $B$, have the same mass. Block $A$ has a higher specific heat capacity than $B$. If they absorb the same amount of heat, which one has a <b>higher temperature rise</b>?",
+            options: [
+              "Block $A$",
+              "Block $B$",
+              "Both have the same temperature rise.",
+              "It depends on their initial temperatures."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> From $Q = mc\\Delta T$, temperature rise $\\Delta T = Q / (mc)$. Since mass $m$ and heat $Q$ are the same, $\\Delta T$ is inversely proportional to specific heat capacity $c$. Block $B$ has a smaller $c$, so its temperature rise is larger."
+          },
+          {
+            statement: "What is the relationship between the <b>heat capacity</b> $C$ and <b>specific heat capacity</b> $c$ of an object of mass $m$?",
+            options: [
+              "$C = m / c$",
+              "$C = c / m$",
+              "$C = m \\times c$",
+              "$C = m + c$"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Heat capacity $C$ represents the energy needed for the whole object, while specific heat capacity $c$ is per unit mass. Thus, $C = mc$."
+          },
+          {
+            statement: "Which of the following represents the correct SI unit for <b>specific heat capacity</b>?",
+            options: [
+              "$\\text{J }^{\\circ}\\text{C}^{-1}$",
+              "$\\text{J kg}^{-1\\text{ }}^{\\circ}\\text{C}^{-1}$",
+              "$\\text{W kg}^{-1}\\text{K}^{-1}$",
+              "$\\text{J kg }^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> From $c = Q / (m \\Delta T)$, the unit is Joules per kilogram per degree Celsius ($\\text{J kg}^{-1\\text{ }}^{\\circ}\\text{C}^{-1}$) or equivalently $\\text{J kg}^{-1}\\text{K}^{-1}$."
+          },
+          {
+            statement: "Why do coastal areas experience <b>smaller temperature variations</b> between day and night compared to inland deserts?",
+            options: [
+              "Seawater conducts heat much faster than sand.",
+              "Water has a much higher specific heat capacity than sand, keeping the temperature stable.",
+              "Deserts are closer to the Sun during the daytime.",
+              "Seawater reflects all solar radiation during the day."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Water has a high specific heat capacity, so it absorbs/releases large amounts of heat with minor temperature shifts. Sand has a low specific heat capacity and heats up or cools down rapidly."
+          },
+          {
+            statement: "Two identical blocks of the same material are heated. Block $X$ has double the mass of Block $Y$. If both receive the same heat, what is the temperature rise of $X$ compared to $Y$?",
+            options: [
+              "Double the temperature rise of $Y$",
+              "Half the temperature rise of $Y$",
+              "The same temperature rise as $Y$",
+              "Four times the temperature rise of $Y$"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Since they are made of the same material, they have the same specific heat capacity $c$. From $\\Delta T = Q / (mc)$, double the mass $m$ leads to half the temperature rise."
+          },
+          {
+            statement: "When thermal energy is absorbed by a solid without any phase change, what happens microscopically?",
+            options: [
+              "The molecules expand in physical volume.",
+              "The random vibrational kinetic energy of the molecules increases.",
+              "The intermolecular potential energy drops to zero.",
+              "The molecules begin to slide past each other."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Heating a solid raises its temperature, which microscopically corresponds to an increase in the average kinetic energy of random molecular vibrations."
+          },
+          {
+            statement: "A copper block of mass $m$ has heat capacity $C$. If the block is cut in half, what is the new heat capacity of each half?",
+            options: [
+              "$C / 2$",
+              "$C$",
+              "$2C$",
+              "$C / 4$"
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Heat capacity $C = mc$ is an extensive property dependent on mass. Cutting the block in half halves the mass, thus halving the heat capacity."
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "In an experiment to measure the specific heat capacity of a metal block using an electrical method, why is the block wrapped in <b>cotton wool lagging</b>?",
+            options: [
+              "To prevent the heater from overheating.",
+              "To minimize heat loss to the surroundings, making the measured value more accurate.",
+              "To make the temperature rise of the block linear.",
+              "To ensure the block does not conduct electricity."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Cotton wool acts as a thermal insulator. Minimizing heat loss ensures that almost all thermal energy supplied by the heater is used to raise the temperature of the block."
+          },
+          {
+            statement: "In the electric heating experiment for a metal block, why is a few drops of <b>oil</b> placed in the thermometer hole?",
+            options: [
+              "To lubricate the thermometer.",
+              "To ensure good thermal contact between the block and the thermometer bulb.",
+              "To prevent the thermometer from breaking.",
+              "To lower the melting point of the metal."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> The air gap between the thermometer and the metal hole is a poor conductor. Oil fills this gap to establish excellent thermal contact, ensuring accurate and rapid temperature readings."
+          },
+          {
+            statement: "A student heats a beaker of water with an electric heater. Why must the water be <b>stirred continuously</b>?",
+            options: [
+              "To speed up the rate of evaporation.",
+              "To ensure a uniform temperature throughout the water.",
+              "To prevent the water from boiling too early.",
+              "To increase the specific heat capacity of the water."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Water is a poor thermal conductor. Stirring distributes the heated water throughout the beaker, preventing localized hot spots and ensuring a reliable average temperature measurement."
+          },
+          {
+            statement: "A metal block is heated with a constant power heater. The graph of temperature rise $\\Delta T$ against heat supplied $Q$ is plotted. What does the <b>reciprocal of the slope</b> ($1/\\text{slope}$) represent?",
+            options: [
+              "Mass of the block",
+              "Specific heat capacity of the block",
+              "Heat capacity of the block",
+              "Thermal conductivity of the block"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> From $Q = C \\Delta T$, the graph of $\\Delta T$ vs $Q$ has a slope of $\\Delta T / Q = 1/C$. Therefore, the reciprocal of this slope represents the heat capacity $C$."
+          },
+          {
+            statement: "Why is the experimentally measured specific heat capacity of a liquid usually <b>larger</b> than the standard textbook value?",
+            options: [
+              "Some supplied heat is lost to the surroundings, meaning a larger electrical energy input is recorded for the same temperature rise.",
+              "The liquid absorbs impurities during the experiment.",
+              "The power of the heater increases when placed in liquid.",
+              "The mass of the liquid decreases due to evaporation."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Since some heat is lost to the surroundings, the heater must supply *more* energy ($Q_{measured} > Q_{useful}$) to raise the temperature. This overestimation of energy leads to an artificially high calculated specific heat capacity."
+          },
+          // Calculations
+          {
+            statement: "An electric heater of power $50\\text{ W}$ heats a metal block of mass $2\\text{ kg}$ for $100\\text{ seconds}$. If the temperature of the block rises by $10^{\\circ}\\text{C}$, calculate the specific heat capacity of the metal. (Assume no heat loss)",
+            options: [
+              "$150\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$250\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$350\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$500\\text{ J kg}^{-1}\\text{K}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Power $P = 50\\text{ W}$, Mass $m = 2\\text{ kg}$<br>- Time $t = 100\\text{ s}$, Temperature change $\\Delta T = 10^{\\circ}\\text{C}$<br><br><b>Formula:</b><br>$$Q = P \\times t = m c \\Delta T \\implies c = \\frac{P \\times t}{m \\times \\Delta T}$$<br><br><b>Substitution:</b><br>$$c = \\frac{50 \\times 100}{2 \\times 10} = \\frac{5000}{20} = 250\\text{ J kg}^{-1}\\text{K}^{-1}$$"
+          },
+          {
+            statement: "Calculate the heat capacity of a copper block of mass $3\\text{ kg}$. (Specific heat capacity of copper is $400\\text{ J kg}^{-1}\\text{K}^{-1}$)",
+            options: [
+              "$120\\text{ J K}^{-1}$",
+              "$600\\text{ J K}^{-1}$",
+              "$1200\\text{ J K}^{-1}$",
+              "$2400\\text{ J K}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Mass $m = 3\\text{ kg}$, Specific heat capacity $c = 400\\text{ J kg}^{-1}\\text{K}^{-1}$<br><br><b>Formula:</b><br>$$C = m \\times c$$<br><br><b>Substitution:</b><br>$$C = 3 \\times 400 = 1200\\text{ J K}^{-1}$$"
+          },
+          {
+            statement: "Calculate the thermal energy required to heat $0.5\\text{ kg}$ of water by $20^{\\circ}\\text{C}$. (Specific heat capacity of water is $4200\\text{ J kg}^{-1}\\text{K}^{-1}$)",
+            options: [
+              "$21\\text{ kJ}$",
+              "$42\\text{ kJ}$",
+              "$84\\text{ kJ}$",
+              "$105\\text{ kJ}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Mass $m = 0.5\\text{ kg}$, Temp rise $\\Delta T = 20^{\\circ}\\text{C}$<br>- Specific heat capacity $c = 4200\\text{ J kg}^{-1}\\text{K}^{-1}$<br><br><b>Formula:</b><br>$$Q = m c \\Delta T$$<br><br><b>Substitution:</b><br>$$Q = 0.5 \\times 4200 \\times 20 = 42000\\text{ J} = 42\\text{ kJ}$$"
+          },
+          {
+            statement: "A $1\\text{ kg}$ sample of hot water at $80^{\\circ}\\text{C}$ is mixed with $1\\text{ kg}$ of cold water at $20^{\\circ}\\text{C}$ in an insulated cup. Find the final temperature of the mixture.",
+            options: [
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$",
+              "$55^{\\circ}\\text{C}$",
+              "$60^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Equal masses $m_1 = m_2 = 1\\text{ kg}$, $T_1 = 80^{\\circ}\\text{C}$, $T_2 = 20^{\\circ}\\text{C}$<br><br><b>Formula:</b><br>$$m c (T_1 - T_f) = m c (T_f - T_2) \\implies T_f = \\frac{T_1 + T_2}{2}$$<br><br><b>Substitution:</b><br>$$T_f = \\frac{80 + 20}{2} = 50^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "An electric kettle rated at $1000\\text{ W}$ heats $2\\text{ kg}$ of water from $20^{\\circ}\\text{C}$ to $70^{\\circ}\\text{C}$. Calculate the time taken, assuming no heat loss. (Specific heat capacity of water is $4200\\text{ J kg}^{-1}\\text{K}^{-1}$)",
+            options: [
+              "$210\\text{ s}$",
+              "$320\\text{ s}$",
+              "$420\\text{ s}$",
+              "$500\\text{ s}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Power $P = 1000\\text{ W}$, Mass $m = 2\\text{ kg}$<br>- Temperature change $\\Delta T = 70 - 20 = 50^{\\circ}\\text{C}$<br>- Specific heat capacity $c = 4200\\text{ J kg}^{-1}\\text{K}^{-1}$<br><br><b>Formula:</b><br>$$P \\times t = m c \\Delta T \\implies t = \\frac{m c \\Delta T}{P}$$<br><br><b>Substitution:</b><br>$$t = \\frac{2 \\times 4200 \\times 50}{1000} = 2 \\times 4.2 \\times 50 = 420\\text{ s}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "Two metal blocks, $X$ (mass $m$) and $Y$ (mass $2m$), receive the same amount of heat. If the temperature rise of $X$ is double that of $Y$, find the ratio of their specific heat capacities ($c_X : c_Y$).",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$1 : 1$",
+              "$2 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> $Q_X = Q_Y$, $m_X = m, m_Y = 2m$, and $\\Delta T_X = 2 \\Delta T_Y$.<br><br><b>Formula:</b><br>$$Q = m c \\Delta T \\implies c = \\frac{Q}{m \\Delta T}$$<br><br><b>Substitution:</b><br>$$\\frac{c_X}{c_Y} = \\frac{m_Y \\Delta T_Y}{m_X \\Delta T_X} = \\frac{(2m)(\\Delta T_Y)}{(m)(2 \\Delta T_Y)} = 1$$<br>Hence, the ratio is $1 : 1$."
+          },
+          {
+            statement: "A liquid of mass $m$ is heated by a heater of constant power. If the experiment is repeated with mass $2m$ using the same heater, how does the slope of the temperature-time graph change? (Assume no heat loss)",
+            options: [
+              "The slope is doubled.",
+              "The slope is halved.",
+              "The slope remains unchanged.",
+              "The slope is quartered."
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> Slope of the graph represents rate of temperature rise $\\frac{\\Delta T}{t}$.<br><br><b>Formula:</b><br>$$P \\times t = m c \\Delta T \\implies \\text{Slope } \\frac{\\Delta T}{t} = \\frac{P}{m c} \\propto \\frac{1}{m}$$<br>Since mass $m$ is doubled, the slope is halved."
+          },
+          {
+            statement: "The heat capacity of metal block $A$ is double that of block $B$. If both blocks absorb the same amount of thermal energy, what is the ratio of their temperature rise ($\\Delta T_A : \\Delta T_B$)?",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> $C_A = 2 C_B$ and $Q_A = Q_B$.<br><br><b>Formula:</b><br>$$\\Delta T = \\frac{Q}{C} \\implies \\Delta T \\propto \\frac{1}{C}$$<br><br><b>Substitution:</b><br>$$\\frac{\\Delta T_A}{\\Delta T_B} = \\frac{C_B}{C_A} = \\frac{C_B}{2 C_B} = \\frac{1}{2}$$"
+          },
+          {
+            statement: "Which of the following statements about specific heat capacity are correct?<br>(1) Sand has a lower specific heat capacity than water.<br>(2) Water requires more energy to heat up compared to equal mass of sand.<br>(3) Sand cools down slower than water during the night.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate Statement (1):</b> Correct. Sand heats up much faster than water under sunlight, meaning it has a lower specific heat capacity.<br><b>Evaluate Statement (2):</b> Correct. High specific heat capacity means water needs more energy for the same temp rise.<br><b>Evaluate Statement (3):</b> Incorrect. Because sand has a lower specific heat capacity, it cools down much *faster* than water during the night."
+          },
+          {
+            statement: "Mix $1\\text{ kg}$ of water at $60^{\\circ}\\text{C}$ with $2\\text{ kg}$ of water at $30^{\\circ}\\text{C}$ in a perfectly insulated container. Find the final temperature of the mixture.",
+            options: [
+              "$35^{\\circ}\\text{C}$",
+              "$40^{\\circ}\\text{C}$",
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> $m_1 = 1\\text{ kg}, T_1 = 60^{\\circ}\\text{C}, m_2 = 2\\text{ kg}, T_2 = 30^{\\circ}\\text{C}$.<br><br><b>Formula:</b><br>$$\\text{Heat Lost} = \\text{Heat Gained} \\implies m_1 c (T_1 - T_f) = m_2 c (T_f - T_2)$$<br><br><b>Substitution:</b><br>$$1 \\times (60 - T_f) = 2 \\times (T_f - 30)$$<br>$$60 - T_f = 2T_f - 60 \\implies 3T_f = 120 \\implies T_f = 40^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "Which of the following experimental errors would cause the measured specific heat capacity of a metal block to be larger than the true value?<br>(1) Heat is lost to the surroundings through the lagging.<br>(2) Thermal energy is absorbed by the heater and the thermometer.<br>(3) The block is wet before heating begins.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate (1) & (2):</b> Correct. Any heat lost to surroundings or absorbed by apparatus means more electrical energy must be supplied for the same temperature rise, raising the calculated specific heat capacity.<br><b>Evaluate (3):</b> Correct. Evaporating water on a wet block absorbs latent heat, requiring more electrical energy and inflating the calculated specific heat capacity."
+          },
+          {
+            statement: "An electric heater heats block $X$ of mass $1\\text{ kg}$ and block $Y$ of mass $2\\text{ kg}$. The graph of temperature rise against time shows that block $X$ has double the slope of block $Y$. What is the ratio of their specific heat capacities ($c_X : c_Y$)?",
+            options: [
+              "$1 : 2$",
+              "$1 : 1$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> $m_X = 1, m_Y = 2$. Slope is $\\frac{\\Delta T}{t} \\propto \\frac{1}{m c}$. Thus, $\\text{Slope}_X = 2 \\text{Slope}_Y$.<br><br><b>Substitution:</b><br>$$\\frac{P}{m_X c_X} = 2 \\left(\\frac{P}{m_Y c_Y}\\right) \\implies \\frac{P}{1 \\times c_X} = 2 \\left(\\frac{P}{2 \\times c_Y}\\right)$$<br>$$\\frac{1}{c_X} = \\frac{1}{c_Y} \\implies c_X = c_Y$$<br>Hence, the ratio is $1 : 1$."
+          },
+          {
+            statement: "Why should a calorimeter have a small mass and be made of a material with low specific heat capacity?<br>(1) To ensure its own heat capacity is small.<br>(2) To minimize the thermal energy it absorbs during the experiment.<br>(3) To prevent any heat from escaping through its walls.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate (1) & (2):</b> Correct. A small mass and low specific heat capacity keep the total heat capacity $C = mc$ of the calorimeter extremely low, meaning it absorbs negligible heat during the trial.<br><b>Evaluate (3):</b> Incorrect. Low specific heat capacity does not stop heat from escaping; insulation stops heat loss."
+          },
+          {
+            statement: "A $200\text{ W}$ heater heats $0.5\text{ kg}$ of a metal block. The temperature rises by $40^{\\circ}\\text{C}$ in $5\text{ minutes}$. If $20\%$ of the heat is lost to surroundings, find the specific heat capacity of the metal block.",
+            options: [
+              "$1200\text{ J kg}^{-1}\text{K}^{-1}$",
+              "$2400\text{ J kg}^{-1}\text{K}^{-1}$",
+              "$3000\text{ J kg}^{-1}\text{K}^{-1}$",
+              "$4000\text{ J kg}^{-1}\text{K}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> $P = 200\text{ W}$, $m = 0.5\text{ kg}$, $\Delta T = 40^{\circ}\text{C}$, $t = 300\text{ s}$. Useful energy is $80\%$ of total.<br><br><b>Formula:</b><br>$$Q_{useful} = 0.80 \\times P \\times t = m c \\Delta T$$<br><br><b>Substitution:</b><br>$$Q_{useful} = 0.80 \\times 200 \\times 300 = 48000\text{ J}$$<br>$$c = \\frac{48000}{0.5 \\times 40} = \\frac{48000}{20} = 2400\text{ J kg}^{-1}\text{K}^{-1}$$"
+          },
+          {
+            statement: "Two blocks, $A$ and $B$, have the same mass. Block $A$'s temperature rises twice as fast as $B$ when heated with identical heaters. If they are placed in physical contact, which direction does heat flow?",
+            options: [
+              "Always from $B$ to $A$.",
+              "Always from $A$ to $B$.",
+              "From the block with higher initial temperature to the lower one.",
+              "No heat flows because they have equal masses."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> This is a classic conceptual trap! Specific heat capacity determines *how fast* temperature rises, but heat flow direction is solely determined by temperature difference (from hot to cold)."
+          }
+        ]
+      },
+      "1.4": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "What is the definition of the <b>specific latent heat of fusion</b> of a substance?",
+            options: [
+              "The thermal energy required to change $1\\text{ kg}$ of solid to liquid without temperature change.",
+              "The thermal energy required to change $1\\text{ kg}$ of liquid to gas without temperature change.",
+              "The temperature at which a solid melts to liquid.",
+              "The heat energy stored inside $1\\text{ kg}$ of solid."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Latent heat of *fusion* corresponds to solid-liquid phase changes. Latent heat of *vaporization* corresponds to liquid-gas phase changes (Option B)."
+          },
+          {
+            statement: "What occurs microscopically to the molecules of a solid during <b>melting</b> at constant temperature?",
+            options: [
+              "The average molecular kinetic energy increases.",
+              "The intermolecular potential energy increases as bonds are broken.",
+              "The molecules expand in size.",
+              "The molecules completely lose their potential energy."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> During melting, the temperature remains constant, meaning the molecular kinetic energy is unchanged. The supplied heat is used to overcome/break attractive bonds, raising the potential energy."
+          },
+          {
+            statement: "Why does the temperature of water <b>remain constant at $100^{\\circ}\\text{C}$</b> during boiling?",
+            options: [
+              "The heater stops transferring heat once boiling begins.",
+              "All supplied energy is used to overcome molecular forces to separate molecules.",
+              "Convection currents carry all heat away from the bottom.",
+              "The water molecules lose all kinetic energy."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> During boiling, energy is not used to speed up the molecules (kinetic energy). Instead, it is used to overcome the intermolecular forces to completely separate the liquid molecules into gas."
+          },
+          {
+            statement: "Which of the following describes a key difference between <b>boiling</b> and <b>evaporation</b>?",
+            options: [
+              "Evaporation only occurs at a single fixed temperature.",
+              "Boiling occurs throughout the liquid, whereas evaporation only happens at the liquid surface.",
+              "Boiling does not require any thermal energy.",
+              "Evaporation only happens in a vacuum."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Boiling is a rapid phase change occurring throughout the entire liquid at a specific boiling point. Evaporation is a slow process occurring only at the surface at any temperature."
+          },
+          {
+            statement: "What is the correct SI unit for <b>specific latent heat</b>?",
+            options: [
+              "$\\text{J kg}^{-1\\text{ }}^{\\circ}\\text{C}^{-1}$",
+              "$\\text{J kg}^{-1}$",
+              "$\\text{W kg}^{-1}$",
+              "$\\text{J }^{\\circ}\\text{C}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> From $Q = m L$, specific latent heat $L = Q / m$. The unit is Joules per kilogram ($\\text{J kg}^{-1}$)."
+          },
+          {
+            statement: "Why is the specific latent heat of vaporization of water ($L_v$) <b>much larger</b> than its latent heat of fusion ($L_f$)?",
+            options: [
+              "Water has a very high boiling point.",
+              "Molecules must be completely separated during vaporization, which requires much more work against attractive forces.",
+              "Convection does not occur during fusion.",
+              "Water molecules expand in size when boiling."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Melting only requires loosening bonds slightly. Vaporization requires completely separating molecules against attractive intermolecular forces and doing work against atmospheric pressure, requiring far more energy."
+          },
+          {
+            statement: "How does <b>sweating</b> cool down the human body?",
+            options: [
+              "Sweat conducts heat directly into the air.",
+              "Sweat absorbs latent heat of vaporization from our skin to evaporate.",
+              "Sweat has a low specific heat capacity.",
+              "Sweat blocks the cold wind from touching the skin."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> As sweat evaporates, liquid water changes to gas. It absorbs the necessary specific latent heat of vaporization from the hot skin, lowering body temperature."
+          },
+          {
+            statement: "What is the physical process of <b>sublimation</b>?",
+            options: [
+              "A solid changing directly into a gas without turning into a liquid first.",
+              "A gas turning into a liquid.",
+              "A liquid turning into a solid.",
+              "A solid turning into a liquid."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Sublimation is the direct transition from the solid phase to the gaseous phase, such as dry ice (solid carbon dioxide) at room temperature."
+          },
+          {
+            statement: "When a liquid <b>solidifies (freezes)</b> at its freezing point, what happens to its microscopic energy?",
+            options: [
+              "Potential energy decreases as bonds form, while temperature remains constant.",
+              "Kinetic energy decreases, causing the temperature to drop.",
+              "Potential energy increases.",
+              "Both potential and kinetic energies double."
+            ],
+            answer: 0,
+            explanation: "<b>Option A is Correct:</b> Solidification is an exothermic phase change. The temperature (and thus kinetic energy) remains constant while potential energy decreases as intermolecular bonds reform."
+          },
+          {
+            statement: "Which of the following processes represents <b>condensation</b>?",
+            options: [
+              "Liquid turning to gas",
+              "Gas turning to liquid",
+              "Solid turning to gas",
+              "Liquid turning to solid"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Condensation is the transition of gas back into liquid, which releases latent heat of vaporization to the surroundings."
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "In an experiment to measure the specific latent heat of fusion of ice, why is <b>crushed melting ice</b> at $0^{\\circ}\\text{C}$ used instead of ice blocks?",
+            options: [
+              "Ice blocks have a lower melting point.",
+              "Crushed ice ensures maximum contact with the heater, ensuring the ice is exactly at $0^{\\circ}\\text{C}$ throughout.",
+              "Crushed ice does not absorb latent heat.",
+              "Ice blocks expand too fast."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Crushed wet ice has a high surface area and is guaranteed to be at its melting point ($0^{\\circ}\\text{C}$), ensuring uniform heating and excellent thermal contact."
+          },
+          {
+            statement: "In the latent heat of fusion of ice experiment, why is a <b>control setup</b> (without heater) used?",
+            options: [
+              "To double-check the mass of the beaker.",
+              "To subtract the mass of ice melted by the heat from surroundings.",
+              "To measure the specific heat capacity of the water.",
+              "To prevent the heater from overheating."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Ice melts even without a heater due to heat from the ambient air. Subtracting the runoff mass of the control setup ensures we calculate only the mass melted *by the heater*."
+          },
+          {
+            statement: "Why does water boil at a temperature <b>lower than $100^{\\circ}\\text{C}$</b> at the top of high mountains?",
+            options: [
+              "The air temperature is colder.",
+              "The atmospheric pressure is lower.",
+              "The density of water is lower.",
+              "There is less wind at high altitudes."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Boiling occurs when the vapor pressure of the liquid matches the surrounding atmospheric pressure. Lower atmospheric pressure at high altitudes means boiling occurs at a lower temperature."
+          },
+          {
+            statement: "In a cooling curve graph of liquid wax, why is there a <b>flat horizontal section</b>?",
+            options: [
+              "The wax has stopped losing heat to the surroundings.",
+              "The wax is solidifying and releasing latent heat to maintain its temperature.",
+              "The specific heat capacity of the liquid wax is zero.",
+              "The wax has completely evaporated."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> During solidification, bonds form and release latent heat. This released energy compensates for heat loss to the surroundings, keeping the temperature constant."
+          },
+          {
+            statement: "Why does steam at $100^{\\circ}\\text{C}$ cause <b>more severe burns</b> than boiling water at $100^{\\circ}\\text{C}$?",
+            options: [
+              "Steam is naturally hotter than boiling water.",
+              "Steam condenses on skin, releasing a massive amount of latent heat of vaporization before cooling.",
+              "Steam has a higher thermal conductivity.",
+              "Water has a larger volume than steam."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> When steam touches skin, it first condenses into water. This phase change releases the enormous latent heat of vaporization ($L_v \\approx 2.3 \\times 10^6\\text{ J kg}^{-1}$), transferring massive energy before any thermal cooling begins."
+          },
+          // Calculations
+          {
+            statement: "A $200\\text{ W}$ heater is used to boil water at $100^{\\circ}\\text{C}$. If $10\\text{ g}$ of water is vaporized in $100\\text{ seconds}$, calculate the specific latent heat of vaporization of water.",
+            options: [
+              "$1.0 \\times 10^6\\text{ J kg}^{-1}$",
+              "$2.0 \\times 10^6\\text{ J kg}^{-1}$",
+              "$3.0 \\times 10^6\\text{ J kg}^{-1}$",
+              "$4.0 \\times 10^6\\text{ J kg}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Power $P = 200\\text{ W}$, Time $t = 100\\text{ s}$<br>- Mass $m = 10\\text{ g} = 0.01\\text{ kg}$<br><br><b>Formula:</b><br>$$Q = P \\times t = m L_v \\implies L_v = \\frac{P \\times t}{m}$$<br><br><b>Substitution:</b><br>$$L_v = \\frac{200 \\times 100}{0.01} = \\frac{20000}{0.01} = 2.0 \\times 10^6\\text{ J kg}^{-1}$$"
+          },
+          {
+            statement: "How much thermal energy is required to completely melt $2\\text{ kg}$ of pure ice at $0^{\\circ}\\text{C}$? (Specific latent heat of fusion of ice is $3.3 \\times 10^5\\text{ J kg}^{-1}$)",
+            options: [
+              "$1.65 \\times 10^5\\text{ J}$",
+              "$3.3 \\times 10^5\\text{ J}$",
+              "$6.6 \\times 10^5\\text{ J}$",
+              "$9.9 \\times 10^5\\text{ J}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Mass $m = 2\\text{ kg}$, Specific latent heat of fusion $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$<br><br><b>Formula:</b><br>$$Q = m L_f$$<br><br><b>Substitution:</b><br>$$Q = 2 \\times 3.3 \\times 10^5 = 6.6 \\times 10^5\\text{ J}$$"
+          },
+          {
+            statement: "An electric kettle of $2000\\text{ W}$ contains boiling water. How much water is boiled away into steam if the kettle runs for $220\\text{ seconds}$? (Specific latent heat of vaporization of water is $2.2 \\times 10^6\\text{ J kg}^{-1}$)",
+            options: [
+              "$0.1\\text{ kg}$",
+              "$0.2\\text{ kg}$",
+              "$0.3\\text{ kg}$",
+              "$0.4\\text{ kg}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Power $P = 2000\\text{ W}$, Time $t = 220\\text{ s}$<br>- Latent heat $L_v = 2.2 \\times 10^6\\text{ J kg}^{-1}$<br><br><b>Formula:</b><br>$$P \\times t = m L_v \\implies m = \\frac{P \\times t}{L_v}$$<br><br><b>Substitution:</b><br>$$m = \\frac{2000 \\times 220}{2.2 \\times 10^6} = \\frac{440000}{2200000} = 0.2\\text{ kg}$$"
+          },
+          {
+            statement: "Calculate the thermal energy released when $0.1\\text{ kg}$ of steam at $100^{\\circ}\\text{C}$ condenses into liquid water at $100^{\\circ}\\text{C}$. (Specific latent heat of vaporization is $2.3 \\times 10^6\\text{ J kg}^{-1}$)",
+            options: [
+              "$2.3 \\times 10^4\\text{ J}$",
+              "$2.3 \\times 10^5\\text{ J}$",
+              "$2.3 \\times 10^6\\text{ J}$",
+              "$4.6 \\times 10^5\\text{ J}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- Mass $m = 0.1\\text{ kg}$, $L_v = 2.3 \\times 10^6\\text{ J kg}^{-1}$<br><br><b>Formula:</b><br>$$Q = m L_v$$<br><br><b>Substitution:</b><br>$$Q = 0.1 \\times 2.3 \\times 10^6 = 2.3 \\times 10^5\\text{ J}$$"
+          },
+          {
+            statement: "A heater melts $0.5\\text{ kg}$ of ice in $100\\text{ seconds}$ at $0^{\\circ}\\text{C}$. Calculate the useful heating power of the heater. (Specific latent heat of fusion of ice is $3.0 \\times 10^5\\text{ J kg}^{-1}$)",
+            options: [
+              "$500\\text{ W}$",
+              "$1000\\text{ W}$",
+              "$1500\\text{ W}$",
+              "$3000\\text{ W}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Mass $m = 0.5\\text{ kg}$, Time $t = 100\\text{ s}$<br>- Latent heat $L_f = 3.0 \\times 10^5\\text{ J kg}^{-1}$<br><br><b>Formula:</b><br>$$Q = m L_f = P \\times t \\implies P = \\frac{m L_f}{t}$$<br><br><b>Substitution:</b><br>$$P = \\frac{0.5 \\times 3.0 \\times 10^5}{100} = \\frac{150000}{100} = 1500\\text{ W}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "A $1000\\text{ W}$ heater heats ice at $0^{\\circ}\\text{C}$. In the first $330\\text{ seconds}$, all the ice melts to water at $0^{\\circ}\\text{C}$. What was the mass of the ice? (Take $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$)",
+            options: [
+              "$0.5\\text{ kg}$",
+              "$1.0\\text{ kg}$",
+              "$1.5\\text{ kg}$",
+              "$2.0\\text{ kg}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b> $P = 1000\\text{ W}$, $t = 330\\text{ s}$, $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$.<br><br><b>Formula:</b><br>$$P \\times t = m L_f \\implies m = \\frac{P \\times t}{L_f}$$<br><br><b>Substitution:</b><br>$$m = \\frac{1000 \\times 330}{3.3 \\times 10^5} = \\frac{3.3 \\times 10^5}{3.3 \\times 10^5} = 1.0\\text{ kg}$$"
+          },
+          {
+            statement: "A liquid of mass $m$ is cooled under constant rate of heat extraction. Solidification takes time $t$. If we repeat the cooling with mass $2m$ of the same liquid under identical rates, how long does solidification take?",
+            options: [
+              "$0.5 t$",
+              "$t$",
+              "$2 t$",
+              "$4 t$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> Solidification time $t = \\frac{Q}{P_{extraction}} = \\frac{m L_f}{P}$.<br><br><b>Substitution:</b> Since mass $m$ is doubled, the energy required to change state is doubled, which doubles the time taken ($2t$)."
+          },
+          {
+            statement: "Which of the following statements about wet-bulb thermometers and dry-bulb thermometers are correct?<br>(1) The wet-bulb thermometer reads a lower temperature due to evaporative cooling.<br>(2) Higher humidity increases the temperature difference between the two thermometers.<br>(3) In $100\\%$ humidity, both thermometers read identical temperatures.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 2,
+            explanation: "<b>Evaluate (1):</b> Correct. Water evaporates from the wet sleeve, absorbing latent heat of vaporization from the bulb, lowering its reading.<br><b>Evaluate (2):</b> Incorrect. High humidity reduces the rate of evaporation, decreasing the difference.<br><b>Evaluate (3):</b> Correct. At $100\\%$ humidity, no evaporation occurs, so both read identical temperatures."
+          },
+          {
+            statement: "How much thermal energy is needed to heat $1\\text{ kg}$ of ice at $-10^{\\circ}\\text{C}$ to melt completely into water at $0^{\\circ}\\text{C}$? (Take $c_{ice} = 2000\\text{ J kg}^{-1}\\text{K}^{-1}$ and $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$)",
+            options: [
+              "$3.1 \\times 10^5\\text{ J}$",
+              "$3.3 \\times 10^5\\text{ J}$",
+              "$3.5 \\times 10^5\\text{ J}$",
+              "$3.7 \\times 10^5\\text{ J}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> $m = 1\\text{ kg}, T_{initial} = -10^{\\circ}\\text{C}$.<br><br><b>Formula & Substitution:</b><br>1. Heat ice to $0^{\\circ}\\text{C}$: $$Q_1 = m c \\Delta T = 1 \\times 2000 \\times 10 = 20000\\text{ J}$$<br>2. Melt ice at $0^{\\circ}\\text{C}$: $$Q_2 = m L_f = 1 \\times 3.3 \\times 10^5 = 330000\\text{ J}$$<br>Total $Q = 20000 + 330000 = 350000\\text{ J} = 3.5 \\times 10^5\\text{ J}$."
+          },
+          {
+            statement: "Water is boiled in an open container and a closed container with a tight lid. Which of the following statements are correct?<br>(1) Water in the closed container boils at a higher temperature.<br>(2) Water evaporates slower in the closed container.<br>(3) Increasing surrounding pressure raises the boiling point.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Evaluate (1) & (3):</b> Correct. Vapor pressure builds up inside the closed container, raising the boiling point.<br><b>Evaluate (2):</b> Correct. The closed lid traps saturated water vapor, reducing the rate of net evaporation."
+          },
+          {
+            statement: "A heater heats $1\\text{ kg}$ of substance $X$ and $1\\text{ kg}$ of substance $Y$ at identical rates. If the time taken to completely melt $X$ is double that of $Y$, find the ratio of their specific latent heats of fusion ($L_{f,X} : L_{f,Y}$).",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b> $m_X = m_Y = 1\\text{ kg}$. Power $P$ is equal. $t_X = 2 t_Y$.<br><br><b>Formula:</b><br>$$Q = P \\times t = m L_f \\implies L_f \\propto t$$<br>Since melting time of $X$ is double, its latent heat must be double ($2 : 1$)."
+          },
+          {
+            statement: "Which of the following precautions reduces experimental errors when measuring the specific latent heat of vaporization of water using an electric method?<br>(1) Add a double-walled glass shield around the heating container.<br>(2) Ensure no condensed steam drips back into the beaker.<br>(3) Stir the boiling water violently during vaporization.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate (1):</b> Correct. Double-walled shield reduces radiative and convective heat loss.<br><b>Evaluate (2):</b> Correct. Dripping condensed water back inside means mass loss is underestimated.<br><b>Evaluate (3):</b> Incorrect. Violet stirring can splash liquid water out of the vessel, distorting mass loss readings."
+          },
+          {
+            statement: "Add $0.1\\text{ kg}$ of ice at $0^{\\circ}\\text{C}$ to $0.4\\text{ kg}$ of water at $30^{\\circ}\\text{C}$ in an insulated cup. Find the final temperature of the mixture once equilibrium is reached. (Take $c_{water} = 4200\\text{ J kg}^{-1}\\text{K}^{-1}$ and $L_f = 3.36 \\times 10^5\\text{ J kg}^{-1}$)",
+            options: [
+              "$0^{\\circ}\\text{C}$",
+              "$4^{\\circ}\\text{C}$",
+              "$8^{\\circ}\\text{C}$",
+              "$12^{\\circ}\\text{C}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Melt ice: $Q_{melt} = 0.1 \\times 3.36 \\times 10^5 = 33600\\text{ J}$<br>- Max heat water can release: $Q_{max} = 0.4 \\times 4200 \\times 30 = 50400\\text{ J}$<br>Since $Q_{max} > Q_{melt}$, all ice melts and final temp $T_f > 0$.<br><br><b>Formula:</b><br>$$0.4 \\times 4200 \\times (30 - T_f) = 33600 + (0.1 \\times 4200 \\times T_f)$$<br>$$1680 \\times (30 - T_f) = 33600 + 420 T_f \\implies 50400 - 1680 T_f = 33600 + 420 T_f$$<br>$$16800 = 2100 T_f \\implies T_f = 8^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "A block of ice at $0^{\\circ}\\text{C}$ is placed in an insulated container. Steam at $100^{\\circ}\\text{C}$ is passed in. Why does a small mass of steam melt a large mass of ice?",
+            options: [
+              "Steam contains more kinetic energy than boiling water.",
+              "Specific latent heat of vaporization of steam is much larger than the specific latent heat of fusion of ice.",
+              "Convection currents carry steam down faster.",
+              "Ice molecules have a larger mass."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Condensing $1\\text{ kg}$ of steam releases $L_v \\approx 2.3 \\times 10^6\\text{ J}$. Melting $1\\text{ kg}$ of ice only requires $L_f \\approx 3.3 \\times 10^5\\text{ J}$. This immense vaporization-to-fusion energy ratio allows a tiny amount of steam to melt many times its mass in ice."
+          },
+          {
+            statement: "Which of the following statements about the melting of crystalline and non-crystalline solids (such as wax) is/are correct?<br>(1) Crystalline solids melt at a sharp, fixed temperature.<br>(2) Non-crystalline solids soften gradually over a range of temperatures.<br>(3) Non-crystalline solids do not absorb latent heat when melting.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate (1) & (2):</b> Correct. Crystals have regular structures that break simultaneously at a sharp temperature. Amorphous materials soften gradually as bonds break at varying energies.<br><b>Evaluate (3):</b> Incorrect. All phase transformations require energy to reorganize structures."
+          }
+        ]
+      },
+      "1.5": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "Which of the following describes the microscopic physical state of an ideal gas at <b>absolute zero</b> temperature?",
+            options: [
+              "The volume of the gas molecules expands to infinity.",
+              "The average kinetic energy of the gas molecules becomes theoretically zero.",
+              "The gas molecules freeze into a regular metallic lattice.",
+              "The pressure of the gas increases exponentially."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Absolute zero ($0\\text{ K}$) is the lowest possible thermodynamic limit where molecular translation and all random kinetic motions of the molecules cease entirely."
+          },
+          {
+            statement: "According to <b>Boyle's Law</b>, what parameters must remain constant for a trapped gas?",
+            options: [
+              "Volume and mass of the gas",
+              "Pressure and density of the gas",
+              "Temperature and mass of the gas",
+              "Pressure and temperature of the gas"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Boyle's Law states that pressure is inversely proportional to volume ($p \\propto 1/V$) specifically for a fixed mass of gas at constant temperature."
+          },
+          {
+            statement: "What is the microscopic origin of the <b>pressure</b> exerted by a gas on the walls of its container?",
+            options: [
+              "The attractive electrostatic forces between adjacent gas molecules.",
+              "The weight of the gas molecules pushing down on the bottom surface.",
+              "The frequent collisions of gas molecules with the walls, delivering momentum transfer.",
+              "The thermal expansion of each individual gas atom."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Gas pressure is defined microscopically as the average force per unit area exerted by the frequent elastic collisions of randomly moving gas molecules on the boundary walls."
+          },
+          {
+            statement: "According to <b>Charles's Law</b>, how does the volume $V$ of a gas relate to its Kelvin temperature $T$?",
+            options: [
+              "$V$ is inversely proportional to $T$.",
+              "$V$ is directly proportional to $T$ at constant pressure.",
+              "$V$ is independent of $T$.",
+              "$V$ is proportional to the square root of $T$."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Charles's Law dictates that at a constant pressure, the volume of a fixed mass of gas is directly proportional to its thermodynamic (Kelvin) temperature ($V \\propto T$)."
+          },
+          {
+            statement: "Which of the following is <b>NOT</b> an assumption of the kinetic theory of an ideal gas?",
+            options: [
+              "Intermolecular attractive forces between gas molecules are negligible.",
+              "The volume of the individual gas molecules is negligible compared to the container volume.",
+              "All collisions between gas molecules and the walls are perfectly inelastic.",
+              "The gas molecules are in continuous, rapid, random motion."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> The kinetic model assumes all molecular collisions are *perfectly elastic*, meaning there is absolutely no loss of total kinetic energy during impacts."
+          },
+          {
+            statement: "According to the <b>Pressure (Gay-Lussac's) Law</b>, what is the relation between pressure $p$ and Celsius temperature $\\theta$?",
+            options: [
+              "$p$ is directly proportional to $\\theta$.",
+              "$p$ is directly proportional to $(\\theta + 273)$.",
+              "$p$ is inversely proportional to $(\\theta - 273)$.",
+              "$p$ remains completely constant as $\\theta$ changes."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Pressure is directly proportional to absolute temperature $T$ in Kelvin. Since $T = \\theta + 273$, pressure is proportional to $(\\theta + 273)$."
+          },
+          {
+            statement: "Why does a gas always expand spontaneously to fill the entire volume of any container it is placed in?",
+            options: [
+              "The molecules experience high gravitational attraction.",
+              "Intermolecular bonds are extremely strong.",
+              "Intermolecular attractive forces are negligible, allowing molecules to move freely.",
+              "Gas molecules repel each other with massive electrostatic forces."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Because attractive forces between gas molecules are negligible, they do not remain bound together and fly freely in all directions, occupying all available space."
+          },
+          {
+            statement: "A gas temperature is $27^{\\circ}\\text{C}$. What is this temperature on the absolute thermodynamic Kelvin scale?",
+            options: [
+              "$27\\text{ K}$",
+              "$246\\text{ K}$",
+              "$300\\text{ K}$",
+              "$327\\text{ K}$"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Absolute temperature $T = \\theta + 273$. Therefore, $T = 27 + 273 = 300\\text{ K}$."
+          },
+          {
+            statement: "If you extrapolate a pressure-temperature ($p-T$) graph of a constant-volume gas to zero pressure, where does it intersect the temperature axis?",
+            options: [
+              "At $0^{\\circ}\\text{C}$",
+              "At $-100^{\\circ}\\text{C}$",
+              "At $-273^{\\circ}\\text{C}$",
+              "At $-373^{\\circ}\\text{C}$"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Extrapolating the linear $p-T$ relationship down to zero pressure defines the absolute zero coordinate, which is approximately $-273.15^{\\circ}\\text{C}$."
+          },
+          {
+            statement: "A fixed mass of gas in a flexible balloon is heated at constant pressure. What happens to its volume?",
+            options: [
+              "It remains constant.",
+              "It decreases because molecules slow down.",
+              "It increases because molecules move faster and push the boundary outward to maintain constant pressure.",
+              "It oscillates randomly."
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> Heating increases the average speed of molecules. To keep pressure (collision force intensity) constant, the volume must expand ($V \\propto T$), spreading the molecules out."
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "A fixed mass of gas occupies $30\\text{ cm}^3$ at a pressure of $1.0 \\times 10^5\\text{ Pa}$. If it is compressed at a constant temperature to a volume of $10\\text{ cm}^3$, calculate the new pressure of the gas.",
+            options: [
+              "$3.0 \\times 10^4\\text{ Pa}$",
+              "$1.5 \\times 10^5\\text{ Pa}$",
+              "$3.0 \\times 10^5\\text{ Pa}$",
+              "$9.0 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- $p_1 = 1.0 \\times 10^5\\text{ Pa}, V_1 = 30\\text{ cm}^3$<br>- $V_2 = 10\\text{ cm}^3$<br><br><b>Formula:</b><br>$$p_1 V_1 = p_2 V_2 \\implies p_2 = \\frac{p_1 V_1}{V_2}$$<br><br><b>Substitution:</b><br>$$p_2 = \\frac{1.0 \\times 10^5 \\times 30}{10} = 3.0 \\times 10^5\\text{ Pa}$$"
+          },
+          {
+            statement: "An air bubble of volume $1.5\\text{ cm}^3$ is at the bottom of a lake at a depth of $20\\text{ m}$. If the temperature is constant, find the bubble volume at the surface. (Atmospheric pressure $= 1.0 \\times 10^5\\text{ Pa}$, water density $= 1000\\text{ kg m}^{-3}$, $g = 10\\text{ m s}^{-2}$)",
+            options: [
+              "$1.5\\text{ cm}^3$",
+              "$3.0\\text{ cm}^3$",
+              "$4.5\\text{ cm}^3$",
+              "$6.0\\text{ cm}^3$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- Surface pressure $p_{surface} = 1.0 \\times 10^5\\text{ Pa}$<br>- Bottom pressure $p_{bottom} = p_{surface} + \\rho g h = 1.0 \\times 10^5 + (1000 \\times 10 \\times 20) = 3.0 \\times 10^5\\text{ Pa}$<br>- $V_{bottom} = 1.5\\text{ cm}^3$<br><br><b>Formula:</b><br>$$p_{bottom} V_{bottom} = p_{surface} V_{surface}$$<br><br><b>Substitution:</b><br>$$3.0 \\times 10^5 \\times 1.5 = 1.0 \\times 10^5 \\times V_{surface} \\implies V_{surface} = 4.5\\text{ cm}^3$$"
+          },
+          {
+            statement: "A gas occupies $300\\text{ cm}^3$ at $27^{\\circ}\\text{C}$. If the gas is heated at constant pressure to $127^{\\circ}\\text{C}$, find its new volume.",
+            options: [
+              "$300\\text{ cm}^3$",
+              "$400\\text{ cm}^3$",
+              "$500\\text{ cm}^3$",
+              "$1410\\text{ cm}^3$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>- $V_1 = 300\\text{ cm}^3, T_1 = 27 + 273 = 300\\text{ K}$<br>- $T_2 = 127 + 273 = 400\\text{ K}$<br><br><b>Formula:</b><br>$$\\frac{V_1}{T_1} = \\frac{V_2}{T_2} \\implies V_2 = V_1 \\times \\frac{T_2}{T_1}$$<br><br><b>Substitution:</b><br>$$V_2 = 300 \\times \\frac{400}{300} = 400\\text{ cm}^3$$"
+          },
+          {
+            statement: "The pressure of gas inside a rigid container is $1.2 \\times 10^5\\text{ Pa}$ at $27^{\\circ}\\text{C}$. Find the pressure when the gas is heated to $227^{\\circ}\\text{C}$.",
+            options: [
+              "$1.0 \\times 10^5\\text{ Pa}$",
+              "$1.6 \\times 10^5\\text{ Pa}$",
+              "$2.0 \\times 10^5\\text{ Pa}$",
+              "$10.1 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- $p_1 = 1.2 \\times 10^5\\text{ Pa}, T_1 = 27 + 273 = 300\\text{ K}$<br>- $T_2 = 227 + 273 = 500\\text{ K}$<br><br><b>Formula:</b><br>$$\\frac{p_1}{T_1} = \\frac{p_2}{T_2} \\implies p_2 = p_1 \\times \\frac{T_2}{T_1}$$<br><br><b>Substitution:</b><br>$$p_2 = 1.2 \\times 10^5 \\times \\frac{500}{300} = 2.0 \\times 10^5\\text{ Pa}$$"
+          },
+          {
+            statement: "An ideal gas has pressure $p$ and volume $V$. If its absolute temperature (Kelvin) is doubled and its volume is halved, find its new pressure.",
+            options: [
+              "$p$",
+              "$2p$",
+              "$4p$",
+              "$8p$"
+            ],
+            answer: 2,
+            explanation: "<b>Formula:</b><br>Using general gas law: $$\\frac{p_1 V_1}{T_1} = \\frac{p_2 V_2}{T_2}$$<br>Given $V_2 = 0.5 V_1$ and $T_2 = 2 T_1$.<br><br><b>Substitution:</b><br>$$p_2 = p_1 \\times \\frac{V_1}{V_2} \\times \\frac{T_2}{T_1} = p_1 \\times 2 \\times 2 = 4p$$"
+          },
+          {
+            statement: "A rigid gas cylinder of volume $0.05\\text{ m}^3$ contains oxygen at $6.0 \\times 10^5\\text{ Pa}$. It is used to fill small balloons, each of volume $0.01\\text{ m}^3$ to a pressure of $1.0 \\times 10^5\\text{ Pa}$. Find the maximum number of balloons that can be filled. (Assume constant temperature and surrounding atmospheric pressure is $1.0 \\times 10^5\\text{ Pa}$)",
+            options: [
+              "$20$",
+              "$25$",
+              "$30$",
+              "$35$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>Since the cylinder cannot go below atmospheric pressure ($1.0 \\times 10^5\\text{ Pa}$), the available gas capacity is:<br>$$\\Delta (pV) = (6.0 \\times 10^5 - 1.0 \\times 10^5) \\times 0.05 = 2.5 \\times 10^4\\text{ Pa m}^3$$<br>Each balloon needs:<br>$$p V = 1.0 \\times 10^5 \\times 0.01 = 1.0 \\times 10^3\\text{ Pa m}^3$$<br><br><b>Substitution:</b><br>$$\\text{Number of balloons} = \\frac{2.5 \\times 10^4}{1.0 \\times 10^3} = 25$$"
+          },
+          {
+            statement: "If the absolute temperature of an ideal gas is quadrupled (times $4$), how does the root-mean-square speed ($v_{\\text{rms}}$) of its molecules change?",
+            options: [
+              "It remains unchanged.",
+              "It is doubled.",
+              "It is quadrupled.",
+              "It increases by $16$ times."
+            ],
+            answer: 1,
+            explanation: "<b>Formula:</b><br>Average molecular kinetic energy is proportional to absolute temperature:<br>$$\\frac{1}{2} m v_{\\text{rms}}^2 \\propto T \\implies v_{\\text{rms}} \\propto \\sqrt{T}$$<br><br><b>Substitution:</b><br>If $T$ increases by $4$ times, $v_{\\text{rms}}$ increases by $\\sqrt{4} = 2$ times."
+          },
+          {
+            statement: "A gas is heated from $100^{\\circ}\\text{C}$ to $200^{\\circ}\\text{C}$ in a rigid flask. A student claims the absolute temperature of the gas has doubled. Is this claim correct?",
+            options: [
+              "Yes, because $200$ is exactly twice $100$.",
+              "No, because absolute temperature must be in Kelvin, changing from $373\\text{ K}$ to $473\\text{ K}$ (only $27\\%$ increase).",
+              "No, because temperature decreases when converted to Kelvin.",
+              "Yes, because Celsius is the official thermodynamic standard scale."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Gas laws only apply directly to the absolute Kelvin scale. Heating from $373\\text{ K}$ to $473\\text{ K}$ does not double the thermodynamic temperature."
+          },
+          {
+            statement: "A vertical piston traps gas inside a cylinder of area $0.01\\text{ m}^2$. The trapped gas pressure is $2.0 \\times 10^5\\text{ Pa}$ and atmospheric pressure is $1.0 \\times 10^5\\text{ Pa}$. Find the downward weight force of the piston.",
+            options: [
+              "$500\\text{ N}$",
+              "$1000\\text{ N}$",
+              "$2000\\text{ N}$",
+              "$3000\\text{ N}$"
+            ],
+            answer: 1,
+            explanation: "<b>Given:</b><br>Trapped gas pressure $p_{\\text{gas}} = p_{\\text{atm}} + \\frac{W}{A}$.<br>$$\\Delta p = 2.0 \\times 10^5 - 1.0 \\times 10^5 = 1.0 \\times 10^5\\text{ Pa}$$<br><br><b>Formula:</b><br>$$W = \\Delta p \\times A = 1.0 \\times 10^5 \\times 0.01 = 1000\\text{ N}$$"
+          },
+          {
+            statement: "A syringe is sealed at a pressure of $1.0 \\times 10^5\\text{ Pa}$ with gas volume $20\\text{ cm}^3$. If the piston is pushed in to a volume of $8\\text{ cm}^3$ at constant temperature, find the new pressure of the gas.",
+            options: [
+              "$0.4 \\times 10^5\\text{ Pa}$",
+              "$1.6 \\times 10^5\\text{ Pa}$",
+              "$2.5 \\times 10^5\\text{ Pa}$",
+              "$4.0 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 2,
+            explanation: "<b>Given:</b><br>- $p_1 = 1.0 \\times 10^5\\text{ Pa}, V_1 = 20\\text{ cm}^3$<br>- $V_2 = 8\\text{ cm}^3$<br><br><b>Formula:</b><br>$$p_2 = \\frac{p_1 V_1}{V_2}$$<br><br><b>Substitution:</b><br>$$p_2 = \\frac{1.0 \\times 10^5 \\times 20}{8} = 2.5 \\times 10^5\\text{ Pa}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "In an experiment verifying Boyle's Law using a syringe, why is it critical to change the volume of the trapped air <b>slowly</b>?<br>(1) To prevent air leakage around the piston seals.<br>(2) To allow heat exchange with the surroundings, maintaining constant temperature.<br>(3) To avoid rapid pressure spikes that break the pressure sensor.",
+            options: [
+              "(1) only",
+              "(2) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Compressing a gas quickly does work on it and raises its temperature (adiabatic-like process). Changing volume slowly allows heat to transfer out, keeping the temperature constant."
+          },
+          {
+            statement: "Two bulbs, $X$ of volume $V$ and $Y$ of volume $2V$, are connected by a narrow tube of negligible volume. They are filled with gas at pressure $p_0$ and temperature $300\\text{ K}$ everywhere. If bulb $Y$ is heated to $600\\text{ K}$ while bulb $X$ is kept at $300\\text{ K}$, find the new pressure $p$ in the system.",
+            options: [
+              "$1.2 p_0$",
+              "$1.5 p_0$",
+              "$1.8 p_0$",
+              "$2.0 p_0$"
+            ],
+            answer: 1,
+            explanation: "<b>Derivation:</b><br>Initial moles: $n_{\\text{total}} = \\frac{p_0 V}{R \\cdot 300} + \\frac{p_0 (2V)}{R \\cdot 300} = \\frac{3 p_0 V}{300 R}$<br>Final moles (equal total): $n_{\\text{total}} = \\frac{p V}{R \\cdot 300} + \\frac{p (2V)}{R \\cdot 600} = \\frac{p V}{300 R} + \\frac{p V}{300 R} = \\frac{2 p V}{300 R}$<br><br><b>Substitution:</b><br>$$\\frac{3 p_0 V}{300 R} = \\frac{2 p V}{300 R} \\implies 3 p_0 = 2 p \\implies p = 1.5 p_0$$"
+          },
+          {
+            statement: "Under which of the following conditions does a real gas deviate <b>most significantly</b> from ideal gas behavior?",
+            options: [
+              "High pressure and high temperature",
+              "Low pressure and high temperature",
+              "High pressure and low temperature",
+              "Low pressure and low temperature"
+            ],
+            answer: 2,
+            explanation: "<b>Option C is Correct:</b> High pressure packs molecules closely together, meaning molecular volume is no longer negligible. Low temperature slows them down, letting attractive intermolecular forces pull them together."
+          },
+          {
+            statement: "When an ideal gas is heated to a higher temperature, what happens to its molecular speed distribution (Maxwell-Boltzmann profile)?<br>(1) The peak of the distribution curve shifts to the right (higher speed).<br>(2) The peak of the distribution curve becomes higher and narrower.<br>(3) The total area under the curve increases.",
+            options: [
+              "(1) only",
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate (1):</b> Correct. Higher temperature means higher average molecular speed, moving the peak right.<br><b>Evaluate (2) & (3):</b> Incorrect. The curve becomes broader and flatter (lower peak) to keep the total area (which represents total molecules $= 100\\%$) constant."
+          },
+          {
+            statement: "Using the kinetic theory of gases, explain microscopically why the pressure of a fixed mass of gas increases when heated at constant volume.",
+            options: [
+              "The molecules expand, increasing their contact area with the walls.",
+              "The molecules move faster, causing more frequent collisions with the walls and transferring larger momentum per collision.",
+              "Intermolecular attractive forces increase, pulling molecules toward the walls.",
+              "The collision rate decreases, but each collision delivers infinitely larger force."
+            ],
+            answer: 1,
+            explanation: "<b>Option B is Correct:</b> Higher temperature means higher average kinetic energy (higher speed). Faster molecules hit the walls more frequently and with higher velocity, increasing total force per unit area."
+          },
+          {
+            statement: "A frictionless, light movable piston traps gas inside a vertical cylinder. If the gas is heated, the piston expands upward. Which of the following parameters of the trapped gas remain <b>constant</b>?<br>(1) Pressure of the gas.<br>(2) Density of the gas.<br>(3) Average molecular kinetic energy.",
+            options: [
+              "(1) only",
+              "(2) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate (1):</b> Correct. The piston is free, so pressure is always balanced by atmospheric pressure and piston weight, which are constant.<br><b>Evaluate (2) & (3):</b> Incorrect. Volume increases, so density decreases. Temperature increases, so kinetic energy increases."
+          },
+          {
+            statement: "An ideal gas has density $\\rho$ at pressure $P$ and absolute temperature $T$. If the pressure is doubled ($2P$) and the temperature is halved ($0.5T$), find the new density of the gas.",
+            options: [
+              "$\\rho$",
+              "$2\\rho$",
+              "$4\\rho$",
+              "$8\\rho$"
+            ],
+            answer: 2,
+            explanation: "<b>Formula:</b><br>Using ideal gas equation in terms of density: $$P = \\frac{\\rho R T}{M} \\implies \\rho \\propto \\frac{P}{T}$$<br><br><b>Substitution:</b><br>$$\\rho_{\\text{new}} \\propto \\frac{2P}{0.5T} = 4 \\left(\\frac{P}{T}\\right) = 4\\rho$$"
+          },
+          {
+            statement: "A rigid cylinder contains oxygen gas at $10\\text{ atm}$ and $300\\text{ K}$. It is heated to $450\\text{ K}$. A safety valve leaks some gas to maintain the internal pressure constant at $10\\text{ atm}$. Find the percentage of original mass of gas lost.",
+            options: [
+              "$25\\%$",
+              "$33\\%$",
+              "$50\\%$",
+              "$67\\%$"
+            ],
+            answer: 1,
+            explanation: "<b>Derivation:</b><br>Using $p V = n R T$ with constant $p$ and $V$:<br>$$n_1 T_1 = n_2 T_2 \\implies n_2 = n_1 \\times \\frac{T_1}{T_2}$$<br>$$n_2 = n_1 \\times \\frac{300}{450} = \\frac{2}{3} n_1$$<br><br><b>Substitution:</b><br>Since $2/3$ of the moles remain, $1/3$ ($33.3\\%$) was lost."
+          },
+          {
+            statement: "Which of the following statements about an ideal gas is/are correct?<br>(1) The total internal energy of an ideal gas consists only of random molecular kinetic energy.<br>(2) Ideal gas molecules collide elastically with each other.<br>(3) All ideal gas molecules in a sample move at exactly the same speed at a given temperature.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 0,
+            explanation: "<b>Evaluate (1):</b> Correct. Since there are no intermolecular forces, potential energy is zero. Internal energy is entirely kinetic.<br><b>Evaluate (2):</b> Correct. Collisions are assumed elastic.<br><b>Evaluate (3):</b> Incorrect. Molecules have a continuous distribution of speeds (Maxwell-Boltzmann distribution)."
+          },
+          {
+            statement: "A container holds Helium gas (molar mass $4\\text{ g}$) and Argon gas (molar mass $40\\text{ g}$) in thermal equilibrium at $300\\text{ K}$. Find the ratio of root-mean-square speed of Helium to Argon ($v_{\\text{He}} : v_{\\text{Ar}}$).",
+            options: [
+              "$1 : 10$",
+              "$1 : \\sqrt{10}$",
+              "$\\sqrt{10} : 1$",
+              "$10 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>Formula:</b><br>Both gases are at the same temperature, so their average kinetic energy is equal:<br>$$\\frac{1}{2} m_{\\text{He}} v_{\\text{He}}^2 = \\frac{1}{2} m_{\\text{Ar}} v_{\\text{Ar}}^2 \\implies \\frac{v_{\\text{He}}}{v_{\\text{Ar}}} = \\sqrt{\\frac{m_{\\text{Ar}}}{m_{\\text{He}}}}$$<br><br><b>Substitution:</b><br>$$\\frac{v_{\\text{He}}}{v_{\\text{Ar}}} = \\sqrt{\\frac{40}{4}} = \\sqrt{10} \\approx 3.16 : 1$$"
+          }
+        ]
+      }
+    };
+
+    // --- POPULATING AND BALANCING OTHER TOPICS ---
+    function fillQuestionBank() {
+      const topicKeys = ['1.1', '1.2', '1.3', '1.4', '1.5'];
+      topicKeys.forEach(tKey => {
+        [1, 2, 3].forEach(lvl => {
+          let currentList = questionBank[tKey]?.[lvl] || [];
+          const sourceCount = currentList.length;
+          if (sourceCount === 0) return;
+          
+          while (currentList.length < 10) {
+            let templateObj = currentList[currentList.length % sourceCount];
+            let newObj = JSON.parse(JSON.stringify(templateObj));
+            
+            if (lvl === 2) {
+              if (newObj.explanation.includes('Given:')) {
+                newObj.statement = "[Variant " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+              } else {
+                newObj.statement = "[Scenario Practice " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+              }
+            } else {
+              newObj.statement = "[Exam Practice " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+            }
+            currentList.push(newObj);
+          }
+          questionBank[tKey][lvl] = currentList;
+        });
+      });
+    }
+
+    fillQuestionBank();
+
+    // --- DASHBOARD RENDER ---
+    function renderDashboard() {
+      const topicContainer = document.getElementById('topic-list-container');
+      topicContainer.innerHTML = '';
+      topics.forEach((topic, idx) => {
+        const isSelected = currentState.selectedTopicIndex === idx;
+        const scoreKeyEasy = `${idx}-1`;
+        const scoreKeyAvg = `${idx}-2`;
+        const scoreKeyDiff = `${idx}-3`;
+        
+        const easyScore = currentState.scores[scoreKeyEasy]?.score || 0;
+        const avgScore = currentState.scores[scoreKeyAvg]?.score || 0;
+        const diffScore = currentState.scores[scoreKeyDiff]?.score || 0;
+        const totalCompleted = (currentState.scores[scoreKeyEasy]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyAvg]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyDiff]?.completed ? 1 : 0);
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+          isSelected 
+            ? 'bg-violet-50 border-brand-teal shadow-md shadow-violet-500/10' 
+            : 'bg-white border-violet-100 hover:bg-violet-50/40 hover:border-violet-300'
+        }`;
+        card.onclick = () => selectTopic(idx);
+
+        card.innerHTML = `
+          <div class="flex items-start space-x-3">
+            <div class="mt-1 flex-shrink-0 h-8 w-8 rounded-lg bg-violet-100 text-brand-teal border border-violet-200 flex items-center justify-center font-bold font-mono text-sm">
+              ${topic.id}
+            </div>
+            <div>
+              <h3 class="text-sm md:text-base font-bold text-slate-800">${topic.title}</h3>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs px-2.5 py-1 rounded bg-violet-50 text-brand-teal font-bold border border-violet-100">L1: ${easyScore}/10</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-violet-50 text-brand-teal font-bold border border-violet-100">L2: ${avgScore}/10</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-violet-50 text-brand-teal font-bold border border-violet-100">L3: ${diffScore}/10</span>
+            <div class="h-6 w-6 rounded-full bg-brand-coral/10 border border-brand-coral/20 flex items-center justify-center text-brand-coral text-xs font-bold">
+              ${totalCompleted}/3
+            </div>
+          </div>
+        `;
+        topicContainer.appendChild(card);
+      });
+
+      const levelContainer = document.getElementById('level-list-container');
+      levelContainer.innerHTML = '';
+      const levels = [
+        { value: 1, label: 'Level 1: Easy (Qualitative)', desc: 'Qualitative definitions & basic relationships.', color: 'border-violet-500/30 text-brand-teal' },
+        { value: 2, label: 'Level 2: Average', desc: 'Conceptual textbook setups & calculations.', color: 'border-brand-amber/30 text-brand-amber' },
+        { value: 3, label: 'Level 3: Difficult (DSE Exam Style)', desc: 'Simplified multi-statement & ratio analyses.', color: 'border-brand-coral/30 text-brand-coral' }
+      ];
+
+      levels.forEach(level => {
+        const isSelected = currentState.selectedLevel === level.value;
+        const button = document.createElement('div');
+        button.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-violet-50 border-brand-teal shadow-md shadow-violet-550/10' 
+            : 'bg-white border-violet-100 hover:bg-violet-50/40 hover:border-violet-300'
+        }`;
+        button.onclick = () => selectLevel(level.value);
+
+        button.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-extrabold ${level.color}">${level.label}</span>
+            <input type="radio" name="level-select" class="accent-brand-teal" ${isSelected ? 'checked' : ''}>
+          </div>
+          <p class="text-xs text-slate-500 mt-2 font-medium">${level.desc}</p>
+        `;
+        levelContainer.appendChild(button);
+      });
+
+      const startBox = document.createElement('button');
+      startBox.className = "w-full mt-4 bg-gradient-to-r from-brand-teal to-brand-amber hover:from-brand-amber hover:to-brand-teal text-white font-extrabold py-3.5 px-6 rounded-xl transition duration-500 shadow-md shadow-violet-700/15 text-center uppercase tracking-wider text-sm";
+      startBox.innerHTML = `Start Physics Quest <i class="fa-solid fa-play ml-1"></i>`;
+      startBox.onclick = startQuiz;
+      levelContainer.appendChild(startBox);
+
+      updateGlobalProgress();
+    }
+
+    function selectTopic(idx) {
+      currentState.selectedTopicIndex = idx;
+      renderDashboard();
+    }
+
+    function selectLevel(lvl) {
+      currentState.selectedLevel = lvl;
+      renderDashboard();
+    }
+
+    // --- NAVIGATION LOGIC ---
+    function goHome() {
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+      renderDashboard();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function startQuiz() {
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('quiz-section').classList.remove('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+
+      currentState.currentQuestionIndex = 0;
+      currentState.currentQuizAnswers = new Array(10).fill(null);
+
+      loadQuestion();
+    }
+
+    // --- LOADING QUESTIONS ---
+    function loadQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+
+      document.getElementById('quiz-meta-topic').innerText = `Topic: ${topicObj.id}`;
+      document.getElementById('quiz-meta-level').innerText = `Lvl ${currentState.selectedLevel}`;
+      document.getElementById('quiz-progress-text').innerText = `Question ${currentState.currentQuestionIndex + 1} of 10`;
+      document.getElementById('quiz-percentage').innerText = `${(currentState.currentQuestionIndex + 1) * 10}%`;
+      document.getElementById('question-index-display').innerText = `Q${currentState.currentQuestionIndex + 1}/10`;
+      document.getElementById('syllabus-reference-code').innerText = `PHY-${topicObj.id}.${currentState.currentQuestionIndex + 1}`;
+
+      document.getElementById('quiz-step-progress').style.width = `${(currentState.currentQuestionIndex + 1) * 10}%`;
+      document.getElementById('question-statement-box').innerHTML = q.statement;
+
+      document.getElementById('explanation-placeholder').classList.remove('hidden');
+      document.getElementById('explanation-content-area').classList.add('hidden');
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      optionsContainer.innerHTML = '';
+
+      const previousResponse = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] ${
+          previousResponse === optIdx
+            ? 'bg-violet-50 border-brand-teal text-brand-teal'
+            : 'bg-white border-violet-100 text-slate-700 hover:bg-violet-50/40 hover:text-slate-900'
+        }`;
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        const label = String.fromCharCode(65 + optIdx);
+        optionBtn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="flex-shrink-0 w-6 h-6 rounded bg-violet-50 border border-violet-200 flex items-center justify-center font-mono font-bold text-brand-teal text-xs">${label}</span>
+            <span class="tex2jax_process leading-normal">${optText}</span>
+          </div>
+          <div class="h-4 w-4 rounded-full border border-violet-300 flex items-center justify-center flex-shrink-0">
+            ${previousResponse === optIdx ? '<div class="w-2 h-2 rounded-full bg-brand-teal"></div>' : ''}
+          </div>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      const btnPrev = document.getElementById('btn-prev-question');
+      if (currentState.currentQuestionIndex === 0) {
+        btnPrev.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = true;
+      } else {
+        btnPrev.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = false;
+      }
+
+      if (previousResponse !== null) {
+        revealAnswerFeedback();
+      } else {
+        document.getElementById('btn-check-answer').classList.remove('hidden');
+        document.getElementById('btn-next-question').classList.add('hidden');
+      }
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function selectOption(optIdx) {
+      const alreadyAnswered = currentState.currentQuizAnswers[currentState.currentQuestionIndex] !== null;
+      if (alreadyAnswered) return;
+
+      currentState.currentQuizAnswers[currentState.currentQuestionIndex] = optIdx;
+      loadQuestion();
+    }
+
+    // --- CHECKING ANSWERS & FEEDBACK ---
+    function checkAnswer() {
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+      if (selectedIndex === null) {
+        showCustomAlert("Input Needed", "Please select an option before submitting.");
+        return;
+      }
+      revealAnswerFeedback();
+      
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('explanation-pane-anchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+
+    function revealAnswerFeedback() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      const isCorrect = selectedIndex === q.answer;
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      const optionButtons = optionsContainer.children;
+
+      for (let i = 0; i < optionButtons.length; i++) {
+        const btn = optionButtons[i];
+        btn.classList.remove('border-brand-teal', 'bg-violet-50');
+        
+        if (i === q.answer) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-emerald-50 border-emerald-550 text-emerald-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        } else if (i === selectedIndex && !isCorrect) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-rose-50 border-rose-500 text-rose-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+        }
+      }
+
+      document.getElementById('explanation-placeholder').classList.add('hidden');
+      const expContent = document.getElementById('explanation-content-area');
+      expContent.classList.remove('hidden');
+
+      const feedbackBox = document.getElementById('explanation-feedback');
+      if (isCorrect) {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-emerald-50 text-emerald-700 border-emerald-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> <span>Correct Answer! Well Done.</span>`;
+      } else {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-rose-50 text-rose-700 border-rose-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i> <span>Incorrect. Review Solution below.</span>`;
+      }
+
+      document.getElementById('explanation-body-text').innerHTML = q.explanation;
+
+      document.getElementById('btn-check-answer').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.remove('hidden');
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentState.currentQuestionIndex > 0) {
+        currentState.currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    // --- OPERATOR HELPER FUNCTIONS FOR CALCULATOR TRIGONOMETRY ---
+    function ASIN_OP(x) { return Math.asin(x) * 180 / Math.PI; }
+    function ACOS_OP(x) { return Math.acos(x) * 180 / Math.PI; }
+    function ATAN_OP(x) { return Math.atan(x) * 180 / Math.PI; }
+    function SIN_OP(x) { return Math.sin(x * Math.PI / 180); }
+    function COS_OP(x) { return Math.cos(x * Math.PI / 180); }
+    function TAN_OP(x) { return Math.tan(x * Math.PI / 180); }
+    function SQRT_OP(x) { return Math.sqrt(x); }
+
+    function nextQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+
+      if (currentState.currentQuestionIndex < questionsList.length - 1) {
+        currentState.currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // --- QUIZ COMPLETION & STATS ---
+    function finishQuiz() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      
+      let correctCount = 0;
+      currentState.currentQuizAnswers.forEach((ans, idx) => {
+        if (ans === questionsList[idx].answer) {
+          correctCount++;
+        }
+      });
+
+      const scoreKey = `${currentState.selectedTopicIndex}-${currentState.selectedLevel}`;
+      currentState.scores[scoreKey] = {
+        completed: true,
+        score: correctCount,
+        responses: [...currentState.currentQuizAnswers]
+      };
+
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.remove('hidden');
+
+      document.getElementById('review-score').innerText = `${correctCount} / 10`;
+      const accuracy = (correctCount / 10) * 100;
+      document.getElementById('review-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('review-level').innerText = `Lvl ${currentState.selectedLevel}`;
+
+      updateGlobalProgress();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function updateGlobalProgress() {
+      let totalCompletedLevels = 0;
+      let grandTotalScore = 0;
+      let possibleMaxScore = 0;
+
+      for (let t = 0; t < topics.length; t++) {
+        for (let l = 1; l <= 3; l++) {
+          const key = `${t}-${l}`;
+          possibleMaxScore += 10;
+          if (currentState.scores[key]?.completed) {
+            totalCompletedLevels++;
+            grandTotalScore += currentState.scores[key].score;
+          }
+        }
+      }
+
+      const totalLevels = topics.length * 3;
+      const progressPercent = Math.round((totalCompletedLevels / totalLevels) * 100);
+
+      document.getElementById('global-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('global-progress-text').innerText = `${progressPercent}%`;
+      document.getElementById('global-score-badge').innerText = `${grandTotalScore} / ${possibleMaxScore}`;
+    }
+
+    // --- CUSTOM MODALS & ALERTS ---
+    function resetStats() {
+      showCustomConfirm(
+        "Reset All Progress?",
+        "Are you sure you want to clear your achievements and start fresh? This action cannot be undone.",
+        () => {
+          currentState.scores = {};
+          renderDashboard();
+          showCustomAlert("Cleared", "All progress records have been reset.");
+        }
+      );
+    }
+
+    function showCustomConfirm(title, message, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.remove('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "Confirm";
+      confirmBtn.className = "px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-rose-950/20 font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+      document.getElementById('modal-cancel-btn').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    function showCustomAlert(title, message) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "OK";
+      confirmBtn.className = "px-4 py-2 bg-brand-teal hover:bg-brand-teallight text-white text-xs font-bold rounded-lg transition shadow-lg shadow-violet-950/40 font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    // --- SCIENTIFIC CALCULATOR ---
+    let calcExpression = '';
+    let calcScreen = '0';
+
+    function toggleCalc() {
+      const calc = document.getElementById('calculator-widget');
+      calc.classList.toggle('hidden');
+    }
+
+    function calcPress(val) {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+
+      if (val === 'AC') {
+        calcExpression = '';
+        calcScreen = '0';
+      } else if (val === 'DEL') {
+        if (calcScreen.length > 1) {
+          calcScreen = calcScreen.slice(0, -1);
+        } else {
+          calcScreen = '0';
+        }
+      } else if (val === 'pi') {
+        calcScreen = Math.PI.toString();
+      } else if (val === 'exp') {
+        calcScreen += '*10^';
+      } else if (val === 'sin' || val === 'cos' || val === 'tan' || val === 'sqrt' || val === 'asin' || val === 'acos' || val === 'atan') {
+        calcExpression = `${val}(`;
+        calcScreen = '';
+      } else {
+        if (calcScreen === '0') calcScreen = '';
+        calcScreen += val;
+      }
+
+      screen.innerText = calcScreen;
+      expr.innerText = calcExpression;
+    }
+
+    function calcEvaluate() {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+      
+      let fullExpr = calcExpression + calcScreen;
+      
+      // Automatically balance open/closed parentheses
+      let openBrackets = (fullExpr.match(/\(/g) || []).length;
+      let closeBrackets = (fullExpr.match(/\)/g) || []).length;
+      while (openBrackets > closeBrackets) {
+        fullExpr += ')';
+        closeBrackets++;
+      }
+
+      // Convert trigonometric tokens to custom non-overlapping operators safely
+      fullExpr = fullExpr.replace(/asin\(/g, 'ASIN_OP(');
+      fullExpr = fullExpr.replace(/acos\(/g, 'ACOS_OP(');
+      fullExpr = fullExpr.replace(/atan\(/g, 'ATAN_OP(');
+      fullExpr = fullExpr.replace(/sin\(/g, 'SIN_OP(');
+      fullExpr = fullExpr.replace(/cos\(/g, 'COS_OP(');
+      fullExpr = fullExpr.replace(/tan\(/g, 'TAN_OP(');
+      fullExpr = fullExpr.replace(/sqrt\(/g, 'SQRT_OP(');
+      
+      fullExpr = fullExpr.replace(/\^2/g, '**2');
+      fullExpr = fullExpr.replace(/\^/g, '**');
+
+      try {
+        let result = eval(fullExpr);
+        if (isNaN(result) || !isFinite(result)) {
+          screen.innerText = 'Error';
+        } else {
+          screen.innerText = parseFloat(result.toFixed(6)).toString();
+        }
+        calcExpression = '';
+        calcScreen = screen.innerText;
+      } catch (err) {
+        screen.innerText = 'Error';
+      }
+    }
+
+    // --- DRAGGABLE SETUP FOR DESKTOP ---
+    const calcWidget = document.getElementById('calculator-widget');
+    const calcHeader = document.getElementById('calculator-header');
+    
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    calcHeader.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    calcHeader.addEventListener('touchstart', dragStart, {passive: true});
+    document.addEventListener('touchmove', drag, {passive: false});
+    document.addEventListener('touchend', dragEnd);
+
+    function dragStart(e) {
+      if (window.innerWidth < 768) return; 
+      if (e.type === 'touchstart') {
+        initialX = e.touches[0].clientX - xOffset;
+        initialY = e.touches[0].clientY - yOffset;
+      } else {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+      }
+      isDragging = true;
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      if (e.type === 'touchmove') {
+        e.preventDefault();
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+      xOffset = currentX;
+      yOffset = currentY;
+      calcWidget.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
+
+    function dragEnd() {
+      initialX = currentX;
+      initialY = currentY;
+      isDragging = false;
+    }
+
+    window.onload = function() {
+      renderDashboard();
+
+      document.getElementById('btn-check-answer').addEventListener('click', checkAnswer);
+      document.getElementById('btn-prev-question').addEventListener('click', prevQuestion);
+      document.getElementById('btn-next-question').addEventListener('click', nextQuestion);
+      document.getElementById('btn-review-restart').addEventListener('click', startQuiz);
+
+      document.getElementById('btn-calc-toggle').addEventListener('click', toggleCalc);
+    };
+  </script>
+
+</body>
+</html>
