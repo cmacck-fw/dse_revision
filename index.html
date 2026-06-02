@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physics Arena - Book 3: Wave Motion</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React and ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel for running JSX in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Custom Animation Styles -->
+  <style>
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideInUp { from { transform: translateY(2rem); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideInRight { from { transform: translateX(2rem); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    
+    .animate-in.fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    .slide-in-from-bottom-8 { animation: slideInUp 0.5s ease-out forwards; }
+    .slide-in-from-bottom-4 { animation: slideInUp 0.3s ease-out forwards; }
+    .slide-in-from-right-8 { animation: slideInRight 0.5s ease-out forwards; }
+    .zoom-in-95 { animation: zoomIn 0.5s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-950">
+  
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- EMBEDDED ICONS ---
+    const svgIcons = {
+      Flame: <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/>,
+      Globe: <g><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></g>,
+      ChevronLeft: <path d="m15 18-6-6 6-6"/>,
+      Sparkles: <path d="m12 3-1.9 5.8a2 2 0 0 1-1.2 1.2L3 12l5.8 1.9a2 2 0 0 1 1.2 1.2L12 21l1.9-5.8a2 2 0 0 1 1.2-1.2L21 12l-5.8-1.9a2 2 0 0 1-1.2-1.2L12 3Z"/>,
+      BookOpen: <g><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></g>,
+      Trophy: <g><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></g>,
+      Calculator: <g><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></g>,
+      X: <g><path d="M18 6 6 18"/><path d="m6 6 12 12"/></g>,
+      Check: <polyline points="20 6 9 17 4 12"/>,
+      XCircle: <g><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></g>,
+      BarChart3: <g><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></g>,
+      HelpCircle: <g><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></g>,
+      Waves: <path d="M2 6c.6 0 1.2.2 1.8.6.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6s1.2.2 1.8.6c.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6s1.2.2 1.8.6c.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6M2 12c.6 0 1.2.2 1.8.6.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6s1.2.2 1.8.6c.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6s1.2.2 1.8.6c.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6M2 18c.6 0 1.2.2 1.8.6.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6s1.2.2 1.8.6c.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6s1.2.2 1.8.6c.6.4 1.2.4 1.8 0 .6-.4 1.2-.6 1.8-.6"/>
+    };
+
+    const Icon = ({ name, className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        {svgIcons[name]}
+      </svg>
+    );
+
+    // --- TRANSLATIONS (ENGLISH ONLY) ---
+    const t = {
+      appTitle: "Physics Arena",
+      tagline: "Book 3: Wave Motion",
+      backBtn: "Back",
+      topics: "Chapters",
+      levels: "Select Difficulty",
+      easy: "Level 1: Easy (Qualitative & Definitions)",
+      average: "Level 2: Average (Conceptual & Formulas)",
+      hard: "Level 3: Difficult (DSE Multi-statements & Ratios)",
+      start: "Start Challenge",
+      calculator: "Calculator",
+      next: "Next Question",
+      finish: "View Results",
+      score: "Your Score",
+      review: "Review Explanations",
+      home: "Back to Home",
+      qType: { conceptual: "Conceptual", calculation: "Calculation", multi: "Multi-statement" },
+      evals: { given: "Given Variables:", formula: "Formula Used:", sub: "Substitution Process:", ans: "Final Answer:", breakdown: "Individual Option Breakdown", stateEval: "Statement-by-Statement Evaluation" }
+    };
+
+    // --- QUESTION BANK: CHAPTER 1 - REFLECTION OF LIGHT ---
+    const chapter1_Questions = {
+      1: [
+        {
+          id: "3.1.1.1", type: "conceptual", correct: 1,
+          text: "An incident ray hits a plane mirror. According to the laws of reflection, which angle is strictly equal to the angle of reflection?",
+          options: [
+            "The angle between the incident ray and the mirror surface.",
+            "The angle between the incident ray and the normal.",
+            "The angle between the reflected ray and the mirror surface.",
+            "The angle of deviation of the ray."
+          ],
+          explanation: {
+            A: "False. The angle of reflection is measured relative to the normal, not the mirror surface.",
+            B: "True. The first law of reflection states that the angle of incidence (angle between incident ray and normal) is equal to the angle of reflection.",
+            C: "False. This is the glancing angle of reflection, not the standard angle of reflection.",
+            D: "False. The angle of deviation represents the angular change from the original straight-line path."
+          }
+        },
+        {
+          id: "3.1.1.2", type: "conceptual", correct: 2,
+          text: "Which of the following is NOT a property of an image formed by a single plane mirror?",
+          options: [
+            "The image is virtual.",
+            "The image is laterally inverted.",
+            "The image is magnified depending on the object's distance.",
+            "The image distance behind the mirror equals the object distance in front."
+          ],
+          explanation: {
+            A: "False. This is a property; the image cannot be projected onto a screen.",
+            B: "False. This is a property; left and right are reversed.",
+            C: "True. Images in plane mirrors are always upright and the same size as the object (magnification is always 1), regardless of object distance.",
+            D: "False. This is a true property; object distance ($u$) strictly equals image distance ($v$)."
+          }
+        },
+        {
+          id: "3.1.1.3", type: "conceptual", correct: 1,
+          text: "What is the physical difference between regular reflection and diffuse reflection?",
+          options: [
+            "Diffuse reflection does not obey the laws of reflection.",
+            "In diffuse reflection, light rays reflect at different angles due to surface roughness.",
+            "Regular reflection occurs only under sunlight.",
+            "Diffuse reflection changes the wavelength of light."
+          ],
+          explanation: {
+            A: "False. Every single ray obeys the law of reflection at its local point of contact.",
+            B: "True. Regular reflection occurs on smooth surfaces, producing parallel reflected rays. Diffuse reflection occurs on rough surfaces, reflecting rays in all directions because the local normals point in different directions.",
+            C: "False. Regular reflection can occur with any light source (e.g., lasers, light bulbs).",
+            D: "False. Wavelength is not altered by reflection."
+          }
+        },
+        {
+          id: "3.1.1.4", type: "conceptual", correct: 2,
+          text: "A letter 'p' is placed in front of a vertical plane mirror. What does the laterally inverted image look like to an observer looking into the mirror?",
+          options: ["p", "b", "q", "d"],
+          explanation: {
+            A: "False. Left and right must be reversed.",
+            B: "False. This is laterally inverted and upside down.",
+            C: "True. Lateral inversion flips the object left-to-right. A left-pointing loop on 'p' becomes a right-pointing loop on 'q' while keeping the stem pointing downwards.",
+            D: "False. 'd' represents a vertically inverted swap."
+          }
+        },
+        {
+          id: "3.1.1.5", type: "conceptual", correct: 2,
+          text: "Why are some emergency ambulances written with backward-facing letters (e.g., 'ECNALUBMA') on their hoods?",
+          options: [
+            "It is an artistic design choice to look modern.",
+            "It looks upright in convex mirrors only.",
+            "So that drivers ahead viewing through their rear-view mirrors will see it laterally inverted back to normal 'AMBULANCE'.",
+            "It prevents light reflection from blinding other drivers."
+          ],
+          explanation: {
+            A: "False. This has a functional physics purpose.",
+            B: "False. Rear-view mirrors can be plane or convex, and both laterally invert images.",
+            C: "True. Since a plane mirror laterally inverts images, pre-inverting the letters ensures that when the driver ahead looks into their mirror, they see the word flipped back into a readable, upright format.",
+            D: "False. Text orientation does not affect specular glare."
+          }
+        },
+        {
+          id: "3.1.1.6", type: "conceptual", correct: 0,
+          text: "When you walk closer to a large wall mirror, what happens to the size of your virtual image?",
+          options: [
+            "It remains exactly the same size as you are.",
+            "It becomes larger than your actual size.",
+            "It becomes smaller than your actual size.",
+            "It vanishes."
+          ],
+          explanation: {
+            A: "True. For a plane mirror, magnification ($m$) is always exactly 1. Your image appears larger only because it subtends a larger angle at your eye as it gets closer, which is a physiological perspective effect.",
+            B: "False. Plane mirrors cannot magnify objects.",
+            C: "False. Plane mirrors cannot diminish objects.",
+            D: "False. The image remains visible as long as you are in front of the reflecting surface."
+          }
+        },
+        {
+          id: "3.1.1.7", type: "conceptual", correct: 1,
+          text: "How is a virtual image physically defined in geometrical optics?",
+          options: [
+            "It is an image that is distorted or upside down.",
+            "It is an image formed where light rays only appear to diverge from, but do not actually cross.",
+            "It can be cast onto a white projection screen.",
+            "It exists only inside the human eye."
+          ],
+          explanation: {
+            A: "False. Virtual images can be upright and perfectly clear.",
+            B: "True. In a virtual image, the real light rays diverge outward. When extrapolated backward, they intersect behind the mirror. No light actually travels behind the mirror.",
+            C: "False. This defines a real image.",
+            D: "False. It can be captured by cameras and recorded."
+          }
+        },
+        {
+          id: "3.1.1.8", type: "conceptual", correct: 3,
+          text: "What is the angle of reflection of a ray of light that hits a plane mirror completely perpendicular to its surface?",
+          options: ["90°", "45°", "180°", "0°"],
+          explanation: {
+            A: "False. A perpendicular ray travels along the normal. The angle with the normal is 0°, not 90°.",
+            B: "False.",
+            C: "False.",
+            D: "True. An incident ray along the normal has an angle of incidence ($i$) of 0°. Therefore, by the law of reflection, the angle of reflection ($r$) must also be 0°. The ray reflects back along its original path."
+          }
+        },
+        {
+          id: "3.1.1.9", type: "conceptual", correct: 1,
+          text: "If you want to view your entire height in a vertical plane mirror, what is the minimum required vertical length of the mirror?",
+          options: [
+            "Equal to your full height.",
+            "Exactly half of your height.",
+            "Two-thirds of your height.",
+            "It depends on how far back you stand."
+          ],
+          explanation: {
+            A: "False. A full-height mirror is unnecessary.",
+            B: "True. By drawing a ray diagram from your eyes to your feet and eyes to the top of your head, similar triangles prove that a vertical mirror of half your height is sufficient. This minimum length is independent of your distance from the mirror.",
+            C: "False.",
+            D: "False. Standing further back changes the field of view, but the minimum length of mirror needed to see your full body remains half your height."
+          }
+        },
+        {
+          id: "3.1.1.10", type: "conceptual", correct: 1,
+          text: "When a ray of light is reflected by a plane mirror, which properties of the light change?",
+          options: [
+            "Wavelength and frequency.",
+            "Direction of propagation only.",
+            "Speed and wavelength.",
+            "Frequency and speed."
+          ],
+          explanation: {
+            A: "False. Wavelength and frequency are properties of the wave source and medium, which do not change upon reflection.",
+            B: "True. Since reflection occurs in the same medium, speed remains constant. Frequency and wavelength also remain unchanged. Only the direction of the light ray changes.",
+            C: "False. Speed and wavelength are constant as long as the medium remains the same.",
+            D: "False."
+          }
+        }
+      ],
+      2: [
+        {
+          id: "3.1.2.1", type: "conceptual", correct: 1,
+          text: "A vertical plane mirror is rotated by an angle of 10° about a vertical axis. If the incident ray direction is kept constant, by what angle does the reflected ray rotate?",
+          options: ["10°", "20°", "5°", "0°"],
+          explanation: {
+            A: "False.",
+            B: "True. When a mirror rotates by $\theta$, the normal rotates by $\theta$. Since both the angle of incidence and the angle of reflection increase by $\theta$, the total deviation changes by $2\theta$. Therefore, the reflected ray rotates by $20°$.",
+            C: "False.",
+            D: "False."
+          }
+        },
+        {
+          id: "3.1.2.2", type: "conceptual", correct: 2,
+          text: "A student stands 3 m in front of a vertical plane mirror. He then walks 1 m directly backward away from the mirror. What is the new distance between the student and his virtual image?",
+          options: ["4 m", "6 m", "8 m", "2 m"],
+          explanation: {
+            A: "False. This is just the distance to the mirror surface.",
+            B: "False.",
+            C: "True. Initially, object distance ($u$) is 3 m, so image distance ($v$) is 3 m, and the distance between them is 6 m. When he walks 1 m back, $u = 4$ m. Thus, $v = 4$ m, and the new distance between the student and his image is $4 + 4 = 8$ m.",
+            D: "False."
+          }
+        },
+        {
+          id: "3.1.2.3", type: "conceptual", correct: 1,
+          text: "Why is a convex mirror often used as a rear-view mirror in cars and security mirrors in shops instead of a plane mirror?",
+          options: [
+            "It forms magnified images so details can be seen clearly.",
+            "It provides a wider field of view and always forms upright, diminished images.",
+            "It reflects light rays much faster than a plane mirror.",
+            "It turns virtual images into real ones."
+          ],
+          explanation: {
+            A: "False. Convex mirrors diminish images; they do not magnify them.",
+            B: "True. Convex mirrors curve outwards, allowing light from a wider angle to reach the observer. The images are always upright and virtual, which is ideal for scanning a wide area.",
+            C: "False. The speed of reflection is identical.",
+            D: "False. Convex mirrors form virtual images of real objects."
+          }
+        },
+        {
+          id: "3.1.2.4", type: "conceptual", correct: 1,
+          text: "How many images are formed when an object is placed between two plane mirrors aligned parallel and facing each other?",
+          options: ["2", "Infinite", "4", "0"],
+          explanation: {
+            A: "False. Multiple reflections occur.",
+            B: "True. Each mirror reflects the image formed in the other, acting as virtual objects for subsequent reflections. This leads to an infinite series of virtual images receding into the distance.",
+            C: "False.",
+            D: "False."
+          }
+        },
+        {
+          id: "3.1.2.5", type: "conceptual", correct: 2,
+          text: "An object is placed at a distance of 1.5 m in front of a plane mirror. If the mirror is moved 0.5 m closer to the object, what is the distance between the original image and the new image?",
+          options: ["0.5 m", "0.75 m", "1.0 m", "2.0 m"],
+          explanation: {
+            A: "False.",
+            B: "False.",
+            C: "True. Initially, the image is 1.5 m behind the mirror, which is 3.0 m from the object. When the mirror moves 0.5 m closer, the object distance becomes 1.0 m. The new image is 1.0 m behind the mirror (2.0 m from the object). The distance between the original image position and the new image position is $3.0 - 2.0 = 1.0$ m.",
+            D: "False."
+          }
+        },
+        {
+          id: "3.1.2.6", type: "calculation", correct: 1,
+          text: "A ray of light strikes a plane mirror at an angle of 35° to the mirror surface. Find the angle of reflection.",
+          options: ["35°", "55°", "70°", "110°"],
+          explanation: {
+            given: "Angle with the mirror surface (glancing angle) $\alpha = 35°$.",
+            formula: "Angle of incidence $i = 90° - \alpha$. Angle of reflection $r = i$.",
+            substitution: "i = 90° - 35° = 55°",
+            answer: "r = 55°"
+          }
+        },
+        {
+          id: "3.1.2.7", type: "calculation", correct: 2,
+          text: "A light ray hits a mirror. The total angle between the incident ray and the reflected ray is 110°. What is the angle of incidence?",
+          options: ["110°", "220°", "55°", "35°"],
+          explanation: {
+            given: "Angle between incident and reflected rays $= i + r = 110°$.",
+            formula: "Since $i = r$, therefore $2i = 110°$.",
+            substitution: "i = 110° / 2",
+            answer: "i = 55°"
+          }
+        },
+        {
+          id: "3.1.2.8", type: "calculation", correct: 1,
+          text: "An object is placed in front of two perpendicular plane mirrors (angled at 90° to each other). Calculate the total number of images formed.",
+          options: ["4", "3", "2", "Infinite"],
+          explanation: {
+            given: "Angle between mirrors $\theta = 90°$.",
+            formula: "Number of images $N = \\frac{360°}{\\theta} - 1$.",
+            substitution: "N = \\frac{360}{90} - 1 \nN = 4 - 1",
+            answer: "N = 3"
+          }
+        },
+        {
+          id: "3.1.2.9", type: "calculation", correct: 2,
+          text: "A ray of light is incident on a flat mirror at an angle of incidence of 25°. Find the angle of deviation (the angle between the reflected ray and the original unreflected path).",
+          options: ["25°", "50°", "130°", "155°"],
+          explanation: {
+            given: "Angle of incidence $i = 25°$.",
+            formula: "Angle of deviation $d = 180° - 2i$.",
+            substitution: "d = 180° - 2(25°) \nd = 180° - 50°",
+            answer: "d = 130°"
+          }
+        },
+        {
+          id: "3.1.2.10", type: "calculation", correct: 2,
+          text: "An observer stands 2 m away from a plane mirror. A clock hanging on a wall 1 m directly behind the observer is reflected in the mirror. What is the distance from the observer's eyes to the image of the clock?",
+          options: ["3 m", "4 m", "5 m", "6 m"],
+          explanation: {
+            given: "Distance from observer to mirror = 2 m. Clock is 1 m behind observer, so distance from clock to mirror = $2 + 1 = 3$ m.",
+            formula: "Image of clock is 3 m behind mirror. Observer is 2 m in front of mirror. Total distance = (Distance from observer to mirror) + (Distance from mirror to clock image).",
+            substitution: "Total Distance = 2 m + 3 m",
+            answer: "Total Distance = 5 m"
+          }
+        }
+      ],
+      3: [
+        {
+          id: "3.1.3.1", type: "multi", correct: 1,
+          text: "A flat mirror is placed vertically on a wall. A student walks directly towards the mirror at a constant speed of $2.5\\text{ m s}^{-1}$. Which of the following statements is/are correct?\n(1) The student's image moves towards the mirror at $2.5\\text{ m s}^{-1}$.\n(2) The student's image moves towards the student at a relative speed of $5.0\\text{ m s}^{-1}$.\n(3) The size of the image increases as the student approaches.",
+          options: ["(1) only", "(1) and (2) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True. Since image distance equals object distance, the image must move towards the mirror at the same speed as the object.",
+            statement2: "True. Because both the object and image move towards the mirror at $2.5\\text{ m s}^{-1}$ from opposite sides, their relative speed of approach is $2.5 + 2.5 = 5.0\\text{ m s}^{-1}$.",
+            statement3: "False. The image in a plane mirror remains exactly the same size as the object (magnification is 1). It only appears larger due to the perspective angular field of view.",
+            conclusion: "Therefore, (1) and (2) only are correct."
+          }
+        },
+        {
+          id: "3.1.3.2", type: "multi", correct: 2,
+          text: "Regarding regular (specular) reflection and diffuse reflection, which of the following statements is/are correct?\n(1) Specular reflection occurs because all local normals on the surface point in the same direction.\n(2) Diffuse reflection occurs because the laws of reflection do not apply to irregular boundaries.\n(3) Specular reflection can form clear virtual images, while diffuse reflection cannot.",
+          options: ["(1) only", "(3) only", "(1) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True. A perfectly smooth surface has parallel normals, keeping incident parallel rays parallel upon reflection.",
+            statement2: "False. Every single ray in diffuse reflection obeys the laws of reflection ($i = r$) at its microscopic point of contact. The rays scatter because the local normals point in random directions.",
+            statement3: "True. Specular reflection preserves the spatial organization of rays, forming a coherent image. Diffuse reflection scrambles the rays, making image formation impossible.",
+            conclusion: "Therefore, (1) and (3) are correct."
+          }
+        },
+        {
+          id: "3.1.3.3", type: "multi", correct: 2,
+          text: "Two plane mirrors, $M_1$ and $M_2$, are placed at an angle of $\\theta$ to each other. An object is placed symmetrically between them. Which of the following statements is/are correct?\n(1) If $\\theta = 60^\\circ$, exactly 5 images are formed.\n(2) If $\\theta$ decreases, the number of images formed increases.\n(3) All formed images lie on a circle centered at the intersection of the two mirrors.",
+          options: ["(1) and (2) only", "(1) and (3) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True. $N = \\frac{360}{\\theta} - 1 = \\frac{360}{60} - 1 = 5$ images.",
+            statement2: "True. Decreasing $\\theta$ increases the value of $\\frac{360}{\\theta}$, leading to more multiple reflections and images.",
+            statement3: "True. Because each reflection preserves the distance from the intersection point (vertex), geometric symmetry dictates that all images and the object lie on a circle whose radius is the distance from the object to the vertex.",
+            conclusion: "Therefore, (1), (2) and (3) are all correct."
+          }
+        },
+        {
+          id: "3.1.3.4", type: "multi", correct: 0,
+          text: "Which of the following statements regarding virtual images is/are correct?\n(1) They can be photographed by a camera.\n(2) They can be captured directly onto a white paper screen.\n(3) They are always upright and laterally inverted.",
+          options: ["(1) only", "(1) and (3) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True. A camera lens converges diverging light rays to form a real image on its digital sensor. Since virtual images emit diverging rays, they can be captured by camera lenses.",
+            statement2: "False. A virtual image has no real light rays intersecting at its apparent position behind the mirror, so it cannot be projected onto a screen.",
+            statement3: "False. Virtual images are not always laterally inverted (e.g., those formed by a combination of mirrors or lenses).",
+            conclusion: "Therefore, only (1) is correct."
+          }
+        },
+        {
+          id: "3.1.3.5", type: "calculation", correct: 1,
+          text: "An incident ray is reflected by a plane mirror. If the mirror is rotated by an angle of $\\theta$ about an axis in its plane, the reflected ray is deflected by an angle of $2\\theta$. If a ray is incident at 30° to a mirror normal, and the mirror rotates by 15° away from the ray, what is the new angle of reflection?",
+          options: ["15°", "45°", "30°", "60°"],
+          explanation: {
+            given: "Initial angle of incidence $i = 30°$. Rotation of mirror $= 15°$ away from the incident ray.",
+            formula: "Rotating the mirror away from the ray increases the angle of incidence by the rotation angle: $i_{new} = i + \\theta_{rot}$.",
+            substitution: "i_{new} = 30° + 15° = 45°",
+            answer: "The new angle of reflection is 45°"
+          }
+        },
+        {
+          id: "3.1.3.6", type: "multi", correct: 1,
+          text: "A vertical plane mirror is mounted on a wall. A student of height $H$ stands in front of it. Which of the following parameters affect the minimum vertical length of the mirror required for the student to see their full-length image?\n(1) The height of the student $H$.\n(2) The distance between the student and the mirror.\n(3) The position of the student's eyes relative to the top of their head.",
+          options: ["(1) only", "(1) and (3) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True. The minimum length of the mirror is exactly $\\frac{H}{2}$, which directly depends on the height of the student.",
+            statement2: "False. Geometric similarity shows that the required mirror length is independent of the distance between the student and the mirror.",
+            statement3: "True. The vertical positioning of the mirror on the wall depends on the eye level. The upper edge must be level with the midpoint between the eyes and the top of the head.",
+            conclusion: "Therefore, (1) and (3) are correct."
+          }
+        },
+        {
+          id: "3.1.3.7", type: "calculation", correct: 1,
+          text: "A ray of light is incident on plane mirror $A$ at an angle of 40° to the normal. It reflects and strikes plane mirror $B$, which is perpendicular to mirror $A$. Find the angle of reflection at mirror $B$.",
+          options: ["40°", "50°", "90°", "10°"],
+          explanation: {
+            given: "Angle of incidence on mirror $A$, $i_A = 40°$. Mirror $B$ is perpendicular to $A$.",
+            formula: "Since the mirrors are perpendicular, the normal of $B$ is parallel to the surface of $A$. This makes the angle of incidence on $B$, $i_B = 90° - i_A$.",
+            substitution: "i_B = 90° - 40°",
+            answer: "The angle of reflection at mirror B is 50°"
+          }
+        },
+        {
+          id: "3.1.3.8", type: "multi", correct: 1,
+          text: "An object is placed at a distance $d$ in front of a flat mirror. If the object moves toward the mirror with a velocity $v$, and the mirror simultaneously moves away from the object with a velocity $u$ ($u < v$), which of the following statements is/are correct?\n(1) The relative velocity of the image with respect to the mirror is $v - u$.\n(2) The relative velocity of the image with respect to the object is $2(v - u)$.\n(3) The distance between the object and the image decreases at a rate of $2(v - u)$.",
+          options: ["(1) only", "(1) and (2) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True. The object's relative velocity to the mirror is $v - u$. Since image distance equals object distance, the image's relative velocity to the mirror is also $v - u$.",
+            statement2: "True. The relative velocity of the image with respect to the object is twice their relative velocity to the mirror, which is $2(v - u)$.",
+            statement3: "True. The distance between the object and the image is $2 \\times$ (object distance to mirror). This distance decreases at a rate of $2 \\times$ (relative velocity to the mirror), which is $2(v - u)$.",
+            conclusion: "Therefore, all three statements (1), (2), and (3) are correct."
+          }
+        },
+        {
+          id: "3.1.3.9", type: "multi", correct: 2,
+          text: "A student holds a curved mirror. She notices that as she moves her face closer to the mirror, the image is upright and magnified. What type of mirror is she using, and what is the nature of the image?\n(1) It is a convex mirror.\n(2) It is a concave mirror.\n(3) The image formed is virtual.",
+          options: ["(1) and (3) only", "(2) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "False. Convex mirrors always form diminished virtual images, never magnified ones.",
+            statement2: "True. A concave mirror forms an upright, magnified virtual image when the object is placed within its focal length ($u < f$).",
+            statement3: "True. All upright images formed by single mirrors are virtual.",
+            conclusion: "Therefore, (2) and (3) are correct."
+          }
+        },
+        {
+          id: "3.1.3.10", type: "calculation", correct: 2,
+          text: "Two plane mirrors are placed parallel to each other at a distance of 20 cm apart. An object is placed 5 cm from Mirror $A$. Find the distance of the second image formed by Mirror $A$ from Mirror $A$ itself.",
+          options: ["15 cm", "25 cm", "35 cm", "45 cm"],
+          explanation: {
+            given: "Distance between mirrors = 20 cm. Object is 5 cm from Mirror $A$ (and 15 cm from Mirror $B$).",
+            formula: "First image in $A$ ($I_{A1}$) is at 5 cm behind $A$.\nFirst image in $B$ ($I_{B1}$) is at 15 cm behind $B$, which is $15 + 20 = 35$ cm from Mirror $A$.\nThis $I_{B1}$ acts as a virtual object for Mirror $A$, creating the second image $I_{A2}$ behind Mirror $A$ at the same distance.",
+            substitution: "Distance of I_{A2} behind Mirror A = Distance of I_{B1} from Mirror A = 35 cm.",
+            answer: "The second image formed by Mirror A is 35 cm from Mirror A."
+          }
+        }
+      ]
+    };
+
+    // --- PLACEHOLDERS FOR CHAPTERS 2 - 6 ---
+    const placeholderQuestions = (topicNum) => ({
+      1: [
+        {
+          id: `${topicNum}.1.1`, type: "conceptual", correct: 0,
+          text: `Sample Conceptual Question for Chapter ${topicNum}.`,
+          options: ["Correct Option", "Incorrect Option 1", "Incorrect Option 2", "Incorrect Option 3"],
+          explanation: {
+            A: "True explanation.",
+            B: "Why B is incorrect.",
+            C: "Why C is incorrect.",
+            D: "Why D is incorrect."
+          }
+        }
+      ],
+      2: [
+        {
+          id: `${topicNum}.2.1`, type: "calculation", correct: 1,
+          text: `Sample Calculation Question for Chapter ${topicNum}.`,
+          options: ["10 units", "20 units", "30 units", "40 units"],
+          explanation: {
+            given: "Sample variable = 10 units",
+            formula: "Result = 2 * variable",
+            substitution: "Result = 2 * 10",
+            answer: "Result = 20 units"
+          }
+        }
+      ],
+      3: [
+        {
+          id: `${topicNum}.3.1`, type: "multi", correct: 1,
+          text: `Sample Multi-statement Question for Chapter ${topicNum}.\n(1) First statement.\n(2) Second statement.\n(3) Third statement.`,
+          options: ["(1) only", "(1) and (2) only", "(2) and (3) only", "(1), (2) and (3)"],
+          explanation: {
+            statement1: "True.",
+            statement2: "True.",
+            statement3: "False.",
+            conclusion: "Therefore, (1) and (2) only are correct."
+          }
+        }
+      ]
+    });
+
+    // --- CALCULATOR COMPONENT ---
+    const FloatingCalculator = ({ onClose }) => {
+      const [display, setDisplay] = useState('0');
+      
+      const handleBtn = (val) => {
+        if (display === '0' || display === 'Error') { setDisplay(val); } else { setDisplay(display + val); }
+      };
+
+      const calculate = () => {
+        try {
+          let expr = display;
+          expr = expr.replace(/sin\(([^)]+)\)/g, 'Math.sin($1 * Math.PI / 180)');
+          expr = expr.replace(/cos\(([^)]+)\)/g, 'Math.cos($1 * Math.PI / 180)');
+          expr = expr.replace(/tan\(([^)]+)\)/g, 'Math.tan($1 * Math.PI / 180)');
+          expr = expr.replace(/√\(([^)]+)\)/g, 'Math.sqrt($1)');
+          expr = expr.replace(/π/g, 'Math.PI');
+          expr = expr.replace(/\^2/g, '**2');
+          
+          const result = new Function('return ' + expr)();
+          const formatted = Number(Math.round(result + "e10") + "e-10").toString();
+          setDisplay(formatted);
+        } catch (e) {
+          setDisplay('Error');
+        }
+      };
+
+      const clear = () => setDisplay('0');
+      const del = () => setDisplay(display.length > 1 ? display.slice(0, -1) : '0');
+
+      const btnClass = "bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white p-3 rounded-lg text-lg font-bold shadow-md transition-colors";
+      const funcClass = "bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-400 text-white p-3 rounded-lg text-sm font-bold shadow-md transition-colors";
+
+      return (
+        <div className="fixed bottom-4 right-4 z-50 w-80 bg-slate-800 border-2 border-indigo-500 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-8">
+          <div className="bg-indigo-900 p-3 flex justify-between items-center border-b border-indigo-500/50 cursor-move">
+            <div className="flex items-center gap-2 text-indigo-200">
+              <Icon name="Calculator" className="w-4 h-4" />
+              <span className="font-bold text-sm">Scientific Calc (DEG)</span>
+            </div>
+            <button onClick={onClose} className="text-indigo-200 hover:text-white"><Icon name="X" className="w-5 h-5"/></button>
+          </div>
+          <div className="p-4 bg-slate-900">
+            <div className="w-full bg-slate-950 text-right text-3xl font-mono p-4 rounded-xl mb-4 text-green-400 overflow-x-auto whitespace-nowrap shadow-inner border border-slate-700 min-h-[72px]">
+              {display}
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              <button onClick={() => handleBtn('sin(')} className={funcClass}>sin</button>
+              <button onClick={() => handleBtn('cos(')} className={funcClass}>cos</button>
+              <button onClick={() => handleBtn('tan(')} className={funcClass}>tan</button>
+              <button onClick={() => handleBtn('π')} className={funcClass}>π</button>
+              
+              <button onClick={() => handleBtn('√(')} className={funcClass}>√</button>
+              <button onClick={() => handleBtn('^2')} className={funcClass}>x²</button>
+              <button onClick={() => handleBtn('(')} className={funcClass}>(</button>
+              <button onClick={() => handleBtn(')')} className={funcClass}>)</button>
+              
+              <button onClick={() => handleBtn('7')} className={btnClass}>7</button>
+              <button onClick={() => handleBtn('8')} className={btnClass}>8</button>
+              <button onClick={() => handleBtn('9')} className={btnClass}>9</button>
+              <button onClick={() => handleBtn('/')} className="bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-lg text-lg font-bold">÷</button>
+              
+              <button onClick={() => handleBtn('4')} className={btnClass}>4</button>
+              <button onClick={() => handleBtn('5')} className={btnClass}>5</button>
+              <button onClick={() => handleBtn('6')} className={btnClass}>6</button>
+              <button onClick={() => handleBtn('*')} className="bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-lg text-lg font-bold">×</button>
+              
+              <button onClick={() => handleBtn('1')} className={btnClass}>1</button>
+              <button onClick={() => handleBtn('2')} className={btnClass}>2</button>
+              <button onClick={() => handleBtn('3')} className={btnClass}>3</button>
+              <button onClick={() => handleBtn('-')} className="bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-lg text-lg font-bold">-</button>
+              
+              <button onClick={clear} className="bg-red-600 hover:bg-red-500 text-white p-3 rounded-lg text-sm font-bold">AC</button>
+              <button onClick={() => handleBtn('0')} className={btnClass}>0</button>
+              <button onClick={() => handleBtn('.')} className={btnClass}>.</button>
+              <button onClick={() => handleBtn('+')} className="bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-lg text-lg font-bold">+</button>
+              
+              <button onClick={del} className="col-span-2 bg-slate-600 hover:bg-slate-500 text-white p-3 rounded-lg text-sm font-bold">DEL</button>
+              <button onClick={calculate} className="col-span-2 bg-green-600 hover:bg-green-500 text-white p-3 rounded-lg text-xl font-bold">=</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- MAIN APP COMPONENT ---
+    function App() {
+      const [currentView, setCurrentView] = useState('topics');
+      const [selectedTopic, setSelectedTopic] = useState(null);
+      const [selectedLevel, setSelectedLevel] = useState(null);
+      
+      const [questions, setQuestions] = useState([]);
+      const [currentQIndex, setCurrentQIndex] = useState(0);
+      const [userAnswers, setUserAnswers] = useState({});
+      const [showExplanation, setShowExplanation] = useState(false);
+      const [score, setScore] = useState(0);
+      
+      const [calcOpen, setCalcOpen] = useState(false);
+
+      const topics = [
+        { id: '1', title: 'Chapter 1: Reflection of Light', available: true },
+        { id: '2', title: 'Chapter 2: Refraction of Light', available: true },
+        { id: '3', title: 'Chapter 3: Lenses', available: true },
+        { id: '4', title: 'Chapter 4: Nature of Waves', available: true },
+        { id: '5', title: 'Chapter 5: Wave Phenomena and Stationary Waves', available: true },
+        { id: '6', title: 'Chapter 6: Wave Nature of Light and EM Waves', available: true }
+      ];
+
+      const startQuiz = (level) => {
+        const questionBanks = {
+          '1': chapter1_Questions,
+          '2': placeholderQuestions('2'),
+          '3': placeholderQuestions('3'),
+          '4': placeholderQuestions('4'),
+          '5': placeholderQuestions('5'),
+          '6': placeholderQuestions('6')
+        };
+
+        setSelectedLevel(level);
+        setQuestions(questionBanks[selectedTopic.id][level]);
+        setCurrentQIndex(0);
+        setUserAnswers({});
+        setShowExplanation(false);
+        setScore(0);
+        setCurrentView('quiz');
+      };
+
+      const handleOptionSelect = (optionIndex) => {
+        if (showExplanation) return;
+        
+        const isCorrect = optionIndex === questions[currentQIndex].correct;
+        if (isCorrect) setScore(s => s + 1);
+        setUserAnswers({ ...userAnswers, [currentQIndex]: optionIndex });
+        setShowExplanation(true);
+      };
+
+      const handleNext = () => {
+        if (currentQIndex < questions.length - 1) {
+          setCurrentQIndex(currentQIndex + 1);
+          setShowExplanation(false);
+        } else {
+          setCurrentView('result');
+        }
+      };
+
+      const ExplanationBlock = ({ question }) => {
+        const { type, explanation: exp } = question;
+        
+        if (type === 'conceptual') {
+          return (
+            <div className="space-y-3 mt-6 p-6 bg-slate-800 rounded-2xl border border-slate-700 animate-in fade-in slide-in-from-bottom-4">
+              <h4 className="font-bold text-indigo-300 flex items-center gap-2 mb-4">
+                <Icon name="HelpCircle" className="w-5 h-5"/> {t.evals.breakdown}
+              </h4>
+              {['A', 'B', 'C', 'D'].map((opt, i) => (
+                <div key={opt} className={`p-3 rounded-lg text-sm border ${i === question.correct ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-slate-900 border-slate-700 text-slate-300'}`}>
+                  <span className="font-bold mr-2">{opt}:</span> {exp[opt]}
+                </div>
+              ))}
+            </div>
+          );
+        }
+
+        if (type === 'calculation') {
+          return (
+            <div className="space-y-4 mt-6 p-6 bg-slate-800 rounded-2xl border border-slate-700 animate-in fade-in slide-in-from-bottom-4 font-mono text-sm">
+               <h4 className="font-bold text-orange-400 flex items-center gap-2 mb-4 font-sans">
+                <Icon name="Calculator" className="w-5 h-5"/> {t.evals.breakdown}
+              </h4>
+              <div className="bg-slate-900 p-3 rounded-lg border-l-4 border-indigo-500">
+                <span className="text-indigo-400 font-bold block mb-1">{t.evals.given}</span>
+                <span className="text-slate-300">{exp.given}</span>
+              </div>
+              <div className="bg-slate-900 p-3 rounded-lg border-l-4 border-yellow-500">
+                <span className="text-yellow-400 font-bold block mb-1">{t.evals.formula}</span>
+                <span className="text-slate-300">{exp.formula}</span>
+              </div>
+              <div className="bg-slate-900 p-3 rounded-lg border-l-4 border-blue-500 overflow-x-auto">
+                <span className="text-blue-400 font-bold block mb-1">{t.evals.sub}</span>
+                <span className="text-slate-300 whitespace-pre-wrap">{exp.substitution}</span>
+              </div>
+              <div className="bg-green-900/30 p-3 rounded-lg border-l-4 border-green-500">
+                <span className="text-green-400 font-bold block mb-1">{t.evals.ans}</span>
+                <span className="text-green-300 text-base font-bold">{exp.answer}</span>
+              </div>
+            </div>
+          );
+        }
+
+        if (type === 'multi') {
+          return (
+            <div className="space-y-3 mt-6 p-6 bg-slate-800 rounded-2xl border border-slate-700 animate-in fade-in slide-in-from-bottom-4">
+              <h4 className="font-bold text-fuchsia-400 flex items-center gap-2 mb-4">
+                <Icon name="Check" className="w-5 h-5"/> {t.evals.stateEval}
+              </h4>
+              {[1, 2, 3].map((num) => (
+                 exp[`statement${num}`] && (
+                   <div key={num} className="p-3 rounded-lg text-sm bg-slate-900 border border-slate-700 text-slate-300">
+                     <span className="font-bold text-fuchsia-300 mr-2">Statement ({num}):</span> 
+                     {exp[`statement${num}`]}
+                   </div>
+                 )
+              ))}
+              <div className="mt-4 p-3 bg-green-900/20 border border-green-700 text-green-200 rounded-lg font-bold">
+                {exp.conclusion}
+              </div>
+            </div>
+          );
+        }
+      };
+
+      const renderText = (text) => {
+        return text.split('\n').map((line, i) => (
+          <React.Fragment key={i}>
+            {line}
+            {i < text.split('\n').length - 1 && <br />}
+          </React.Fragment>
+        ));
+      };
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-orange-500/30 overflow-x-hidden">
+          
+          <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[150px]"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-fuchsia-600/10 rounded-full blur-[150px]"></div>
+          </div>
+
+          <header className="relative z-10 p-4 md:p-6 flex justify-between items-center max-w-4xl mx-auto border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md sticky top-0">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-br from-indigo-500 to-fuchsia-600 p-2 rounded-xl shadow-lg shadow-indigo-500/20">
+                <Icon name="Waves" className="w-6 h-6 md:w-8 md:h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl md:text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
+                  {t.appTitle}
+                </h1>
+                <p className="text-xs md:text-sm text-indigo-400 font-semibold">{t.tagline}</p>
+              </div>
+            </div>
+            {currentView !== 'topics' && (
+               <button onClick={() => setCalcOpen(!calcOpen)}
+               className={`p-2 rounded-full transition-colors border ${calcOpen ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}`}>
+                 <Icon name="Calculator" className="w-5 h-5"/>
+               </button>
+            )}
+          </header>
+
+          <main className="relative z-10 max-w-4xl mx-auto px-4 pt-8 pb-32">
+            
+            {/* VIEW 1: TOPIC SELECTION */}
+            {currentView === 'topics' && (
+              <div className="animate-in fade-in slide-in-from-bottom-8">
+                <h2 className="text-3xl md:text-4xl font-black mb-8 text-center flex items-center justify-center gap-3">
+                  <Icon name="BookOpen" className="text-indigo-500 w-8 h-8"/>
+                  {t.topics}
+                </h2>
+                <div className="space-y-4">
+                  {topics.map((topic) => (
+                    <button
+                      key={topic.id}
+                      disabled={!topic.available}
+                      onClick={() => { setSelectedTopic(topic); setCurrentView('levels'); }}
+                      className={`w-full flex items-center justify-between p-6 rounded-2xl border transition-all duration-300 text-left
+                        ${topic.available 
+                          ? 'bg-slate-900 border-slate-700 hover:border-indigo-500 hover:bg-slate-800 hover:shadow-lg hover:shadow-indigo-500/10 group cursor-pointer' 
+                          : 'bg-slate-900/50 border-slate-800/50 opacity-60 cursor-not-allowed'}`}
+                    >
+                      <div>
+                        <h3 className={`text-xl font-bold ${topic.available ? 'text-white group-hover:text-indigo-400 transition-colors' : 'text-slate-500'}`}>
+                          {topic.title}
+                        </h3>
+                      </div>
+                      {topic.available && <Icon name="ChevronLeft" className="w-6 h-6 text-slate-500 rotate-180 group-hover:text-indigo-500 transition-colors" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 2: LEVEL SELECTION */}
+            {currentView === 'levels' && (
+              <div className="animate-in fade-in slide-in-from-right-8">
+                <button 
+                  onClick={() => setCurrentView('topics')}
+                  className="flex items-center gap-2 text-slate-400 hover:text-white mb-8 bg-slate-800/50 px-4 py-2 rounded-lg"
+                >
+                  <Icon name="ChevronLeft" className="w-5 h-5" /> {t.backBtn}
+                </button>
+                
+                <div className="text-center mb-10">
+                  <h2 className="text-2xl md:text-3xl font-bold text-indigo-400 mb-2">
+                    {selectedTopic.title}
+                  </h2>
+                  <p className="text-slate-400 text-lg">{t.levels}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    { id: 1, title: t.easy, icon: "Sparkles", color: "from-green-500 to-emerald-600", bg: "bg-green-500/10", border: "border-green-500/30" },
+                    { id: 2, title: t.average, icon: "BarChart3", color: "from-blue-500 to-indigo-600", bg: "bg-blue-500/10", border: "border-blue-500/30" },
+                    { id: 3, title: t.hard, icon: "Flame", color: "from-red-500 to-rose-600", bg: "bg-red-500/10", border: "border-red-500/30" }
+                  ].map((lvl) => (
+                    <button
+                      key={lvl.id}
+                      onClick={() => startQuiz(lvl.id)}
+                      className={`relative p-8 rounded-3xl border ${lvl.border} ${lvl.bg} hover:bg-slate-800 transition-all duration-300 group text-left flex flex-col items-center text-center overflow-hidden`}
+                    >
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity bg-gradient-to-b from-white to-transparent"></div>
+                      <div className={`p-4 rounded-full bg-gradient-to-br ${lvl.color} mb-6 shadow-lg shadow-black/20`}>
+                        <Icon name={lvl.icon} className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3">{lvl.title}</h3>
+                      <div className="mt-6 w-full py-3 rounded-xl bg-slate-900/50 border border-slate-700 group-hover:border-slate-500 font-bold text-slate-300 group-hover:text-white transition-colors">
+                        {t.start}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 3: QUIZ ENGINE */}
+            {currentView === 'quiz' && (
+              <div className="max-w-3xl mx-auto">
+                 <div className="flex justify-between items-center mb-6 bg-slate-900 p-4 rounded-2xl border border-slate-800 sticky top-[80px] z-20 shadow-lg">
+                    <div className="flex-1 mr-6">
+                      <div className="flex justify-between text-sm font-bold text-slate-400 mb-2">
+                        <span>Question {currentQIndex + 1} of {questions.length}</span>
+                        <span className="text-indigo-400">{score} / {questions.length}</span>
+                      </div>
+                      <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-indigo-500 to-fuchsia-550 transition-all duration-500 ease-out"
+                          style={{ width: `${((currentQIndex + 1) / questions.length) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setCurrentView('levels')}
+                      className="text-slate-500 hover:text-white p-2"
+                    >
+                      <Icon name="X" className="w-6 h-6"/>
+                    </button>
+                 </div>
+
+                 <div className="bg-slate-900 rounded-3xl p-6 md:p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-indigo-600/20 text-indigo-400 text-xs font-bold px-3 py-1 rounded-bl-xl border-b border-l border-indigo-600/30 uppercase tracking-wider flex items-center gap-2">
+                      Level {selectedLevel} • {t.qType[questions[currentQIndex].type]}
+                    </div>
+                    
+                    <h3 className="text-xl md:text-2xl font-medium leading-relaxed mt-4 mb-8 whitespace-pre-wrap">
+                      {renderText(questions[currentQIndex].text)}
+                    </h3>
+
+                    <div className="space-y-3">
+                      {questions[currentQIndex].options.map((opt, index) => {
+                        const isSelected = userAnswers[currentQIndex] === index;
+                        const isCorrect = index === questions[currentQIndex].correct;
+                        const showCorrect = showExplanation && isCorrect;
+                        const showWrong = showExplanation && isSelected && !isCorrect;
+
+                        let btnClass = "w-full text-left p-4 md:p-5 rounded-2xl border-2 transition-all duration-200 text-base md:text-lg flex items-center justify-between ";
+                        
+                        if (!showExplanation) {
+                          btnClass += "border-slate-700 bg-slate-800/50 hover:border-indigo-500 hover:bg-slate-800 text-slate-300 hover:text-white";
+                        } else if (showCorrect) {
+                          btnClass += "border-green-500 bg-green-500/10 text-green-400 font-bold shadow-[0_0_15px_rgba(34,197,94,0.2)]";
+                        } else if (showWrong) {
+                          btnClass += "border-red-500 bg-red-500/10 text-red-400 font-bold opacity-75";
+                        } else {
+                          btnClass += "border-slate-800 bg-slate-900/50 text-slate-600 opacity-50";
+                        }
+
+                        return (
+                          <button
+                            key={index}
+                            disabled={showExplanation}
+                            onClick={() => handleOptionSelect(index)}
+                            className={btnClass}
+                          >
+                            <div className="flex gap-4">
+                              <span className={`w-8 h-8 flex items-center justify-center rounded-lg border ${showCorrect ? 'bg-green-500 text-slate-900 border-green-500' : showWrong ? 'bg-red-500 text-slate-900 border-red-500' : 'border-slate-600'}`}>
+                                {String.fromCharCode(65 + index)}
+                              </span>
+                              <span className="mt-1 leading-snug">{opt}</span>
+                            </div>
+                            {showCorrect && <Icon name="Check" className="w-6 h-6 text-green-500 flex-shrink-0" />}
+                            {showWrong && <Icon name="XCircle" className="w-6 h-6 text-red-500 flex-shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {showExplanation && <ExplanationBlock question={questions[currentQIndex]} />}
+
+                    {showExplanation && (
+                      <button 
+                        onClick={handleNext}
+                        className="w-full mt-8 bg-gradient-to-r from-indigo-500 to-fuchsia-600 hover:from-indigo-400 hover:to-fuchsia-500 text-white font-bold py-4 rounded-xl text-lg shadow-lg shadow-indigo-500/25 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                      >
+                        {currentQIndex < questions.length - 1 ? t.next : t.finish}
+                      </button>
+                    )}
+                 </div>
+              </div>
+            )}
+
+            {/* VIEW 4: RESULT SCREEN */}
+            {currentView === 'result' && (
+              <div className="max-w-xl mx-auto text-center animate-in zoom-in-95 duration-500">
+                <div className="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent"></div>
+                  
+                  <div className="relative z-10">
+                    <Icon name="Trophy" className="w-24 h-24 text-yellow-400 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
+                    <h2 className="text-3xl font-black text-white mb-2">Quiz Completed!</h2>
+                    <p className="text-slate-400 mb-8">{selectedTopic.title} • Level {selectedLevel}</p>
+                    
+                    <div className="flex justify-center mb-10">
+                      <div className="relative w-48 h-48">
+                        <svg className="w-full h-full transform -rotate-90">
+                          <circle cx="96" cy="96" r="88" className="stroke-slate-800" strokeWidth="16" fill="none" />
+                          <circle 
+                            cx="96" cy="96" r="88" 
+                            className="stroke-indigo-550 transition-all duration-1000 ease-out" 
+                            strokeWidth="16" fill="none" 
+                            strokeDasharray={2 * Math.PI * 88}
+                            strokeDashoffset={(2 * Math.PI * 88) * (1 - (score / questions.length))}
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-5xl font-black text-white">{score}</span>
+                          <span className="text-sm font-bold text-slate-400">/ {questions.length}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <button 
+                        onClick={() => setCurrentView('levels')}
+                        className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl transition-colors border border-slate-700"
+                      >
+                        Play Another Level
+                      </button>
+                      <button 
+                        onClick={() => setCurrentView('topics')}
+                        className="w-full bg-transparent hover:bg-slate-800/50 text-slate-400 font-bold py-4 rounded-xl transition-colors"
+                      >
+                        {t.home}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {calcOpen && <FloatingCalculator onClose={() => setCalcOpen(false)} />}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
