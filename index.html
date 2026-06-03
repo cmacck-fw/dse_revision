@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSE Physics Mastermind - Portal Hub</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#faf5ff',
+              card: '#ffffff',
+              border: '#f3e8ff',
+              textDark: '#1e1b4b',
+              textMuted: '#6b21a8',
+              violet: '#7c3aed',
+              cyan: '#06b6d4',
+              pink: '#ec4899',
+              amber: '#f59e0b',
+              coral: '#f43f5e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', "Microsoft JhengHei", sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-slate-50 via-purple-50/40 to-violet-50/20 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white">
+
+  <!-- TOP HEADER PORTAL -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 px-4 py-4 shadow-sm">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <!-- Logo Portal -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-gradient-to-tr from-brand-violet via-purple-500 to-brand-pink p-2.5 rounded-2xl shadow-md shadow-purple-500/10">
+          <i class="fa-solid fa-graduation-cap text-white text-xl md:text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-brand-violet to-brand-pink bg-clip-text text-transparent tracking-tight">
+            DSE Physics Mastermind
+          </h1>
+          <p class="text-xs text-brand-cyan font-bold tracking-wide uppercase" id="sub-title">
+            S4 - S6 Complete Exam Preparation System
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Language Selector Toggle -->
+      <div class="flex items-center bg-purple-50 border border-purple-100 rounded-xl p-1 shadow-inner">
+        <button id="lang-btn-en" onclick="setLanguage('en')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-200 bg-white text-brand-violet shadow-sm">
+          English
+        </button>
+        <button id="lang-btn-zh" onclick="setLanguage('zh')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-200 text-slate-550 hover:text-brand-violet">
+          繁體中文
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN ENTRY GATEWAY -->
+  <main class="max-w-5xl w-full mx-auto p-4 flex-grow flex flex-col justify-center gap-8 py-12">
+    
+    <!-- WELCOME CARD -->
+    <section class="text-center space-y-3 max-w-2xl mx-auto">
+      <div class="inline-flex items-center space-x-2 bg-purple-50 border border-purple-200 rounded-full px-3.5 py-1.5 text-xs text-brand-textMuted font-bold">
+        <i class="fa-solid fa-sparkles text-brand-amber animate-pulse"></i>
+        <span id="badge-text">Interactive Syllabus Navigator</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-black text-brand-textDark tracking-tight leading-tight" id="main-title">
+        Select Your Physics Chapter
+      </h2>
+      <p class="text-sm md:text-base text-slate-550 font-medium leading-relaxed" id="main-desc">
+        Master textbook concepts, review step-by-step mathematical derivations, and practice past-paper-level multiple choice questions with an integrated degree scientific calculator.
+      </p>
+    </section>
+
+    <!-- BOOKS GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+      
+      <!-- BOOK 1 CARD -->
+      <div class="bg-white border border-purple-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-purple-300 transition duration-300 flex flex-col justify-between gap-6 relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-violet to-purple-400"></div>
+        
+        <div class="space-y-4">
+          <!-- Icon Header -->
+          <div class="flex items-center justify-between">
+            <div class="h-12 w-12 rounded-2xl bg-purple-50 text-brand-violet flex items-center justify-center text-xl font-bold border border-purple-100">
+              <i class="fa-solid fa-temperature-half"></i>
+            </div>
+            <span class="text-xs font-extrabold px-3 py-1 bg-purple-50 text-brand-violet rounded-full border border-purple-100 font-mono">BOOK 1</span>
+          </div>
+
+          <!-- Title and Description -->
+          <div class="space-y-2">
+            <h3 class="text-lg font-bold text-brand-textDark group-hover:text-brand-violet transition duration-200 book-title-1">
+              Heat & Gases
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed font-medium book-desc-1">
+              Includes Temperature, Heat, Specific Heat Capacity, Latent Heat, Phase Changes, Gas Laws, and Kinetic Theory.
+            </p>
+          </div>
+        </div>
+
+        <!-- Launch Buttons -->
+        <div class="space-y-2.5 pt-4 border-t border-slate-100">
+          <a href="book1_eng.html" class="flex items-center justify-between w-full bg-slate-50 hover:bg-purple-50 border border-purple-100 text-slate-700 hover:text-brand-violet font-extrabold text-sm py-2.5 px-4 rounded-xl transition duration-200">
+            <span class="flex items-center space-x-2">
+              <span class="text-xs py-0.5 px-2 bg-purple-100 text-brand-textMuted rounded font-bold font-sans">EN</span>
+              <span>English Version</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+          <a href="book1_chi.html" class="flex items-center justify-between w-full bg-slate-50 hover:bg-pink-50 border border-pink-100 text-slate-700 hover:text-brand-pink font-extrabold text-sm py-2.5 px-4 rounded-xl transition duration-200">
+            <span class="flex items-center space-x-2">
+              <span class="text-xs py-0.5 px-2 bg-pink-100 text-brand-pink rounded font-bold font-sans">中文</span>
+              <span>繁體中文版本</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- BOOK 2 CARD -->
+      <div class="bg-white border border-purple-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-purple-300 transition duration-300 flex flex-col justify-between gap-6 relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-violet to-brand-cyan"></div>
+        
+        <div class="space-y-4">
+          <!-- Icon Header -->
+          <div class="flex items-center justify-between">
+            <div class="h-12 w-12 rounded-2xl bg-cyan-50 text-brand-cyan flex items-center justify-center text-xl font-bold border border-cyan-100">
+              <i class="fa-solid fa-gauge-high"></i>
+            </div>
+            <span class="text-xs font-extrabold px-3 py-1 bg-cyan-50 text-brand-cyan rounded-full border border-cyan-100 font-mono">BOOK 2</span>
+          </div>
+
+          <!-- Title and Description -->
+          <div class="space-y-2">
+            <h3 class="text-lg font-bold text-brand-textDark group-hover:text-brand-violet transition duration-200 book-title-2">
+              Force & Motion
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed font-medium book-desc-2">
+              Includes Kinematics, Newton's Laws, Moment of Force, Work, Energy, Power, Momentum, Projectile Motion, Circular Motion, and Gravitation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Launch Buttons -->
+        <div class="space-y-2.5 pt-4 border-t border-slate-100">
+          <a href="book2_eng.html" class="flex items-center justify-between w-full bg-slate-50 hover:bg-purple-50 border border-purple-100 text-slate-700 hover:text-brand-violet font-extrabold text-sm py-2.5 px-4 rounded-xl transition duration-200">
+            <span class="flex items-center space-x-2">
+              <span class="text-xs py-0.5 px-2 bg-purple-100 text-brand-textMuted rounded font-bold font-sans">EN</span>
+              <span>English Version</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+          <a href="book2_chi.html" class="flex items-center justify-between w-full bg-slate-50 hover:bg-pink-50 border border-pink-100 text-slate-700 hover:text-brand-pink font-extrabold text-sm py-2.5 px-4 rounded-xl transition duration-200">
+            <span class="flex items-center space-x-2">
+              <span class="text-xs py-0.5 px-2 bg-pink-100 text-brand-pink rounded font-bold font-sans">中文</span>
+              <span>繁體中文版本</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- BOOK 3 CARD -->
+      <div class="bg-white border border-purple-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-purple-300 transition duration-300 flex flex-col justify-between gap-6 relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-violet to-brand-pink"></div>
+        
+        <div class="space-y-4">
+          <!-- Icon Header -->
+          <div class="flex items-center justify-between">
+            <div class="h-12 w-12 rounded-2xl bg-pink-50 text-brand-pink flex items-center justify-center text-xl font-bold border border-pink-100">
+              <i class="fa-solid fa-wave-square"></i>
+            </div>
+            <span class="text-xs font-extrabold px-3 py-1 bg-pink-50 text-brand-pink rounded-full border border-pink-100 font-mono">BOOK 3</span>
+          </div>
+
+          <!-- Title and Description -->
+          <div class="space-y-2">
+            <h3 class="text-lg font-bold text-brand-textDark group-hover:text-brand-violet transition duration-200 book-title-3">
+              Wave Motion
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed font-medium book-desc-3">
+              Includes Reflection, Refraction, Lenses, Wave Nature, Wave Phenomena, Interference, Diffraction, and Electromagnetic Waves.
+            </p>
+          </div>
+        </div>
+
+        <!-- Launch Buttons -->
+        <div class="space-y-2.5 pt-4 border-t border-slate-100">
+          <a href="book3_eng.html" class="flex items-center justify-between w-full bg-slate-50 hover:bg-purple-50 border border-purple-100 text-slate-700 hover:text-brand-violet font-extrabold text-sm py-2.5 px-4 rounded-xl transition duration-200">
+            <span class="flex items-center space-x-2">
+              <span class="text-xs py-0.5 px-2 bg-purple-100 text-brand-textMuted rounded font-bold font-sans">EN</span>
+              <span>English Version</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+          <a href="book3_chi.html" class="flex items-center justify-between w-full bg-slate-50 hover:bg-pink-50 border border-pink-100 text-slate-700 hover:text-brand-pink font-extrabold text-sm py-2.5 px-4 rounded-xl transition duration-200">
+            <span class="flex items-center space-x-2">
+              <span class="text-xs py-0.5 px-2 bg-pink-100 text-brand-pink rounded font-bold font-sans">中文</span>
+              <span>繁體中文版本</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-purple-100 bg-white py-6 px-4">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-xs text-slate-400 font-bold">
+      <p id="footer-copy">© 2026 DSE Physics Mastermind. All Rights Reserved.</p>
+      <div class="flex items-center space-x-4">
+        <span class="flex items-center space-x-1.5 text-brand-violet"><i class="fa-solid fa-shield-halved"></i> <span id="footer-security">DSE syllabus aligned</span></span>
+        <span>•</span>
+        <span class="flex items-center space-x-1.5 text-brand-pink"><i class="fa-solid fa-fire"></i> <span id="footer-curriculum">S4 - S6 Exam Prep</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT BLOCK -->
+  <script>
+    const langData = {
+      en: {
+        subtitle: "S4 - S6 Complete Exam Preparation System",
+        badge: "Interactive Syllabus Navigator",
+        mainTitle: "Select Your Physics Chapter",
+        mainDesc: "Master textbook concepts, review step-by-step mathematical derivations, and practice past-paper-level multiple choice questions with an integrated degree scientific calculator.",
+        bookTitle1: "Heat & Gases",
+        bookDesc1: "Includes Temperature, Heat, Specific Heat Capacity, Latent Heat, Phase Changes, Gas Laws, and Kinetic Theory.",
+        bookTitle2: "Force & Motion",
+        bookDesc2: "Includes Kinematics, Newton's Laws, Moment of Force, Work, Energy, Power, Momentum, Projectile Motion, Circular Motion, and Gravitation.",
+        bookTitle3: "Wave Motion",
+        bookDesc3: "Includes Reflection, Refraction, Lenses, Wave Nature, Wave Phenomena, Interference, Diffraction, and Electromagnetic Waves.",
+        footerCopy: "© 2026 DSE Physics Mastermind. All Rights Reserved.",
+        footerSecurity: "DSE syllabus aligned",
+        footerCurriculum: "S4 - S6 Exam Prep"
+      },
+      zh: {
+        subtitle: "S4 - S6 中學文憑試物理應試備考系統",
+        badge: "互動式物理課程導航",
+        mainTitle: "請選擇您的物理科單元",
+        mainDesc: "深入掌握教科書核心概念、細閱詳細公式分步推導，並配合度數模式內置科學計算機，高頻演練文憑試等級的多項選擇題。",
+        bookTitle1: "第一冊：熱和氣體",
+        bookDesc1: "涵蓋溫度、熱能、比熱容、潛熱、物態改變、氣體定律以及氣體微觀動力學。",
+        bookTitle2: "第二冊：力與運動",
+        bookDesc2: "涵蓋運動學、牛頓運動定律、力矩、功、能量與功率、動量、拋體運動、勻速圓周運動與萬有引力。",
+        bookTitle3: "第三冊：波動學",
+        bookDesc3: "涵蓋光的反射、折射、透鏡成像、波的特性與波動現象、雙縫干涉與單縫繞射、光的波動性以及電磁波譜。",
+        footerCopy: "© 2026 DSE 物理科掌門人。版權所有，不得轉載。",
+        footerSecurity: "緊扣 DSE 物理科考綱",
+        footerCurriculum: "中四至中六備考專用"
+      }
+    };
+
+    function setLanguage(lang) {
+      // Toggle button highlights
+      if (lang === 'en') {
+        document.getElementById('lang-btn-en').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-200 bg-white text-brand-violet shadow-sm";
+        document.getElementById('lang-btn-zh').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-200 text-slate-550 hover:text-brand-violet";
+      } else {
+        document.getElementById('lang-btn-zh').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-200 bg-white text-brand-violet shadow-sm";
+        document.getElementById('lang-btn-en').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-200 text-slate-550 hover:text-brand-violet";
+      }
+
+      // Update text values
+      document.getElementById('sub-title').innerText = langData[lang].subtitle;
+      document.getElementById('badge-text').innerText = langData[lang].badge;
+      document.getElementById('main-title').innerText = langData[lang].mainTitle;
+      document.getElementById('main-desc').innerText = langData[lang].mainDesc;
+
+      document.querySelector('.book-title-1').innerText = langData[lang].bookTitle1;
+      document.querySelector('.book-desc-1').innerText = langData[lang].bookDesc1;
+
+      document.querySelector('.book-title-2').innerText = langData[lang].bookTitle2;
+      document.querySelector('.book-desc-2').innerText = langData[lang].bookDesc2;
+
+      document.querySelector('.book-title-3').innerText = langData[lang].bookTitle3;
+      document.querySelector('.book-desc-3').innerText = langData[lang].bookDesc3;
+
+      document.getElementById('footer-copy').innerText = langData[lang].footerCopy;
+      document.getElementById('footer-security').innerText = langData[lang].footerSecurity;
+      document.getElementById('footer-curriculum').innerText = langData[lang].footerCurriculum;
+    }
+
+    // Default Initialization
+    window.onload = function() {
+      setLanguage('en');
+    }
+  </script>
+</body>
+</html>
