@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSE 物理科掌門人 - 第二冊：力與運動</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#faf5ff',
+              card: '#ffffff',
+              border: '#f3e8ff',
+              textDark: '#1e1b4b',
+              textMuted: '#6b21a8',
+              violet: '#7c3aed',
+              cyan: '#06b6d4',
+              pink: '#ec4899',
+              amber: '#f59e0b',
+              coral: '#f43f5e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering physics symbols and formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- FontAwesome for UI icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', "Microsoft JhengHei", sans-serif;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(124, 58, 237, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(124, 58, 237, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(124, 58, 237, 0.4);
+    }
+    /* Draggable calculator style on desktop */
+    @media (min-width: 768px) {
+      #calculator-widget {
+        touch-action: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-slate-50 via-purple-50/30 to-violet-50/20 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white pb-20">
+
+  <!-- TOP NAV BAR -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+        <div class="bg-gradient-to-tr from-brand-violet via-purple-500 to-brand-pink p-2.5 rounded-xl shadow-md shadow-purple-500/10">
+          <i class="fa-solid fa-bolt text-white text-xl animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-lg md:text-xl font-extrabold bg-gradient-to-r from-brand-violet to-brand-pink bg-clip-text text-transparent tracking-tight">DSE 物理科掌門人</h1>
+          <p class="text-xs text-brand-cyan font-bold">第二冊：力與運動 • 中學文憑試複習系統</p>
+        </div>
+      </div>
+      
+      <!-- Quick Score & Progress Stats -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">整體複習進度</span>
+          <div class="flex items-center space-x-2">
+            <div class="w-24 bg-purple-100 h-2 rounded-full overflow-hidden">
+              <div id="global-progress-bar" class="bg-brand-violet h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="global-progress-text" class="text-xs font-bold text-brand-violet">0%</span>
+          </div>
+        </div>
+        <div class="bg-purple-50 border border-purple-100 rounded-xl px-3 py-1.5 flex items-center space-x-2 shadow-inner">
+          <i class="fa-solid fa-trophy text-brand-amber text-sm"></i>
+          <span id="global-score-badge" class="font-bold text-sm text-brand-textDark">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-4 flex-grow flex flex-col gap-6 mb-24">
+    
+    <!-- DASHBOARD: TOPICS & LEVELS SELECTOR -->
+    <div id="dashboard-section" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEFT: TOPIC SELECTOR -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-cyan rounded-full"></span>
+            <span>1. 選擇 DSE 物理課題</span>
+          </h2>
+          <div class="space-y-3" id="topic-list-container">
+            <!-- Topics generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LEVEL SELECTOR -->
+      <div class="space-y-6">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-pink rounded-full"></span>
+            <span>2. 選擇難度級別</span>
+          </h2>
+          <div class="grid grid-cols-1 gap-3" id="level-list-container">
+            <!-- Levels generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVE QUIZ CONTAINER -->
+    <div id="quiz-section" class="hidden flex-col gap-6 animate-fade-in">
+      
+      <!-- Top Status Card -->
+      <div class="bg-white border border-purple-100 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+        <button onclick="goHome()" class="flex items-center space-x-2 text-slate-600 hover:text-brand-violet hover:bg-purple-50 bg-slate-50 px-3.5 py-2 rounded-xl border border-purple-100 transition duration-200">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="text-sm font-bold">更改課題 / 難度</span>
+        </button>
+        <div class="flex items-center space-x-3">
+          <span id="quiz-meta-topic" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-purple-50 text-brand-violet border border-purple-100">課題</span>
+          <span id="quiz-meta-level" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-pink-50 text-brand-pink border border-pink-100 font-mono">級別</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-xs text-slate-555 font-semibold">測驗進度</div>
+            <div class="text-sm font-extrabold text-slate-800" id="quiz-progress-text">第 1 題，共 6 題</div>
+          </div>
+          <div class="h-10 w-10 rounded-full border-2 border-brand-violet/30 flex items-center justify-center font-bold text-brand-violet text-sm bg-purple-50/50" id="quiz-percentage">
+            16%
+          </div>
+        </div>
+      </div>
+
+      <!-- Question and Options Arena -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Question Presentation -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 md:p-8 shadow-sm relative min-h-[350px] flex flex-col justify-between">
+            <div>
+              <!-- Progress Meter Bar -->
+              <div class="w-full bg-slate-100 h-1.5 rounded-full mb-6 overflow-hidden">
+                <div id="quiz-step-progress" class="bg-brand-violet h-full transition-all duration-300" style="width: 16%"></div>
+              </div>
+
+              <!-- Question Header -->
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">問題展示</span>
+                <span class="text-xs px-2.5 py-1 rounded bg-purple-50 border border-purple-100 text-brand-violet font-mono font-bold" id="question-index-display">Q1/6</span>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="text-slate-800 text-sm md:text-base leading-relaxed font-semibold mb-6 tex2jax_process" id="question-statement-box">
+                正在載入物理問題陳述...
+              </div>
+            </div>
+
+            <!-- Interactive Options Grid -->
+            <div class="grid grid-cols-1 gap-3" id="options-grid-container">
+              <!-- Options elements will be rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Bottom Nav Bar for Current Question -->
+          <div class="flex justify-between items-center bg-white p-4 border border-purple-100 rounded-2xl shadow-sm">
+            <button id="btn-prev-question" class="opacity-50 cursor-not-allowed bg-slate-50 hover:bg-slate-100 text-slate-505 px-4 py-2.5 rounded-xl text-sm font-bold border border-slate-200 transition flex items-center space-x-2" disabled>
+              <i class="fa-solid fa-chevron-left text-xs"></i> <span>上一題</span>
+            </button>
+            <button id="btn-next-question" class="hidden bg-gradient-to-r from-brand-violet to-brand-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>下一題</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+            <button id="btn-check-answer" class="bg-brand-amber hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>提交答案</span> <i class="fa-solid fa-circle-check text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Explanation Pane -->
+        <div class="lg:col-span-5 flex flex-col" id="explanation-pane-anchor">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 shadow-sm flex-grow flex flex-col justify-between min-h-[300px]">
+            <div>
+              <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-brand-pink mr-2"></i> DSE 解題指南
+              </h3>
+              
+              <!-- Placeholder State -->
+              <div id="explanation-placeholder" class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-lightbulb text-4xl mb-3 animate-pulse text-brand-violet/40"></i>
+                <p class="text-sm font-bold">提交你的答案以解鎖教科書標準的物理詳解。</p>
+              </div>
+
+              <!-- Explanation Content Area -->
+              <div id="explanation-content-area" class="hidden space-y-4 text-sm leading-relaxed tex2jax_process">
+                <div id="explanation-feedback" class="p-3.5 rounded-xl font-extrabold flex items-center space-x-2 border">
+                  <!-- Dynamic status -->
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-purple-100">
+                  <h4 class="text-xs font-bold text-brand-violet uppercase mb-2 tracking-wider">分步解題邏輯：</h4>
+                  <div id="explanation-body-text" class="text-slate-700 space-y-3 font-medium">
+                    <!-- Complete derivations / option evaluations -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concept Reference Code -->
+            <div class="mt-6 pt-4 border-t border-purple-100 flex items-center justify-between text-xs text-slate-555 font-bold">
+              <span>學科大綱編號：</span>
+              <span id="syllabus-reference-code" class="font-mono bg-purple-50 px-2.5 py-1 rounded text-brand-violet border border-purple-100">PHY-2.1</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- REVIEW BOARD / PERFORMANCE STATS -->
+    <div id="review-section" class="hidden flex-col gap-6 animate-fade-in">
+      <div class="bg-white border border-purple-100 rounded-3xl p-8 text-center shadow-md relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-violet via-brand-cyan to-brand-pink"></div>
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-brand-textDark">本難度完成！</h2>
+        <p class="text-slate-505 mt-2 max-w-md mx-auto text-sm md:text-base font-medium">讓我們在下方分析你的文憑試複習表現指標。</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mt-8">
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">總得分</div>
+            <div class="text-2xl font-black text-slate-800 mt-1" id="review-score">0 / 6</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">答對率</div>
+            <div class="text-2xl font-black text-brand-violet mt-1" id="review-accuracy">0%</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">通過級別</div>
+            <div class="text-2xl font-black text-brand-pink mt-1 font-mono" id="review-level">Level --</div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+          <button id="btn-review-restart" class="bg-gradient-to-r from-brand-violet to-purple-500 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 shadow-md shadow-purple-500/10">
+            重新挑戰此級別
+          </button>
+          <button onclick="goHome()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-6 py-3 rounded-xl border border-slate-200 transition duration-200">
+            返回主頁面
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-purple-100 px-4 py-2 flex justify-around items-center z-45 shadow-lg">
+    <button onclick="goHome()" class="flex flex-col items-center p-2 text-slate-555 hover:text-brand-teal transition duration-200 font-sans">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] mt-1 font-bold">主頁</span>
+    </button>
+    <button id="btn-calc-toggle" class="relative -top-5 bg-gradient-to-tr from-brand-violet to-brand-pink text-white h-14 w-14 rounded-full flex items-center justify-center shadow-lg shadow-brand-violet/30 hover:scale-105 transition duration-250 active:scale-95">
+      <i class="fa-solid fa-calculator text-2xl"></i>
+    </button>
+    <button onclick="resetStats()" class="flex flex-col items-center p-2 text-slate-555 hover:text-brand-coral transition duration-200 font-sans">
+      <i class="fa-solid fa-rotate-left text-lg"></i>
+      <span class="text-[10px] mt-1 font-bold">重置</span>
+    </button>
+  </nav>
+
+  <!-- SCIENTIFIC CALCULATOR MODAL -->
+  <div id="calculator-widget" class="hidden fixed bottom-16 right-0 left-0 md:left-auto md:right-4 md:bottom-20 w-full md:w-80 bg-white border-t md:border border-purple-200 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-hidden z-50 select-none">
+    
+    <!-- Calculator Header -->
+    <div class="bg-slate-100 px-4 py-3 md:py-2.5 flex items-center justify-between border-b border-purple-100 cursor-move" id="calculator-header">
+      <div class="flex items-center space-x-2 text-slate-700">
+        <i class="fa-solid fa-calculator text-brand-violet text-xs"></i>
+        <span class="text-xs font-bold font-mono tracking-wide">DSE 計算機 (角度模式)</span>
+      </div>
+      <button id="btn-close-calc" class="text-slate-400 hover:text-slate-900 transition p-1" onclick="toggleCalc()">
+        <i class="fa-solid fa-xmark text-lg md:text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Calculator Display Screen -->
+    <div class="p-4 md:p-3 bg-slate-50 text-right space-y-1 border-b border-purple-100">
+      <div id="calc-expression-display" class="text-slate-400 text-xs font-mono truncate h-4 min-h-[1rem]"></div>
+      <div id="calc-screen-display" class="text-slate-900 text-2xl md:text-xl font-mono truncate h-8 min-h-[1.75rem] font-bold">0</div>
+    </div>
+
+    <!-- Calculator Button Grid -->
+    <div class="p-3 md:p-2.5 grid grid-cols-5 gap-1.5 bg-slate-150">
+      <!-- Scientific Keys -->
+      <button onclick="calcPress('sin')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">sin</button>
+      <button onclick="calcPress('cos')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">cos</button>
+      <button onclick="calcPress('tan')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">tan</button>
+      <button onclick="calcPress('sqrt')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">√</button>
+      <button onclick="calcPress('pi')" class="bg-slate-200 hover:bg-slate-300 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">π</button>
+
+      <!-- Row 2 -->
+      <button onclick="calcPress('asin')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">sin⁻¹</button>
+      <button onclick="calcPress('acos')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">cos⁻¹</button>
+      <button onclick="calcPress('atan')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">tan⁻¹</button>
+      <button onclick="calcPress('^2')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x²</button>
+      <button onclick="calcPress('^')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x^y</button>
+
+      <!-- Row 3 -->
+      <button onclick="calcPress('(')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">(</button>
+      <button onclick="calcPress(')')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">)</button>
+      <button onclick="calcPress('exp')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold font-sans">EXP</button>
+      <button onclick="calcPress('DEL')" class="bg-rose-100 hover:bg-rose-200 text-brand-coral py-1.5 rounded font-mono font-bold text-xs">DEL</button>
+      <button onclick="calcPress('AC')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 rounded font-mono font-bold text-xs">AC</button>
+
+      <!-- Row 4 -->
+      <button onclick="calcPress('7')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">7</button>
+      <button onclick="calcPress('8')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">8</button>
+      <button onclick="calcPress('9')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">9</button>
+      <button onclick="calcPress('*')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">×</button>
+      <button onclick="calcPress('/')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">÷</button>
+
+      <!-- Row 5 -->
+      <button onclick="calcPress('4')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">4</button>
+      <button onclick="calcPress('5')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">5</button>
+      <button onclick="calcPress('6')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">6</button>
+      <button onclick="calcPress('+')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">+</button>
+      <button onclick="calcPress('-')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">-</button>
+
+      <!-- Row 6 -->
+      <button onclick="calcPress('1')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">1</button>
+      <button onclick="calcPress('2')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">2</button>
+      <button onclick="calcPress('3')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">3</button>
+      <button onclick="calcEvaluate()" class="col-span-2 row-span-2 bg-gradient-to-r from-brand-violet to-brand-pink hover:opacity-90 text-white py-2 rounded font-mono font-extrabold text-lg shadow-md">=</button>
+
+      <!-- Row 7 -->
+      <button onclick="calcPress('0')" class="col-span-2 bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">0</button>
+      <button onclick="calcPress('.')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">.</button>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE OVERLAY MODAL -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white border border-purple-100 rounded-2xl max-w-sm w-full p-6 shadow-2xl transition duration-300">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="p-2.5 bg-brand-amber/10 text-brand-amber rounded-xl" id="modal-icon-container">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-brand-textDark font-sans" id="modal-title">重置進度</h3>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed mb-6 font-medium font-sans" id="modal-message">您確定要清除所有的複習記錄並重新開始嗎？此操作將無法復原。</p>
+      <div class="flex items-center justify-end space-x-3">
+        <button id="modal-cancel-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition font-sans">取消</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md font-sans">確認重置</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE MACHINE ---
+    const APP_ID = 'dse-physics-book2-zh';
+    let currentState = {
+      selectedTopicIndex: 0,
+      selectedLevel: 1, // 1: Level 1, 2: Level 2, 3: Level 3
+      currentQuestionIndex: 0,
+      scores: {}, // Key: 'topicIndex-level' -> { completed: bool, score: int, responses: array }
+      currentQuizAnswers: []
+    };
+
+    // --- CURRICULUM TOPICS ---
+    const topics = [
+      { id: '2.1', title: '2.1 運動學基本概念 (路程、位移、速率、速度)' },
+      { id: '2.2', title: '2.2 直線運動 (運動學方程及運動圖像分析)' },
+      { id: '2.3', title: '2.3 力與運動 (牛頓運動定律、合力與摩擦力)' },
+      { id: '2.4', title: '2.4 力的力矩 (力矩、力偶與靜態平衡平衡)' },
+      { id: '2.5', title: '2.5 功、能量和功率 (功的定義與機械能守恆)' },
+      { id: '2.6', title: '2.6 動量 (動量守恆定律、衝量與線性碰撞)' },
+      { id: '2.7', title: '2.7 拋體運動 (水平與垂直運動分解)' },
+      { id: '2.8', title: '2.8 勻速圓周運動 (向心加速度與向心力)' },
+      { id: '2.9', title: '2.9 萬有引力 (萬有引力定律與軌道力學)' }
+    ];
+
+    // --- HIGH-QUALITY HKDSE ALIGNED PHYSICS QUESTIONS ---
+    const questionBank = {
+      "2.1": {
+        1: [
+          {
+            statement: "下列哪一個物理量屬於<b>純量（scalar quantity）</b>？",
+            options: ["速度 (Velocity)", "加速度 (Acceleration)", "位移 (Displacement)", "速率 (Speed)"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> 速率（Speed）僅表示物體運動的快慢（量值），不具備任何方向性，因此是純量。而速度、加速度和位移都是具有大小和方向的矢量。"
+          },
+          {
+            statement: "一名學生繞著周長為 $400\\text{ m}$ 的圓形跑道跑完完整的一圈，歷時 $80\\text{ 秒}$。求該學生在整個過程中的<b>平均速度</b>大小。",
+            options: ["$0\\text{ m s}^{-1}$", "$5.0\\text{ m s}^{-1}$", "$10.0\\text{ m s}^{-1}$", "$50.0\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 平均速度的定義為位移除以時間。由於學生回到了起點，其位置的淨改變（即位移 $\\Delta s$）為零。<br>$$\\text{平均速度} = \\frac{\\text{位移}}{\\text{時間}} = \\frac{0\\text{ m}}{80\\text{ s}} = 0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "位移-時間（$s-t$）圖像中，圖線的<b>斜率（slope）</b>代表什麼物理量？",
+            options: ["加速度", "速度", "路程", "力"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在 $s-t$ 圖像中，斜率定義為縱軸改变量除以橫軸改变量，即 $\\frac{\\Delta s}{\\Delta t}$。根據定義，位移隨時間的變化率即為速度。"
+          },
+          {
+            statement: "在什麼情況下，物體運動的總路程會剛好等於其淨位移的大小？",
+            options: [
+              "當物體以完全恆定的速率運動時。",
+              "當物體沿著彎曲的路徑前進，但速率保持不變時。",
+              "當物體沿著單一方向的直線運動，中途沒有折返時。",
+              "當物體最終回到其起跑點時。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 位移是起點到終點之間的直綫距離。如果物體沿著直線行進且不往回折返，其行經的路徑長度（路程）便會與位移的大小完全一致。"
+          },
+          {
+            statement: "下列哪一組物理量包含一個純量和一個矢量？",
+            options: ["路程與速率", "位移與速度", "速率與速度", "加速度與力"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 速率是純量（只有大小），速度則是矢量（同時具有大小及方向）。其餘選項中，A 組均為純量，B 與 D 組則兩者皆為矢量。"
+          },
+          {
+            statement: "一輛車以 $20\\text{ m s}^{-1}$ 的恆定速率繞著一個圓形環島運動。其速度在此過程中是否恆定？",
+            options: [
+              "是，因為它的速率保持不變。",
+              "是，因為它在相同的時間間隔內行經相同的距離。",
+              "否，因為它運動的方向正在持續改變。",
+              "否，因為它的位移正在不斷增加。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 速度是矢量。即使速率（大小）不變，由於車輛在繞圈時方向時時刻刻在改變，因此它的速度並不是恆定的。"
+          }
+        ],
+        2: [
+          {
+            statement: "一質點向東移動了 $12\\text{ m}$，隨即轉向北移動了 $5\\text{ m}$。求該質點的淨位移大小。",
+            options: ["$7\\text{ m}$", "$13\\text{ m}$", "$17\\text{ m}$", "$169\\text{ m}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 向東和向北的運動互相垂直。使用畢氏定理（Pythagorean theorem）計算淨位移大小：<br>$$s = \\sqrt{x^2 + y^2} = \\sqrt{12^2 + 5^2} = \\sqrt{144 + 25} = \\sqrt{169} = 13\\text{ m}$$"
+          },
+          {
+            statement: "一輛車以 $10\\text{ m s}^{-1}$ 的恆定速率行駛了總旅程距離 $d$ 的前半段，再以 $30\\text{ m s}^{-1}$ 的恆定速率行駛後半段。求整段旅程中車輛的<b>平均速率</b>。",
+            options: ["$15\\text{ m s}^{-1}$", "$20\\text{ m s}^{-1}$", "$25\\text{ m s}^{-1}$", "$30\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 設總路程為 $d$。<br>前半段耗時 $t_1 = \\frac{d/2}{10} = \\frac{d}{20}$<br>後半段耗時 $t_2 = \\frac{d/2}{30} = \\frac{d}{60}$<br>總時間 $t = t_1 + t_2 = \\frac{3d + d}{60} = \\frac{4d}{60} = \\frac{d}{15}$。<br>$$\\text{平均速率} = \\frac{\\text{總路程}}{\\text{總時間}} = \\frac{d}{d/15} = 15\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一架航拍機在 $10\\text{ 秒}$ 內向西飛行了 $60\\text{ m}$，接著在下一個 $10\\text{ 秒}$ 內向東行飛了 $20\\text{ m}$。求航拍機的平均速度。",
+            options: ["向東 $2\\text{ m s}^{-1}$", "向西 $2\\text{ m s}^{-1}$", "向西 $4\\text{ m s}^{-1}$", "向東 $4\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 設向西為正方向。淨位移為 $\\Delta s = +60 - 20 = +40\\text{ m}$ (向西)。總耗時 $t = 10 + 10 = 20\\text{ 物理}$。<br>$$\\text{平均速度} = \\frac{\\Delta s}{t} = \\frac{40\\text{ m}}{20\\text{ s}} = 2\\text{ m s}^{-1}\\text{ (向西)}$$"
+          },
+          {
+            statement: "一名運動員在一條半徑為 $14\\text{ m}$ 的圓形跑道上運動。他由靜止出發，跑完了恰好四分之三圈。求他所行經的路程。（取 $\\pi \\approx \\frac{22}{7}$）",
+            options: ["$14\\text{ m}$", "$44\\text{ m}$", "$66\\text{ m}$", "$88\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 圓形跑道的周長為 $C = 2\\pi r$。四分之三圈的總路程為：<br>$$d = \\frac{3}{4} (2\\pi r) = \\frac{3}{2} \\pi r = \\frac{3}{2} \\times \\frac{22}{7} \\times 14 = 3 \\times 22 = 66\\text{ m}$$"
+          },
+          {
+            statement: "承上題，若該運動員用時 $44\\text{ 秒}$ 跑完這一圈跑道（半徑為 $14\\text{ m}$ ），求其平均速率。（取 $\\pi \\approx \\frac{22}{7}$）",
+            options: ["$0\\text{ m s}^{-1}$", "$2.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 跑完一整圈的路程等於圓周長 $d = 2\\pi r = 2 \\times \\frac{22}{7} \\times 14 = 88\\text{ m}$。<br>$$\\text{平均速率} = \\frac{\\text{路程}}{\\text{時間}} = \\frac{88\\text{ m}}{44\\text{ s}} = 2.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一輛巴士以 $30\\text{ km h}^{-1}$ 的恆定速率行駛了 $60\\text{ km}$，再以 $60\\text{ km h}^{-1}$ 的恆定速率行駛下一個 $60\\text{ km}$。求巴士在整段路程中的平均速率。",
+            options: ["$40\\text{ km h}^{-1}$", "$45\\text{ km h}^{-1}$", "$50\\text{ km h}^{-1}$", "$55\\text{ km h}^{-1}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 總行駛路程 $= 60 + 60 = 120\\text{ km}$。總行駛時間 $= \\frac{60}{30} + \\frac{60}{60} = 2 + 1 = 3\\text{ 小時}$。<br>$$\\text{平均速率} = \\frac{\\text{總路程}}{\\text{總時間}} = \\frac{120\\text{ km}}{3\\text{ h}} = 40\\text{ km h}^{-1}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "一艘小船試圖橫渡寬度為 $W$ 的河流。小船相對於水流的速度大小為 $v$，且方向垂直於河岸。此時，河流相對於地面的流速為 $u$（向下游方向）。<br>下列哪些陳述是正確的？<br>(1) 無論流速 $u$ 的大小為何，橫渡河流所需的時間均為 $\\frac{W}{v}$。<br>(2) 小船相對於地面的實際運動路程大小為 $W \\sqrt{1 + \\frac{u^2}{v^2}}$。<br>(3) 小船被水流推向下游的漂移距離（drift）為 $\\frac{u W}{v}$。",
+            options: ["只有 (1)", "只有 (1) 和 (2)", "只有 (2) 和 (3)", "(1)、(2) 和 (3)"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> (1) 正確：垂直於河岸的速度分量僅為 $v$，故渡河時間由垂直分量決定，$t = \\frac{W}{v}$，不受平行流速 $u$ 的影響。<br>(3) 正確：在渡河時間內，小船被水流向下游帶動的距離為 $x = u \\times t = \\frac{u W}{v}$。<br>(2) 正確：利用畢氏定理，相對於地面的淨位移路程為 $\\sqrt{W^2 + x^2} = \\sqrt{W^2 + \\left(\\frac{u W}{v}\\right)^2} = W \\sqrt{1 + \\frac{u^2}{v^2}}$。"
+          },
+          {
+            statement: "一物體沿著封閉的平面軌道移動。若要令物體在任何時間間隔內的平均速度的大小都剛好等於其平均速率，下列哪一項是必須滿足的條件？",
+            options: [
+              "物體在運動中絕對不能經歷減速。",
+              "物體瞬時速度的方向絕對不能發生任何改變（即只能作單向直線運動）。",
+              "物體在任何時刻的位移均不為零。",
+              "物體的加速度在所有時刻都必須為零。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 只有當總位移的大小與總路程完全一致時，平均速度的大小才會與平均速率相等。只要物體行經彎曲路徑或發生折返，路程就會大於位移的大小，因此物體必須只能作無折返的單向直線運動。"
+          },
+          {
+            statement: "一個質點沿著 x 軸運動。已知其速度大小為正值，但正在逐漸減少。下列哪一項陳述是正確的？",
+            options: [
+              "該質點正朝 x 軸的負方向移動。",
+              "該質點的加速度為負值。",
+              "該質點的位移正在逐漸減少。",
+              "該質點的速率正在逐漸增加。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 速度為正值意味著質點正往正 x 方向前進（位移正在增加）。速度正在減少意味著速度的變化率（即加速度）與速度方向相反，因此加速度為負值。此時質點正在減速，速率正在減少。"
+          },
+          {
+            statement: "一名跑手繞著一個橢圓形跑道跑完一圈。若跑道的總周長為 $P$，則下列哪一項說法正確？",
+            options: [
+              "跑手的平均速度為 $\\frac{P}{t}$。",
+              "跑手的淨位移為 $P$。",
+              "跑手的平均速率大於其平均速度的大小。",
+              "跑手的平均速度與平均速率相等。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 跑完完整的一整圈，淨位移為零。因此，平均速度大小為零。而平均速率則為 $\\frac{P}{t} > 0$。因此平均速率大於平均速度的大小（零）。"
+          },
+          {
+            statement: "一輛車沿著半徑為 $R$ 的圓形軌道行駛。當它完成了四分之一圈時，其行經的路程與其淨位移大小之比是多少？",
+            options: ["$\\pi : 2$", "$\\sqrt{2}\\pi : 4$", "$\\pi : 2\\sqrt{2}$", "$\\pi : 4$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 四分之一圈的路程為 $s = \\frac{1}{4}(2\\pi R) = 0.5\\pi R$。<br>四分之一圈的位移大小（畢氏定理）為 $d = \\sqrt{R^2 + R^2} = \\sqrt{2}R$。<br>兩者之比為：<br>$$\\frac{\\text{路程}}{\\text{位移}} = \\frac{0.5\\pi R}{\\sqrt{2}R} = \\frac{\\pi}{2\\sqrt{2}}$$"
+          },
+          {
+            statement: "一個物體沿一條直線運動。若它在某時間段內的平均速度為零，下列哪些說法<b>必定</b>正確？<br>(1) 它的平均速率為零。<br>(2) 它在中途必定曾改變其運動方向。<br>(3) 它的淨位移為零。",
+            options: ["只有 (3)", "只有 (1) 和 (3)", "只有 (2) 和 (3)", "(1)、(2) 和 (3)"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 平均速度為零代表淨位移為零 (3)。在一維直線運動中，物體要能回到原點，中途必定要折返，即改變運動方向 (2)。由於物體有行進，路程不為零，故平均速率大於零 (1 錯誤)。"
+          }
+        ]
+      },
+      "2.2": {
+        1: [
+          {
+            statement: "在速度-時間（$v-t$）圖像中，圖線下方的<b>面積</b>代表什麼物理量？",
+            options: ["加速度", "作用力", "位移", "急動度 (Jerk)"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 在 $v-t$ 圖像中，面積對應於積分 $\\int v \\, dt$。由於速度是位置隨時間的變化率，圖線下方的圍成面積便代表物體位置的淨改變，即位移。"
+          },
+          {
+            statement: "一個物體從懸崖頂由靜止被釋放並自由下落。若忽略空氣阻力，其下落時的<b>加速度</b>會如何變化？",
+            options: [
+              "隨時間呈線性增加。",
+              "保持不變。",
+              "隨速率的增加而減少。",
+              "在物體著地時突然變為零。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在自由落體運動中，忽略空氣阻力，物體僅受重力（$mg$）作用。根據牛頓第二定律，其加速度 $a = \\frac{F}{m} = g$（約 $9.81\\text{ m s}^{-2}$）保持完全恆定。"
+          },
+          {
+            statement: "一輛汽車正在作勻等減速直線運動。下列哪一項正確描述了其速度-時間圖像的形狀？",
+            options: [
+              "一條水平直線。",
+              "一條向右下方傾斜的直線。",
+              "一條向上彎曲的曲線。",
+              "一條垂直直線。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 勻等減速意味著加速度為負且大小恆定。由於 $v-t$ 圖像的斜率代表加速度，因此圖線必須是一條斜率恆定為負的直線，即向右下方傾斜的直線。"
+          },
+          {
+            statement: "下列哪一個方程<b>不屬於</b>適用於勻等加速度運動的標準運動學方程（Kinematic Equations）？",
+            options: ["$v = u + at$", "$s = ut + \\frac{1}{2}at^2$", "$v^2 = u^2 + 2as$", "$F = ma$"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> $F = ma$ 是牛頓第二運動定律（屬於動力學動力學方程，用於關聯力與加速度），而非純粹描述運動幾何關係的運動學方程。"
+          },
+          {
+            statement: "在加速度-時間（$a-t$）圖像中，一條向右上方傾斜的直線代表什麼運動狀態？",
+            options: ["勻速運動", "勻加速運動", "加速度勻速增加的運動", "減速運動"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> $a-t$ 圖像的縱軸代表加速度。向右上方傾斜的直線表示加速度 $a$ 正隨時間 $t$ 均勻（呈線性地）增加。"
+          },
+          {
+            statement: "一個物體被直上拋。在其運動的最高點處，下列哪一項正確描述了其物理狀態？",
+            options: [
+              "其速度為零，加速度也為零。",
+              "其速度不為零，加速度為零。",
+              "其速度為零，加速度為 $9.81\\text{ m s}^{-2}$ 向下。",
+              "其速度不為零，加速度為 $9.81\\text{ m s}^{-2}$ 向下。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 在最高點（頂點）處，物體瞬間停止向上運動（瞬時速度 $v = 0$）。但重力仍然作用在物體上，因此它此時仍具有向下的重力加速度 $g = 9.81\\text{ m s}^{-2}$。"
+          }
+        ],
+        2: [
+          {
+            statement: "一輛車從靜止出發，以勻等加速度在 $5.0\\text{ 秒}$ 內達到 $20\\text{ m s}^{-1}$ 的末速度。求車子的加速度。",
+            options: ["$2.0\\text{ m s}^{-2}$", "$4.0\\text{ m s}^{-2}$", "$5.0\\text{ m s}^{-2}$", "$10.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 已知 $u = 0$, $v = 20\\text{ m s}^{-1}$, $t = 5\\text{ s}$。使用公式 $v = u + at$：<br>$$a = \\frac{v - u}{t} = \\frac{20 - 0}{5.0} = 4.0\\text{ m s}^{-2}$$"
+          },
+          {
+            statement: "一塊石頭從橋上由靜止釋放自由下落。它在 $3.0\\text{ 秒}$ 後剛好擊中下方水面。求橋面距離水面的高度。（取重力加速度 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$15\\text{ m}$", "$30\\text{ m}$", "$45\\text{ m}$", "$90\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 已知 $u = 0$, $t = 3.0\\text{ s}$, $a = g = 10\\text{ m s}^{-2}$。使用公式 $s = ut + \\frac{1}{2}at^2$：<br>$$s = 0 + \\frac{1}{2}(10)(3.0)^2 = 5 \\times 9 = 45\\text{ m}$$"
+          },
+          {
+            statement: "一列火車煞車進行勻減速，由初速度 $30\\text{ m s}^{-1}$ 減速至完全停下，行經的煞車距離為 $150\\text{ m}$。求火車減速度的大小。",
+            options: ["$1.5\\text{ m s}^{-2}$", "$3.0\\text{ m s}^{-2}$", "$6.0\\text{ m s}^{-2}$", "$9.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 已知 $u = 30\\text{ m s}^{-1}$, $v = 0$, $s = 150\\text{ m}$。使用公式 $v^2 = u^2 + 2as$：<br>$$0 = 30^2 + 2a(150) \\implies 0 = 900 + 300a \\implies a = -3.0\\text{ m s}^{-2}$$<br>因此，減速度（加速度的大小）為 $3.0\\text{ m s}^{-2}$。"
+          },
+          {
+            statement: "一名運動員從靜止出發，以 $2.0\\text{ m s}^{-2}$ 的勻加速度奔跑。求他在跑了 $16\\text{ m}$ 的路程後的速率。",
+            options: ["$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$16.0\\text{ m s}^{-1}$", "$32.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 已知 $u = 0$, $a = 2.0\\text{ m s}^{-2}$, $s = 16\\text{ m}$。使用公式 $v^2 = u^2 + 2as$：<br>$$v^2 = 0 + 2(2.0)(16) = 64 \\implies v = \\sqrt{64} = 8.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一輛車在 $80\\text{ m}$ 的路程內，速度從 $25\\text{ m s}^{-1}$ 勻等減速至 $15\\text{ m s}^{-1}$。求其減速度的大小。",
+            options: ["$1.5\\text{ m s}^{-2}$", "$2.5\\text{ m s}^{-2}$", "$3.0\\text{ m s}^{-2}$", "$4.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 已知 $u = 25$, $v = 15$, $s = 80$。使用公式 $v^2 = u^2 + 2as$：<br>$$15^2 = 25^2 + 2a(80) \\implies 225 = 625 + 160a \\implies 160a = -400 \\implies a = -2.5\\text{ m s}^{-2}$$<br>減速度大小為 $2.5\\text{ m s}^{-2}$。"
+          },
+          {
+            statement: "一個球以 $20\\text{ m s}^{-1}$ 的初速度被直上拋。求該球最大能上升的高度。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$10\\text{ m}$", "$20\\text{ m}$", "$30\\text{ m}$", "$40\\text{ m}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在最大高度處，末速度 $v = 0$。設向上為正：$u = 20\\text{ m s}^{-1}$, $a = -g = -10\\text{ m s}^{-2}$。使用公式 $v^2 = u^2 + 2as$：<br>$$0 = 20^2 + 2(-10)h \\implies 20h = 400 \\implies h = 20\\text{ m}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "一架玩具小車從靜止出發，沿著傾斜的斜軌以恆定的加速度滑下。它在首 $t\\text{ 秒}$ 內滑行了距離 $s_1$，並在隨後的下一個 $t\\text{ 秒}$ 內滑行了額外的路程 $s_2$。求兩段路程之比 $s_1 : s_2$。",
+            options: ["$1 : 2$", "$1 : 3$", "$1 : 4$", "$2 : 3$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 使用運動學方程。首 $t$ 秒內的位移為 $s_1 = \\frac{1}{2}at^2$。<br>前 $2t$ 秒內的總位移為 $s_{\\text{總}} = \\frac{1}{2}a(2t)^2 = 4 \\times \\left(\\frac{1}{2}at^2\\right) = 4s_1$。<br>因此，後半段時間內的位移為 $s_2 = s_{\\text{總}} - s_1 = 4s_1 - s_1 = 3s_1$。路程比為 $s_1 : s_2 = 1 : 3$。"
+          },
+          {
+            statement: "一顆子彈從地面直上發射。它在上升過程中於時刻 $t_1$ 通過一扇高度為 $h$ 的窗戶，並在下降過程中於時刻 $t_2$ 再次通過該處。求子彈的發射初速度 $u$ 與 $g, t_1, t_2$ 的關係式。",
+            options: [
+              "$u = \\frac{1}{2}g(t_1 + t_2)$",
+              "$u = g(t_1 + t_2)$",
+              "$u = \\sqrt{g h}$",
+              "$u = \\frac{g t_1 t_2}{2}$"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 設向上為正。高度位移方程為 $h = ut - \\frac{1}{2}gt^2$。整理成一元二次方程：<br>$$\\frac{1}{2}gt^2 - ut + h = 0$$<br>子彈兩次通過該高度的時間 $t_1$ 和 $t_2$ 便是此方程的兩個實根。根據韋達定理（roots of quadratic）：<br>$$\\text{兩根之和 } t_1 + t_2 = \\frac{-(-u)}{\\frac{1}{2}g} = \\frac{2u}{g} \\implies u = \\frac{1}{2}g(t_1 + t_2)$$"
+          },
+          {
+            statement: "一輛汽車以速率 $u$ 煞車勻等減速停下，煞車距離為 $s$。若該車的初速率改為 $2.5u$，在相同的減速度下，其新的煞車距離會是多少？",
+            options: ["$2.5 s$", "$5.0 s$", "$6.25 s$", "$12.5 s$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 根據公式 $v^2 = u^2 + 2as$，當完全停下（$v = 0$）時，煞車位移大小 $s = \\frac{u^2}{2d}$。在減速度 $d$ 相同時，煞車距離與初速率的平方成正比（$s \\propto u^2$）。<br>新煞車距離為 $(2.5)^2 \\times s = 6.25 s$。"
+          },
+          {
+            statement: "一顆石頭以初速度 $v_0$ 從高為 $H$ 的懸崖頂直下拋。在同一瞬間，第二顆石頭在同一高度由靜止釋放自由下落。在兩顆石頭擊中地面前，經歷時間 $t$ 後，兩者之間的垂直距離是多少？",
+            options: ["$\\frac{1}{2}gt^2$", "$v_0 t$", "$v_0 t + \\frac{1}{2}gt^2$", "$H - v_0 t$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 設向下為正。第一顆石頭的位置為 $y_1 = v_0 t + \\frac{1}{2}gt^2$。<br>第二顆石頭的位置為 $y_2 = \\frac{1}{2}gt^2$。<br>兩者之間的垂直分離距離為 $|y_1 - y_2| = v_0 t$。該距離僅與初速度和時間成正比，與重力無關。"
+          },
+          {
+            statement: "一輛小車與一輛大貨車同時由靜止出發。小車的加速度為 $2\\text{ m s}^{-2}$，大貨車為 $4\\text{ m s}^{-2}$。當兩車行駛了<b>相同距離</b>時，它們的速率之比（$v_{\\text{小車}} : v_{\\text{貨車}}$）是多少？",
+            options: ["$1 : 2$", "$1 : \\sqrt{2}$", "$\\sqrt{2} : 1$", "$2 : 1$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 根據運動學方程 $v^2 = u^2 + 2as$，由於起點為靜止（$u = 0$），在位移 $s$ 相等的情況下，速率 $v = \\sqrt{2as} \\propto \\sqrt{a}$。<br>兩車速率比為：<br>$$\\frac{v_{\\text{小}}}{v_{\\text{大}}} = \\sqrt{\\frac{a_{\\text{小}}}{a_{\\text{大}}}} = \\sqrt{\\frac{2}{4}} = \\frac{1}{\\sqrt{2}}$$"
+          },
+          {
+            statement: "一個物體在重力 $g$ 下被直上拋。在不計空氣阻力的情況下，下列哪些關於此運動的陳述是正確的？<br>(1) 上升至最高點所需的時間等於由最高點回落至起點的時間。<br>(2) 物體在上升首秒內行經的距離等於下降最後一秒內行經的距離。<br>(3) 在同一高度處，物體上升時的速度大小與下降時的速度大小相等。",
+            options: ["只有 (1) 和 (3)", "只有 (2) 和 (3)", "只有 (1) 和 (2)", "(1)、(2) 和 (3)"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> 在真空中，重力場下的垂直上拋運動具有完全的對稱性。上升與下降的對稱時間間隔、對應高度的速度大小，以及相同時間段內的位移大小均完全一致。因此三個陳述均正確。"
+          }
+        ]
+      },
+      "2.3": {
+        1: [
+          {
+            statement: "根據<b>牛頓第一運動定律</b>，當作用於運動中物體的合力（net force）為零時，物體會如何？",
+            options: [
+              "逐漸減速直到完全停下。",
+              "保持原來的速度作勻速直線運動。",
+              "立刻停止運動。",
+              "轉向並開始作圓周運動。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 牛頓第一定律（慣性定律）指出：若物體不受外力作用，或所受合外力為零，靜止的物體將保持靜止，運動的物體將保持勻速直線運動。"
+          },
+          {
+            statement: "物體的哪一個固有物理屬性可以直接用於量度其<b>慣性（inertia）</b>的大小？",
+            options: ["重量 (Weight)", "體積 (Volume)", "質量 (Mass)", "密度 (Density)"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 質量（Mass）是物體慣性的唯一量度。質量越大的物體，其運動狀態越難被改變（即抵抗加速度的能力越強）。"
+          },
+          {
+            statement: "關於牛頓第三運動定律中的<b>作用力與反作用力（action-reaction pair）</b>，下列哪項陳述是正確的？",
+            options: [
+              "它們作用在同一個物體上，因此可以互相抵消。",
+              "它們作用在兩個不同的物體上，因此絕不能互相抵消。",
+              "作用力的大小總是略微大於反作用力的大小。",
+              "它們只有在物體處於靜止狀態時才會存在。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 作用力與反作用力始終成對出現，且大小相等、方向相反。但由於它們分別作用在兩個相互作用的不同物體上，因此它們在單一物體的受力分析中絕對不能互相抵消。"
+          },
+          {
+            statement: "一架重型貨車與一架輕型私家車迎面相撞。哪一架車輛在碰撞瞬間承受較大大小的作用力？",
+            options: [
+              "輕型私家車。",
+              "重型貨車。",
+              "兩架車輛承受相同大小的作用力。",
+              "碰撞前行駛速率較快的那一架車輛。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 根據牛頓第三運動定律，貨車施加予私家車的撞擊力與私家車施加予貨車的反作用撞擊力，在大小上必定完全相等，方向相反。私家車受損較嚴重是由於其質量小、加速度極大且結構強度較弱，而非受力較大。"
+          },
+          {
+            statement: "當一個木塊沿著粗糙的斜面下滑時，它會受到哪些力的作用？",
+            options: [
+              "只有它的重量和斜面的支持力。",
+              "它的重量、斜面的支持力以及摩擦力。",
+              "它的重量、支持力、摩擦力以及一個向下滑動的重力推力。",
+              "只有支持力和摩擦力。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 下滑的木塊受到三個實體力的作用：地球施加的重力（重量 $mg$）、斜面施加垂直於表面的法向反作用力（支持力 $N$），以及沿斜面向上的滑動摩擦力（$f$）。向下的下滑力只是重力的沿斜面分量，並不是獨立的力。"
+          },
+          {
+            statement: "當一個人站在一個以恆定速度向下運動的升降機（電梯）內的磅秤上時，磅秤的讀數會：",
+            options: ["大於他的真實重量。", "小於他的真實重量。", "等於他的真實重量。", "顯示為零。"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 升降機以「恆定速度」運動，這意味著其加速度 $a = 0$。根據牛頓第二定律，合力必須為零：$N - mg = 0 \\implies N = mg$。因此磅秤的支持力讀數（視重）等於人的真實重量。"
+          }
+        ],
+        2: [
+          {
+            statement: "一個質量為 $2.0\\text{ kg}$ 的木塊置於粗糙的水平桌面上。現以 $15\\text{ N}$ 的水平拉力拉動木塊，若阻礙其運動的摩擦力大小為 $3.0\\text{ N}$，求木塊的加速度。",
+            options: ["$1.5\\text{ m s}^{-2}$", "$6.0\\text{ m s}^{-2}$", "$7.5\\text{ m s}^{-2}$", "$9.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 作用在木塊上的淨合力為 $F_{\\text{合}} = F_{\\text{拉}} - f = 15 - 3.0 = 12\\text{ N}$。根據牛頓第二定律 $F = ma$：<br>$$a = \\frac{F_{\\text{合}}}{m} = \\frac{12\\text{ N}}{2.0\\text{ kg}} = 6.0\\text{ m s}^{-2}$$"
+          },
+          {
+            statement: "一個質量為 $800\\text{ kg}$ 的升降機箱以 $2.0\\text{ m s}^{-2}$ 的加速度勻加速上升。求鋼纜對升降機的拉力（張力）。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$1600\\text{ N}$", "$6400\\text{ N}$", "$8000\\text{ N}$", "$9600\\text{ N}$"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> 升降機向上加速運動，拉力 $T$ 必須大於重力 $mg$：$T - mg = ma \\implies T = m(g + a)$：<br>$$T = 800\\text{ kg} \\times (10 + 2.0)\\text{ m s}^{-2} = 800 \\times 12 = 9600\\text{ N}$$"
+          },
+          {
+            statement: "一個重為 $5.0\\text{ kg}$ 的木箱置於水平地面上。已知木箱與地面之間的靜摩擦係數為 $\\mu_s = 0.40$。求要使木箱開始運動所需的最小水平推力。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$2.0\\text{ N}$", "$10.0\\text{ N}$", "$20.0\\text{ N}$", "$50.0\\text{ N}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 木箱在開始移動前，水平推力必須克服最大靜摩擦力 $f_{\\text{max}}$：<br>$$f_{\\text{max}} = \\mu_s R = \\mu_s (mg) = 0.40 \\times (5.0 \\times 10) = 20.0\\text{ N}$$"
+          },
+          {
+            statement: "一台起重機以 $1.5\\text{ m s}^{-1}$ 的恆定速度將一個質量為 $400\\text{ kg}$ 的重物勻速吊起。求鋼索對重物的拉力。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$600\\text{ N}$", "$4000\\text{ N}$", "$4600\\text{ N}$", "$8000\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 速度完全恆定，表示加速度 $a = 0$。根據力平衡平衡關係，向上的拉力必須剛好與向下的重力相平衡：<br>$$T = mg = 400\\text{ kg} \\times 10\\text{ m s}^{-2} = 4000\\text{ N}$$"
+          },
+          {
+            statement: "一個質量為 $5.0\\text{ kg}$ 的物體在光滑水平面上受到 $10\\text{ N}$ 的水平外力作用。若物體由靜止出發，求它在運動 $4\\text{ 秒}$ 後的速率。",
+            options: ["$2.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$10.0\\text{ m s}^{-1}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 首先求加速度：$a = \\frac{F}{m} = \\frac{10}{5.0} = 2.0\\text{ m s}^{-2}$。<br>接著利用運動學方程：<br>$$v = u + at = 0 + (2.0 \\times 4) = 8.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一個質量為 $40\\text{ kg}$ 的男孩站在一個以 $1.5\\text{ m s}^{-2}$ 的加速度向下加速運動的升降機內。求升降機地板對男孩的支持力。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$60\\text{ N}$", "$340\\text{ N}$", "$400\\text{ N}$", "$460\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 向下加速，重力 $mg$ 必須大於支持力 $N$。根據牛頓第二定律：$mg - N = ma \\implies N = m(g - a)$：<br>$$N = 40\\text{ kg} \\times (10 - 1.5)\\text{ m s}^{-2} = 40 \\times 8.5 = 340\\text{ N}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "兩個木塊 $X$（質量為 $M$）和 $Y$（質量為 $m$）用一條輕質無彈性的繩子相連，置於光滑的水平桌面上。現以一水平力 $F$ 向右拉動木塊 $Y$，使系統向右加速。<br>$$\\text{桌面 } \\rightarrow \\quad [X] \\xrightarrow{T} [Y] \\xrightarrow{F} \\text{拉}$$<br>求連接兩木塊的繩子中的張力 $T$。",
+            options: [
+              "$T = \\frac{m F}{M+m}$",
+              "$T = \\frac{M F}{M+m}$",
+              "$T = F$",
+              "$T = \\frac{M F}{m}$"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 整個系統的總質量為 $M+m$，拉力為 $F$，故系統的共同加速度為 $a = \\frac{F}{M+m}$。對木塊 $X$ 進行受力分析，水平方向僅受繩子的張力 $T$ 作用。因此：<br>$$T = M a = \\frac{M F}{M+m}$$"
+          },
+          {
+            statement: "一名乘客站在升降機內的體重計上。當升降機靜止時，體重計的讀數為 $W_0$。當升降機在向下運動的過程中煞車減速時，體重計的讀數為 $W$。試比較 $W$ 與 $W_0$ 的大小關係。",
+            options: [
+              "$W > W_0$",
+              "$W < W_0$",
+              "$W = W_0$",
+              "無法判斷，讀數取決於升降機的速度大小。"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 升降機「向下運動」且「減速」，這意味著其加速度的方向是指向<b>上方</b>（即 $a > 0$）。因此，支持力 $R$ 必須大於重力：$R - mg = ma \\implies R = m(g+a) > mg$。即 $W > W_0$（處於超重狀態）。"
+          },
+          {
+            statement: "一個質量為 $m$ 的木箱靜置在一個傾角可調的粗糙斜面上。當慢慢將斜面的傾角 $\\theta$ 調大，木箱恰好在 $\\theta = 30^{\\circ}$ 時開始向下滑動。求木箱與斜面之間的靜摩擦係數 $\\mu_s$。",
+            options: ["$\\mu_s = 0.50$", "$\\mu_s = \\frac{\\sqrt{3}}{3}$", "$\\mu_s = \\sqrt{3}$", "$\\mu_s = 1.0$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 當木箱剛好開始滑動時，沿斜面向下的重力分量與最大靜摩擦力平衡：<br>$$mg \\sin\\theta = f_{\\text{max}} = \\mu_s N = \\mu_s mg \\cos\\theta$$<br>$$mg \\sin\\theta = \\mu_s mg \\cos\\theta \\implies \\mu_s = \\tan\\theta = \\tan(30^{\\circ}) = \\frac{\\sqrt{3}}{3} \\approx 0.577$$"
+          },
+          {
+            statement: "一個總質量為 $M$ 的熱氣球正以大小為 $a$（$a < g$）的加速度勻加速垂直下降。若要使該熱氣球改以相同大小的加速度 $a$ 勻加速上升，應從氣球上拋出多少質量的壓載物 $m$？（忽略空氣阻力）",
+            options: [
+              "$m = \\frac{Ma}{g}$",
+              "$m = \\frac{2Ma}{g+a}$",
+              "$m = \\frac{2Ma}{g-a}$",
+              "$m = \\frac{Ma}{g+a}$"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 設空氣浮力為 $B$。下降時：$Mg - B = Ma \\implies B = M(g-a)$。<br>拋出質量 $m$ 的壓載物後，新質量為 $M-m$，氣球向上加速：<br>$$B - (M-m)g = (M-m)a \\implies B = (M-m)(g+a)$$<br>將 $B = M(g-a)$ 代入：<br>$$M(g-a) = (M-m)(g+a) \\implies m(g+a) = M(g+a) - M(g-a) = 2Ma \\implies m = \\frac{2Ma}{g+a}$$"
+          },
+          {
+            statement: "在阿特伍德機（Atwood machine）裝置中，兩個質量分別為 $m$ 和 $2m$ 的物體跨過光滑無摩擦的定滑輪用輕繩相連。若將系統由靜止釋放，求物體的加速度大小。",
+            options: ["$g$", "$\\frac{g}{2}$", "$\\frac{g}{3}$", "$\\frac{2g}{3}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 作用在整個系統上的不平衡重力為 $F_{\\text{合}} = 2mg - mg = mg$。系統的總質量為 $m_{\\text{總}} = m + 2m = 3m$。根據牛頓第二定律：<br>$$a = \\frac{F_{\\text{合}}}{m_{\\text{總}}} = \\frac{mg}{3m} = \\frac{g}{3}$$"
+          },
+          {
+            statement: "一個質量為 $m$ 的木塊被一個水平推力 $P$ 壓在粗糙的垂直牆壁上。若木塊此時恰好不會向下向下滑動，下列哪些陳述是正確的？<br>(1) 牆壁對木塊的靜摩擦力大小等於 $mg$。<br>(2) 木塊與牆壁之間的靜摩擦係數為 $\\frac{mg}{P}$。<br>(3) 若將水平推力 $P$ 增加一倍，木塊會向上加速運動。",
+            options: ["只有 (1) 和 (2)", "只有 (2) 和 (3)", "只有 (1) 和 (3)", "(1)、(2) 和 (3)"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 在垂直方向上，木塊受重力 $mg$ 向下，摩擦力 $f$ 向上。由於木塊靜止，摩擦力與重力平衡：$f = mg$ (1 正確)。水平方向上支持力 $N = P$。由於木塊剛好開始滑行，摩擦力達到最大值：$f = \\mu_s N \\implies mg = \\mu_s P \\implies \\mu_s = \\frac{mg}{P}$ (2 正確)。增大 $P$ 只是增加了最大限制靜摩擦力，但不能主動推動木塊向上運動 (3 錯誤)。"
+          }
+        ]
+      },
+      "2.4": {
+        1: [
+          {
+            statement: "在計算力對支點的力矩（moment of a force）時，公式中的距離是指什麼距離？",
+            options: [
+              "槓桿臂的總長度。",
+              "由支點到力的作用線（line of action）的垂直距離。",
+              "力的起點到支點的直綫距離。",
+              "平行於力矢量的長度。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 力矩的定義為 $\\tau = F \\times d$，其中 $d$ 代表力臂，即從旋轉支點到力的作用線之間的最小垂直距離。"
+          },
+          {
+            statement: "一個剛體若要處於完全的<b>靜態平衡（static equilibrium）</b>狀態，必須滿足哪兩個條件？",
+            options: [
+              "總質量與總重量必須相等。",
+              "作用在物體上的合力必須為零，且合力矩也必須為零。",
+              "物體絕對不能發生任何移動。",
+              "順時針力矩必須大於逆時針力矩。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 靜態平衡要求：(1) 平移平衡平衡：外力之和為零（$\\sum F = 0$）；(2) 旋轉平衡平衡：相對於任何支點的外力矩之和為零（$\\sum \\tau = 0$）。"
+          },
+          {
+            statement: "一個均勻（uniform）的木質長板，其<b>重心（center of gravity）</b>位於何處？",
+            options: [
+              "偏向較重的一端。",
+              "其幾何中心（正中間）。",
+              "木板的其中一個外邊緣。",
+              "木板被懸掛的支點處。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 均勻意味著質量沿著長度均勻分佈。對於對稱且質量均勻分佈的物體，其重力的等效作用點（重心）位於其幾何對稱中心。"
+          },
+          {
+            statement: "如何有效提高立在桌面上的物體的結構<b>穩定性（stability）</b>？",
+            options: [
+              "提高其重心高度並縮小其接觸底面積。",
+              "降低其重心高度並擴大其接觸底面積。",
+              "增加物體的垂直高度。",
+              "盡量減小物體的總質量。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 降低重心高度可以使物體在傾斜時重心不易移出底面邊界；擴大底面積則能容許更大的傾角，兩者皆能顯著提升穩定性。"
+          },
+          {
+            statement: "作用在剛體不同位置上的兩個大小相等、方向相反且不共線的平行力，會形成一個：",
+            options: ["力偶 (Couple)", "扭矩 (Torque)", "法向力 (Normal force)", "摩擦力 (Frictional force)"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 力偶定義為一對大小相等、方向相反且不共線的平行力，它們只會對剛體產生淨旋轉效應（力矩），而不會產生平移合外力。"
+          },
+          {
+            statement: "下列哪一項正確描述了處於<b>穩定平衡（stable equilibrium）</b>狀態的物體？",
+            options: [
+              "當它被稍微傾斜時，其重心高度會上升。",
+              "當它被稍微傾斜時，其重心高度會下降。",
+              "當它被稍微傾斜時，其重心高度保持不變。",
+              "它不具備任何重心。"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 處於穩定平衡狀態的物體，若受到微小擾動而傾斜，其重心會被抬升。這會產生一個恢復力矩，引導物體回到原始的平衡平衡位置。"
+          }
+        ],
+        2: [
+          {
+            statement: "一根均勻的米尺在其正中央（$50\\text{ cm}$ 刻度處）被支持並平衡平衡。現將一個 $2.0\\text{ N}$ 的重物掛在 $10\\text{ cm}$ 刻度處。若要在另一側掛上一個 $4.0\\text{ N}$ 的重物以使米尺重新恢復水平平衡，該重物應掛在什麼刻度處？",
+            options: ["$70\\text{ cm}$ 刻度處", "$80\\text{ cm}$ 刻度處", "$90\\text{ cm}$ 刻度處", "$60\\text{ cm}$ 刻度處"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 以 $50\\text{ cm}$ 為支點。左側逆時針力矩：$2.0\\text{ N} \\times (50 - 10)\\text{ cm} = 80\\text{ N cm}$。<br>右側順時針力矩必須與之相等：$4.0\\text{ N} \\times d_2 = 80 \\implies d_2 = 20\\text{ cm}$。<br>因此右側掛重物的位置應位於 $50 + 20 = 70\\text{ cm}$ 刻度處。"
+          },
+          {
+            statement: "一水平拉力大小為 $20\\text{ N}$，垂直作用在一把長為 $25\\text{ cm}$ 的扳手末端。求此力對螺栓中心（支點）的力矩。",
+            options: ["$5.0\\text{ N m}$", "$500\\text{ N m}$", "$50.0\\text{ N m}$", "$0.8\\text{ N m}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 首先將距離轉換為國際單位：$d = 25\\text{ cm} = 0.25\\text{ m}$。<br>由於力垂直於扳手，垂直力臂即為其長度：<br>$$\\tau = F \\times d = 20\\text{ N} \\times 0.25\\text{ m} = 5.0\\text{ N m}$$"
+          },
+          {
+            statement: "一根長為 $3.0\\text{ m}$ 的輕質水平橫樑，其兩端由兩根垂直鋼絲支撐。現將一個 $300\\text{ N}$ 的重物置於距離左端 $1.0\\text{ m}$ 的橫樑上。求右側鋼絲的拉力（張力）。",
+            options: ["$100\\text{ N}$", "$150\\text{ N}$", "$200\\text{ N}$", "$300\\text{ N}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 以橫樑左端為支點，列出力矩平衡平衡方程：<br>$$\\sum \\tau_{\\text{左}} = 0 \\implies T_{\\text{右}} \\times 3.0\\text{ m} = 300\\text{ N} \\times 1.0\\text{ m}$$<br>$$3.0 T_{\\text{右}} = 300 \\implies T_{\\text{右}} = 100\\text{ N}$$"
+          },
+          {
+            statement: "一架重為 $200\\text{ N}$、長為 $4.0\\text{ m}$ 的均勻梯子水平放置在相距 $4.0\\text{ m}$ 的兩個腳手架支撐點上。求每個支撐點對梯子施加的向上支持力。",
+            options: ["$50\\text{ N}$", "$100\\text{ N}$", "$200\\text{ N}$", "$400\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 均勻梯子的重量作用在其中央重心上（即距離兩端各 $2.0\\text{ m}$ 處）。根據幾何對稱性，梯子的總重力會被左右兩個支撐點平分，因此每個支持力為：<br>$$F = \\frac{200\\text{ N}}{2} = 100\\text{ N}$$"
+          },
+          {
+            statement: "一根長為 $4.0\\text{ m}$ 的蹺蹺板在正中央被支撐。一名質量為 $30\\text{ kg}$ 的兒童坐在左端邊緣。若一名質量為 $50\\text{ kg}$ 的兒童想與其達成平衡，應坐在右側距離支點多遠的地方？",
+            options: ["$1.2\\text{ m}$", "$1.5\\text{ m}$", "$1.8\\text{ m}$", "$2.0\\text{ m}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 蹺蹺板全長 $4.0\\text{ m}$，支點在中點，故左側兒童距離支點為 $2.0\\text{ m}$。利用力矩平衡平衡（忽略蹺蹺板自重，其自重力矩為零）：<br>$$30\\text{ kg} \\times 2.0\\text{ m} = 50\\text{ kg} \\times d_2 \\implies 60 = 50 d_2 \\implies d_2 = 1.2\\text{ m}$$"
+          },
+          {
+            statement: "一根長為 $2.0\\text{ m}$、重為 $50\\text{ N}$ 的均勻金屬桿在正中央被支撐。現將一個 $20\\text{ N}$ 的重物掛在金屬桿的最左端。若要使金屬桿保持水平平衡，必須在最右端施加多大的向下力？",
+            options: ["$10\\text{ N}$", "$20\\text{ N}$", "$35\\text{ N}$", "$50\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 由於金屬桿是均勻的，其自重作用在幾何中心，對中心支點產生的力矩為零。因此，左端重物產生的逆時針力矩與右端外力產生的順時針力矩平衡。由於兩端力臂長度相等（均為 $1.0\\text{ m}$），右端向下的力必須等於左端的重物重力，即 $20\\text{ N}$。"
+          }
+        ],
+        3: [
+          {
+            statement: "一根長度為 $L$、重為 $W$ 的非均勻木棒 $AB$ 水平放置，其兩端由兩根垂直的輕繩懸掛。若鋼絲 $A$ 的張力是鋼絲 $B$ 的三倍，求木棒的重心距離端點 $A$ 多遠？",
+            options: ["$\\frac{1}{4} L$", "$\\frac{1}{3} L$", "$\\frac{1}{2} L$", "$\\frac{2}{3} L$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 設鋼絲 $B$ 的拉力為 $T_B = T$，則 $T_A = 3T$。在垂直方向上力平衡：$T_A + T_B = W \\implies 4T = W$。設重心距離端點 $A$ 的距離為 $x$。以 $A$ 為支點列出力矩平衡平衡方程：<br>$$W \\times x = T_B \\times L \\implies (4T)x = T L \\implies x = \\frac{1}{4}L$$"
+          },
+          {
+            statement: "一個邊長為 $a$、重為 $W$ 的均勻立方體置於粗糙水平地面上。現於立方體頂部邊緣施加一個水平推力 $P$。求在不發生水平滑動的前提下，使立方體開始發生翻倒（tipping）所需的最小推力 $P$。",
+            options: ["$0.25 W$", "$0.50 W$", "$W$", "$2W$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 翻倒是以立方體與地面接觸的右下角邊緣為旋轉支點。推力 $P$ 對該支點產生順時針力矩：$\\tau_{\\text{推}} = P \\times a$。重力 $W$ 作用於立方體中心，產生逆時針力矩：$\\tau_{\\text{重}} = W \\times \\frac{a}{2}$。翻轉條件為：<br>$$P a \\ge W \\frac{a}{2} \\implies P \\ge 0.50 W$$"
+          },
+          {
+            statement: "一根長為 $1.0\\text{ m}$、重為 $12\\text{ N}$ 的均勻木尺在 $30\\text{ cm}$ 刻度處被支持。若在 $0\\text{ cm}$ 刻度處懸掛一個 $20\\text{ N}$ 的重物，應在 $100\\text{ cm}$ 刻度處施加多大的垂直向下的力，才能使木尺保持水平平衡？",
+            options: ["$4.0\\text{ N}$", "$5.0\\text{ N}$", "$8.0\\text{ N}$", "$10.0\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 支點在 $30\\text{ cm}$。左側 $0\\text{ cm}$ 處重物產生的逆時針力矩：$\\tau_{\\text{左}} = 20\\text{ N} \\times (30 - 0)\\text{ cm} = 600\\text{ N cm}$。<br>均勻木尺重力 $12\\text{ N}$ 作用於其重心 $50\\text{ cm}$ 處，相對於 $30\\text{ cm}$ 支點在右側，產生順時針力矩：$\\tau_{\\text{自重}} = 12\\text{ N} \\times (50 - 30)\\text{ cm} = 240\\text{ N cm}$。<br>設在 $100\\text{ cm}$ 處向下的拉力為 $F$，力臂為 $100 - 30 = 70\\text{ cm}$：<br>$$600 = 240 + F \\times 70 \\implies 70F = 360 \\implies F \\approx 5.14\\text{ N} \\approx 5.0\\text{ N}$$"
+          },
+          {
+            statement: "一根質量不計的水平槓桿，左端通過鉸鏈固定在牆壁上，右端通過一根與橫棒呈 $30^{\\circ}$ 夾角的鋼索拉住。若槓桿中央懸掛了一個重為 $W$ 的物體，求鋼索中的拉力 $T$。",
+            options: ["$0.5 W$", "$W$", "$1.5 W$", "$2W$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 設橫桿長為 $L$。以牆壁鉸鏈為支點列出力矩平衡平衡方程。重力 $W$ 產生順時針力矩，拉力 $T$ 的垂直分量 $T \\sin(30^{\\circ})$ 產生逆時針力矩：<br>$$W \\times 0.5L = (T \\sin 30^{\\circ}) \\times L \\implies 0.5 W L = 0.5 T L \\implies T = W$$"
+          },
+          {
+            statement: "一根重為 $W$、長為 $L$ 的均勻橫樑，其兩端由兩個支持物支撐。現將一個重為 $2W$ 的載荷放在距離左端 $\\frac{1}{3}L$ 的地方。求右側支持物受到的反作用支持力。",
+            options: ["$\\frac{1}{2}W$", "$\\frac{5}{6}W$", "$\\frac{7}{6}W$", "$\\frac{4}{3}W$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 以左端支持點為支點。自重 $W$ 作用於中點 $\\frac{1}{2}L$。載荷 $2W$ 作用於 $\\frac{1}{3}L$。列出力矩平衡平衡方程：<br>$$R_{\\text{右}} \\times L = W \\times \\frac{1}{2}L + 2W \\times \\frac{1}{3}L$$<br>$$R_{\\text{右}} = 0.5 W + \\frac{2}{3} W = \\left(\\frac{3}{6} + \\frac{4}{6}\\right) W = \\frac{7}{6}W$$"
+          },
+          {
+            statement: "一隻重為 $W$、半徑為 $R$ 的均勻圓形輪子擱在一個高度為 $h$（$h < R$）的台階前。若要將輪子拉上台階，其重力對台階接觸點（翻轉支點）的阻力矩力臂（垂直距離）是多少？",
+            options: ["$R-h$", "$\\sqrt{2Rh - h^2}$", "$\\sqrt{R^2 - h^2}$", "$R$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 翻轉時，輪子繞台階直角轉角旋轉。輪子的重心（中心）到台階接觸點的垂直距離為 $R-h$。根據直角三角形及畢氏定理，輪子重力作用線到接觸點的水平距離（即阻力力臂）為：<br>$$d = \\sqrt{R^2 - (R-h)^2} = \\sqrt{R^2 - (R^2 - 2Rh + h^2)} = \\sqrt{2Rh - h^2}$$"
+          }
+        ]
+      },
+      "2.5": {
+        1: [
+          {
+            statement: "在物理學中，一個力在什麼情況下會被定義為對物體作了<b>機械功（mechanical work）</b>？",
+            options: [
+              "當施加了很大的力，但物體依然完全靜止時。",
+              "當物體在力的方向上發生了位移時。",
+              "當物體在真空中完全不受力地勻速滑動時。",
+              "當一個重物被靜止懸掛在一定高度處時。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 作功的物理定義是力與力的方向上位移的乘積，數學公式為 $W = F s \\cos\\theta$。若位移為零或位移方向垂直於力，力對物體並不作功。"
+          },
+          {
+            statement: "根據<b>能量守恆定律（Law of Conservation of Energy）</b>，下列哪項說法正確？",
+            options: [
+              "下落物體的動能必定在任何時刻都剛好等於其勢能。",
+              "能量既不能被創造，也不能被消滅，只能由一種形式轉化為另一種形式。",
+              "任何真實機械設備的有用工作效率都可以達到 $100\\%$。",
+              "熱能是質量最優秀、最容易利用的能量形式。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 能量守恆定律是物理學的核心定律，指出在孤立系統中，總能量保持不變。能量可以轉換形式，但總量不增不減。"
+          },
+          {
+            statement: "為什麼在實際現實世界中，任何機械設備的能量效率都<b>必然小於 $100\\%$</b>？",
+            options: [
+              "因為真實機械運作時違反了能量守恆定律。",
+              "因為摩擦阻力的存在使部分輸入能量不可逆地轉化為了無用的內能（熱和聲響）。",
+              "因為機械產生的輸出作用力總是小於輸入作用力。",
+              "因為重力在運動中會不斷消滅動能。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 由於運動部件之間不可避免地存在摩擦力，部分機械能會不可逆地轉化為廢熱和雜訊，散失到周圍環境中，導致有用輸出功總是小於總輸入能。"
+          },
+          {
+            statement: "物理學中對於<b>功率（power）</b>的定義是：",
+            options: [
+              "力對物體作功的總量。",
+              "作功的速率或能量轉化的速率。",
+              "作用力大小乘上物體行駛的距離。",
+              "物體的質量與其速度的乘積。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 功率用以衡量能量傳遞與作功的快慢程度，定義為單位時間內所作的功或轉化的能量，公式為 $P = \\frac{W}{t}$。"
+          },
+          {
+            statement: "一個質量為 $m$、動量大小為 $p$ 的運動物體，其動能可以表示為：",
+            options: ["$\\frac{p}{2m}$", "$\\frac{p^2}{2m}$", "$\\frac{m p^2}{2}$", "$p m$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 動能為 $K.E. = \\frac{1}{2}mv^2$。由於動量 $p = mv \\implies v = \\frac{p}{m}$，代入動能公式得：<br>$$K.E. = \\frac{1}{2}m\\left(\\frac{p}{m}\\right)^2 = \\frac{p^2}{2m}$$"
+          },
+          {
+            statement: "在下列哪一種物理情境中，作用力對物體<b>不作機械功</b>？",
+            options: [
+              "起重機將一塊重型混凝土柱垂直吊起。",
+              "一顆人造衛星沿著穩定的圓形軌道繞地球運行。",
+              "跑車沿著直道踩油門加速前進。",
+              "木塊沿著粗糙的斜面匀速滑下。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 衛星在穩定圓軌道運動時，萬有引力（向心力）的方向與衛星的瞬時運動方向（軌道切線方向）始終垂直，夾角 $\\theta = 90^{\\circ}$。由於 $\\cos 90^{\\circ} = 0$，引力對衛星作功為零。"
+          }
+        ],
+        2: [
+          {
+            statement: "一名質量為 $50\\text{ kg}$ 的學生在 $15\\text{ 秒}$ 內垂直爬上了一架高為 $6.0\\text{ m}$ 的梯子。求該學生克服重力作功的平均輸出功率。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$20\\text{ W}$", "$200\\text{ W}$", "$300\\text{ W}$", "$3000\\text{ W}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 克服重力作功等於重力勢能的增加量：$W = mgh = 50\\text{ kg} \\times 10\\text{ m s}^{-2} \\times 6.0\\text{ m} = 3000\\text{ J}$。<br>平均功率為：<br>$$P = \\frac{W}{t} = \\frac{3000\\text{ J}}{15\\text{ s}} = 200\\text{ W}$$"
+          },
+          {
+            statement: "一輛總質量為 $150\\text{ kg}$ 的電單車以 $20\\text{ m s}^{-1}$ 的速度行駛。求其動能。",
+            options: ["$1.5\\text{ kJ}$", "$3.0\\text{ kJ}$", "$30.0\\text{ kJ}$", "$60.0\\text{ kJ}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 使用動能公式：<br>$$K.E. = \\frac{1}{2} m v^2 = \\frac{1}{2} \\times 150\\text{ kg} \\times (20\\text{ m s}^{-1})^2 = 75 \\times 400 = 30000\\text{ J} = 30\\text{ kJ}$$"
+          },
+          {
+            statement: "一水平拉力恆定為 $40\\text{ N}$，拉著一個箱子沿著水平地面拖行了 $8.0\\text{ m}$ 的距離。求拉力對箱子所作的功。",
+            options: ["$5.0\\text{ J}$", "$32.0\\text{ J}$", "$320\\text{ J}$", "$640\\text{ J}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 由於拉力方向與位移方向一致（$\\theta = 0^{\\circ}$）：<br>$$W = F \\times s = 40\\text{ N} \\times 8.0\\text{ m} = 320\\text{ J}$$"
+          },
+          {
+            statement: "一台有用效率為 $80\\%$ 的電動機，共消耗了 $2000\\text{ J}$ 的輸入電能。求電動機能輸出的有用機械功。",
+            options: ["$1600\\text{ J}$", "$2000\\text{ J}$", "$2500\\text{ J}$", "$400\\text{ J}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 有用輸出功等於總輸入能乘以機械功率效率：<br>$$W_{\\text{輸出}} = E_{\\text{輸入}} \\times \\eta = 2000\\text{ J} \\times 0.80 = 1600\\text{ J}$$"
+          },
+          {
+            statement: "一個電熱器的額定功率為 $1.5\\text{ kW}$。若將它開著運行 $2.0\\text{ 分鐘}$，它共消耗了多少電能？",
+            options: ["$3.0\\text{ kJ}$", "$180.0\\text{ kJ}$", "$300.0\\text{ kJ}$", "$1800.0\\text{ kJ}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 將時間轉換為秒：$t = 2.0 \\times 60 = 120\\text{ 秒}$。功率轉化為瓦特：$P = 1.5\\text{ kW} = 1500\\text{ W}$：<br>$$E = P \\times t = 1500\\text{ W} \\times 120\\text{ s} = 180000\\text{ J} = 180\\text{ kJ}$$"
+          },
+          {
+            statement: "一個質量為 $2.0\\text{ kg}$ 的物理球被直上拋，最高能上升到 $5.0\\text{ m}$ 的高度。求拋出球時的初動能。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$10\\text{ J}$", "$50\\text{ J}$", "$100\\text{ J}$", "$200\\text{ J}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 根據機械能守恆，球拋出時的初動能會全部轉化為最高點處的重力勢能：<br>$$K.E._{\\text{初}} = P.E._{\\text{最大}} = mgh = 2.0\\text{ kg} \\times 10\\text{ m s}^{-2} \\times 5.0\\text{ m} = 100\\text{ J}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "一架小車在水平軌道上由靜止出發，在恆定的引擎輸出功率 $P$ 驅動下加速。若忽略一切阻力與摩擦力，小車的速率 $v$ 與加速時間 $t$ 具有什麼正比關係？",
+            options: ["$v \\propto t$", "$v \\propto t^2$", "$v \\propto \\sqrt{t}$", "$v$ 保持恆定"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 恆定功率 $P$ 意味著在時間 $t$ 內引擎所作的總功為 $W = P t$。根據動能定理，有用功等於動能的增量（$u = 0$）：<br>$$\\frac{1}{2}mv^2 = P t \\implies v^2 = \\left(\\frac{2P}{m}\\right)t \\implies v \\propto \\sqrt{t}$$"
+          },
+          {
+            statement: "一個質量為 $m$ 的木塊沿著一條粗糙的彎曲路徑從高度為 $H$ 的高處滑下。木塊由靜止釋放，到達底部時的速度大小為 $v$。求木塊在下滑過程中因克服摩擦力而轉化的熱能（作負功的大小）$W_f$。",
+            options: [
+              "$W_f = mgH$",
+              "$W_f = \\frac{1}{2}mv^2$",
+              "$W_f = mgH - \\frac{1}{2}mv^2$",
+              "$W_f = mgH + \\frac{1}{2}mv^2$"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 初始狀態下木塊的機械能僅為重力勢能 $mgH$。末狀態下木塊的機械能為動能 $\\frac{1}{2}mv^2$。根據能量守恆，減少的機械能便等於克服摩擦所消耗並轉化的內能：<br>$$W_f = E_{\\text{初}} - E_{\\text{末}} = mgH - \\frac{1}{2}mv^2$$"
+          },
+          {
+            statement: "一輛質量為 $m$ 的汽車沿著傾角為 $\\theta$ 的斜坡以恆定速度 $v$ 向上爬行。若阻礙汽車運動的總阻力大小為 $f$，求引擎此時的輸出功率。",
+            options: [
+              "$P = f v$",
+              "$P = (f + m g \\sin\\theta) v$",
+              "$P = (f + m g \\cos\\theta) v$",
+              "$P = (m g \\sin\\theta) v$"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 因為汽車以「恆定速度」運動，其受力平衡。引擎施加的推力 $F_D$ 必須與阻力及重力平行斜面向下的分量平衡：<br>$$F_D = f + mg\\sin\\theta$$<br>根據功率與速度的關係式：<br>$$P = F_D \\times v = (f + mg\\sin\\theta)v$$"
+          },
+          {
+            statement: "一台抽水機從深井中以恆定的體積流量 $Q\\text{ (m}^3\\text{ s}^{-1}\\text{)}$ 抽水，並使水流以速度 $v$ 從水管噴出。若水的密度為 $\\rho$，求抽水機賦予噴出水流的動能功率（輸出功率）。",
+            options: [
+              "$P = \\frac{1}{2} \\rho Q v^2$",
+              "$P = \\rho Q v$",
+              "$P = \\frac{1}{2} \\rho Q^2 v$",
+              "$P = \\rho Q v^2$"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 單位時間內抽出的水質量（質量流量）為 $\\frac{m}{t} = \\rho Q$。因此，單位時間內賦予水流的動能（即輸出動能功率）為：<br>$$P = \\frac{K.E.}{t} = \\frac{1}{2}\\left(\\frac{m}{t}\\right) v^2 = \\frac{1}{2} \\rho Q v^2$$"
+          },
+          {
+            statement: "一個物體從高處自由下落。若它在與地面碰撞的瞬間損失了 $20\\%$ 的機械能，求物體在反彈後能達到的最大高度與初高度 $h$ 的比例關係。",
+            options: ["$0.2 h$", "$0.4 h$", "$0.8 h$", "$h$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 碰撞損失 $20\\%$ 機械能，意味著物體反彈後保留了 $80\\%$ 的機械能。由於在最大反彈高度處能量均為勢能，故：<br>$$mgh' = 0.80 mgh \\implies h' = 0.80 h$$"
+          },
+          {
+            statement: "一輛汽車以恆定速度 $v$ 克服恆定阻力 $f$ 行駛。若此時引擎的輸出功率突然增加一倍（阻力維持不變），求在功率增加的瞬間，汽車的瞬時加速度。",
+            options: ["$\\frac{f}{m}$", "$\\frac{2f}{m}$", "$\\frac{3f}{m}$", "零"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 起初匀速行駛，故推力 $F_0 = f$，此時功率 $P = F_0 v = f v$。當功率突然翻倍至 $2P$ 時，瞬時推力變為 $F' = \\frac{2P}{v} = 2f$。此瞬間受到的合外力為：<br>$$F_{\\text{合}} = F' - f = 2f - f = f$$<br>根據牛頓第二定律，瞬時加速度為 $a = \\frac{F_{\\text{合}}}{m} = \\frac{f}{m}$。"
+          }
+        ]
+      },
+      "2.6": {
+        1: [
+          {
+            statement: "在物理學中，物體的質量與其速度的乘積被定義為：",
+            options: ["作用力", "動量 (Momentum)", "衝量 (Impulse)", "動能"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 動量在數學上的定義為 $p = mv$，它是一個矢量，方向與速度方向完全一致。"
+          },
+          {
+            statement: "根據<b>動量-衝量定理（Impulse-Momentum Theorem）</b>，作用在物體上的衝量等於：",
+            options: [
+              "物體的末動量。",
+              "物體動量的改变量。",
+              "物體動量的變化率。",
+              "物體獲得的動能。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 衝量 $I = F \\Delta t = \\Delta p$ 描述了外力對時間累積的效應，在數值上剛好等於物體在此期間發生的動量改变量。"
+          },
+          {
+            statement: "在一個<b>完全彈性碰撞（elastic collision）</b>中，下列哪些物理量在系統中是守恆的？",
+            options: [
+              "只有動量。",
+              "只有動能。",
+              "動量與動能兩者皆守恆。",
+              "動量與動能兩者皆不守恆。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 彈性碰撞的特徵是：(1) 系統不受外力，動量守恆；(2) 沒有動能轉換成其他非機械能，故系統總動能守恆。"
+          },
+          {
+            statement: "在力-時間（$F-t$）圖像中，圖線下方的<b>面積</b>代表什麼物理量？",
+            options: ["功 (Work)", "加速度", "衝量 (Impulse)", "速度"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 力隨時間的積分 $\\int F \\, dt$ 對應圖像中的圍成面積，其物理定義即為外力施加的衝量。"
+          },
+          {
+            statement: "下列哪一項正確描述了完全非彈性碰撞（completely inelastic collision）？",
+            options: [
+              "只有動量守恆，碰撞後物體黏在一起，動能損失最大。",
+              "只有動能守恆，碰撞後物體分開運動。",
+              "動量與動能兩者皆守恆。",
+              "兩者皆不守恆。"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 任何無外力碰撞系統的動量都是守恆的。若碰撞後兩物體黏合在一起以相同共同速度運動，這代表系統損失了最大可能的動能，稱為完全非彈性碰撞。"
+          },
+          {
+            statement: "合外力（Net Force）與動量之間的微觀關係可以如何表示？",
+            options: [
+              "力是動量與時間的乘積。",
+              "力與動量在數值上相等。",
+              "力是動量的時間變化率。",
+              "力是動量的平方。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 牛頓第二定律最本質的物理公式為 $F = \\frac{\\Delta p}{\\Delta t}$。這意味著，物體所受合外力等於其動量隨時間的變化率。"
+          }
+        ],
+        2: [
+          {
+            statement: "一輛質量為 $1000\\text{ kg}$ 的汽車正以 $15\\text{ m s}^{-1}$ 的速度行駛。求其動量的大小。",
+            options: [
+              "$1500\\text{ kg m s}^{-1}$",
+              "$15000\\text{ kg m s}^{-1}$",
+              "$150000\\text{ kg m s}^{-1}$",
+              "$7500\\text{ kg m s}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 直接帶入公式：<br>$$p = m \\times v = 1000\\text{ kg} \\times 15\\text{ m s}^{-1} = 15000\\text{ kg m s}^{-1}$$"
+          },
+          {
+            statement: "一個以 $6.0\\text{ m s}^{-1}$ 的速度向東運動的 $2.0\\text{ kg}$ 木塊，與一個靜止的 $4.0\\text{ kg}$ 木塊迎面相撞並黏在一起。求相撞後兩者的共同末速度大小。",
+            options: ["$2.0\\text{ m s}^{-1}$", "$3.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$6.0\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 根據動量守恆定律：$m_1 u_1 + m_2 u_2 = (m_1 + m_2) v_f$：<br>$$2.0 \\times 6.0 + 4.0 \\times 0 = (2.0 + 4.0) v_f$$<br>$$12 = 6 v_f \\implies v_f = 2.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一顆質量為 $0.05\\text{ kg}$ 的高爾夫球被擊出。已知球棒對球的平均作用力為 $800\\text{ N}$，接觸時間為 $0.01\\text{ 秒}$。設高爾夫球由靜止出發，求其離開球桿時的速度大小。",
+            options: ["$1.6\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$160.0\\text{ m s}^{-1}$", "$320.0\\text{ m s}^{-1}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 利用動量-衝量定理：$F \\Delta t = m(v_f - u)$：<br>$$800\\text{ N} \\times 0.01\\text{ s} = 0.05\\text{ kg} \\times (v_f - 0) \\implies 8 = 0.05 v_f \\implies v_f = 160.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一顆質量為 $0.06\\text{ kg}$ 的網球水平以 $20\\text{ m s}^{-1}$ 擊中牆面，並以 $15\\text{ m s}^{-1}$ 的速度水平沿反方向反彈。求網球在此碰撞過程中動量改变量的大小。",
+            options: [
+              "$0.30\\text{ kg m s}^{-1}$",
+              "$0.90\\text{ kg m s}^{-1}$",
+              "$2.10\\text{ kg m s}^{-1}$",
+              "$3.50\\text{ kg m s}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 設向西（反彈方向）為正。初速度 $u = -20\\text{ m s}^{-1}$，末速度 $v = +15\\text{ m s}^{-1}$。動量改变量為：<br>$$\\Delta p = m(v - u) = 0.06\\text{ kg} \\times (15 - (-20))\\text{ m s}^{-1} = 0.06 \\times 35 = 2.10\\text{ kg m s}^{-1}$$"
+          },
+          {
+            statement: "踢一隻質量為 $0.20\\text{ kg}$ 的足球。若平均踢力大小為 $150\\text{ N}$，腳與球的接觸時間為 $0.04\\text{ 秒}$。求足球被踢出瞬間的速度大小（初速度為零）。",
+            options: ["$15.0\\text{ m s}^{-1}$", "$30.0\\text{ m s}^{-1}$", "$45.0\\text{ m s}^{-1}$", "$60.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 衝量等於動量改變：$F \\Delta t = m \\Delta v$：<br>$$150\\text{ N} \\times 0.04\\text{ s} = 0.20\\text{ kg} \\times v_f \\implies 6.0 = 0.20 v_f \\implies v_f = 30.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一輛 $4.0\\text{ kg}$ 的玩具車以 $3.0\\text{ m s}^{-1}$ 的速度向東行駛，與另一輛以 $6.0\\text{ m s}^{-1}$ 速度向西行駛的 $2.0\\text{ kg}$ 玩具車發生完全非彈性碰撞。求碰撞後兩車的共同速度大小。",
+            options: ["$0\\text{ m s}^{-1}$", "$2.0\\text{ m s}^{-1}$", "$3.0\\text{ m s}^{-1}$", "$4.5\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 設向東為正。系統初始總動量為：<br>$$p_{\\text{初}} = m_1 u_1 + m_2 u_2 = 4.0 \\times 3.0 + 2.0 \\times (-6.0) = 12 - 12 = 0$$<br>由於初始總動量為零，根據動量守恆，碰撞黏合後的共同速度也必須為零。"
+          }
+        ],
+        3: [
+          {
+            statement: "一挺機關槍以每秒 $N$ 顆子彈的發射率水平發射質量為 $m$ 的子彈。若子彈離開發射槍口時的初速度為 $v$，求機關槍承受的平均反衝作用力大小。",
+            options: ["$N m v$", "$\\frac{m v}{N}$", "$2 N m v$", "$\\frac{1}{2} N m v$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 平均反衝力等於發射槍口單位時間內子彈動量的改变量。每秒發射子彈的總質量為 $\\frac{\\Delta m}{\\Delta t} = N m$。動量變化率（即力）為：<br>$$F = \\frac{\\Delta p}{\\Delta t} = \\left(\\frac{\\Delta m}{\\Delta t}\\right) v = N m v$$"
+          },
+          {
+            statement: "兩個物體 $A$（質量為 $M$）和 $B$（質量為 $m$），且 $M > m$，具有<b>完全相同</b>的動能。求兩物體的動量大小之比（$p_A : p_B$）。",
+            options: [
+              "$M : m$",
+              "$\\sqrt{M} : \\sqrt{m}$",
+              "$m : M$",
+              "$\\sqrt{m} : \\sqrt{M}$"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 動量與動能的關係式為 $p = \sqrt{2m K}$。在動能 $K$ 完全相同的情況下，動量與質量的平方根成正比（$p \\propto \\sqrt{m}$）。<br>因此比例為 $\\frac{p_A}{p_B} = \\frac{\\sqrt{M}}{\\sqrt{m}} = \\sqrt{M} : \\sqrt{m}$。"
+          },
+          {
+            statement: "一顆質量為 $m$ 的子彈水平以速度 $u$ 射入一個懸掛在輕繩上、質量為 $M$ 且處於靜止狀態的木塊中（衝擊擺模型）。子彈最終嵌入木塊中。求在此非彈性碰撞過程中，系統損失的動能佔初動能的比例（fraction of kinetic energy lost）。",
+            options: [
+              "$\\frac{m}{M+m}$",
+              "$\\frac{M}{M+m}$",
+              "$\\frac{M+m}{M}$",
+              "$\\frac{m}{M}$"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 碰撞後末共同速度為 $v = \\frac{m u}{M+m}$。<br>末動能為 $K_f = \\frac{1}{2}(M+m)v^2 = \\frac{1}{2} \\frac{m^2 u^2}{M+m}$。<br>保留動能比例為 $\\frac{K_f}{K_i} = \\frac{m}{M+m}$。因此，損失的動能比例為：<br>$$\\text{Loss Fraction} = 1 - \\frac{K_f}{K_i} = 1 - \\frac{m}{M+m} = \\frac{M}{M+m}$$"
+          },
+          {
+            statement: "一顆雞蛋落到堅硬的水泥地板上會破裂，但從相同高度落到柔軟的沙發坐墊上卻能完好無損。下列哪一項物理學解釋是正確的？",
+            options: [
+              "水泥地板對雞蛋施加了更大的衝量。",
+              "沙發坐墊延長了碰撞接觸時間，從而大幅減小了作用在雞蛋上的平均衝擊力。",
+              "落到沙發上時，雞蛋經歷的動量改变量較小。",
+              "沙發在碰撞前就已經減小了雞蛋下落的動能。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 由於下落高度相同，不論與哪種地面碰撞，雞蛋著地前速度相同，末速度皆為零。因此兩者經歷的動量改变量 $\\Delta p$（及外力施加的總衝量）是完全相同的。沙發坐墊通過變形延長了停下的時間 $\\Delta t$。根據 $F_{\\text{平均}} = \\frac{\\Delta p}{\\Delta t}$，$\\Delta t$ 變大會大幅降低作用力大小。"
+          },
+          {
+            statement: "一個以速度 $v$ 運動的木塊 $A$，在光滑水平面上與另一個靜止的完全相同的木塊 $B$ 發生一維完全彈性碰撞。求碰撞後兩木塊的運動狀態。",
+            options: [
+              "木塊 $A$ 停止運動，木塊 $B$ 以速度 $v$ 向前運動。",
+              "兩木塊以共同速度 $0.5v$ 黏在一起向前運動。",
+              "木塊 $A$ 以 $0.5v$ 沿原方向反彈。",
+              "木塊 $B$ 繼續保持靜止。"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 在一維完全彈性碰撞中，若碰撞雙方的質量相等（$m_1 = m_2$），兩者在碰撞後會完全交換速度（Velocity Exchange）。因此，原本運動的木塊 $A$ 會瞬間停下（末速度為零），原本靜止的木塊 $B$ 則會承接其原有速度 $v$。"
+          },
+          {
+            statement: "一艘總質量為 $M$ 的火箭，以恆定的噴氣質量率 $R\\text{ (kg s}^{-1}$ 噴出氣體，噴出的氣體相對於火箭的速度大小為 $u$。若不計重力，求火箭點火瞬間的瞬時加速度大小。",
+            options: ["$\\frac{R u}{M}$", "$\\frac{M u}{R}$", "$\\frac{R M}{u}$", "零"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 火箭高速噴射氣體產生的瞬時推力（張力）等於單位時間內噴出物體動量的增加量，即 $F_{\\text{推}} = R \\times u$。根據牛頓第二定律，火箭的瞬時加速度為：<br>$$a = \\frac{F_{\\text{推}}}{M} = \\frac{R u}{M}$$"
+          }
+        ]
+      },
+      "2.7": {
+        1: [
+          {
+            statement: "在忽略空氣阻力的真空環境中，關於以一定夾角斜拋的拋體運動，下列哪項描述是正確的？",
+            options: [
+              "物體水平與垂直方向的速度分量在整個過程中都是恆定的。",
+              "物體的水平速度分量保持不變，垂直方向具有恆定的加速度。",
+              "物體的水平速度分量會因受重力作用而呈線性減小。",
+              "物體在下落過程中，其垂直加速度會越來越大。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 拋體運動可以分解為：(1) 水平方向：完全不受外力作用（$a_x = 0$），作勻速運動；(2) 垂直方向：僅受恆定重力作用，作加速度為 $-g$ 的勻變速運動。"
+          },
+          {
+            statement: "拋體運動在其軌跡的最頂點（最高點）處，其<b>垂直速度分量</b>是多少？",
+            options: ["達到最大值", "等於拋出時的初速度大小", "剛好為零", "方向轉向垂直向下"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 拋體在達到軌跡頂點時，物體剛好結束向上攀升，並即將開始向下掉落。因此，在此轉折點處，其瞬時垂直速度分量 $v_y$ 剛好為零。此時物體的總速度不為零，仍具有水平速度分量 $v_x = u\\cos\\theta$。"
+          },
+          {
+            statement: "兩個相同的小球從同一高度處釋放。小球 $X$ 由靜止垂直自由下落，小球 $Y$ 被水平拋出。在忽略空氣阻力的情況下，哪一個小球會先擊中地面？",
+            options: [
+              "小球 $X$ 先落地。",
+              "小球 $Y$ 先落地。",
+              "兩個小球在完全相同的時刻同時落地。",
+              "這取決於小球 $Y$ 被拋出時的水平速率。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 根據垂直與水平運動的獨立性原理，兩小球在垂直方向上的初速度皆為零（$u_y = 0$），且下落時的垂直加速度都是重力加速度 $g$。由於垂直下落的高度相同，兩球落地所需時間完全一致，即 $t = \\sqrt{\\frac{2h}{g}}$。"
+          },
+          {
+            statement: "在平整的地面上斜拋物體。若不計空氣阻力，以與水平面呈多大的發射角拋出物體，其<b>射程（range）</b>會達到最大值？",
+            options: ["$30^{\\circ}$", "$45^{\\circ}$", "$60^{\\circ}$", "$90^{\\circ}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 斜拋射程公式為 $R = \\frac{u^2 \\sin(2\\theta)}{g}$。要使射程 $R$ 最大，$\\sin(2\\theta)$ 必須達到最大值 $1$，即 $2\\theta = 90^{\\circ} \\implies \\theta = 45^{\\circ}$。"
+          },
+          {
+            statement: "一個斜拋運動的物體在上升過程中，其<b>總速度的大小</b>會如何變化？",
+            options: [
+              "保持完全恆定。",
+              "持續不斷增加。",
+              "持續不斷減小直至在最高點處降為零。",
+              "持續減小，並在最高點處達到一個不為零的最小值。"
+            ],
+            answer: 3,
+            explanation: "<b>解題指南：</b> 斜拋時總速度大小為 $v = \\sqrt{v_x^2 + v_y^2}$。上升過程中，水平速度分量 $v_x = u\\cos\\theta$ 恆定，垂直分量 $v_y$ 逐漸減小至零。因此，總速度持續減小，並在最高點處達到最小值 $u\\cos\\theta$。"
+          },
+          {
+            statement: "若發射角保持不變，將拋體的拋出初速率增加一倍。求其最大上升高度會如何變化？",
+            options: ["變為原來的兩倍。", "變為原來的一半。", "變為原來的四倍。", "保持完全不變。"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 最大上升高度公式為 $H = \\frac{u^2 \\sin^2\\theta}{2g}$。可見，最大高度 $H$ 與初速度的平方成正比（$H \\propto u^2$）。初速率加倍，最大高度變為原來的 $2^2 = 4$ 倍。"
+          }
+        ],
+        2: [
+          {
+            statement: "一隻球以 $15\\text{ m s}^{-1}$ 的初速度水平拋出。求球在拋出後 $3.0\\text{ 秒}$ 時的水平位移大小。",
+            options: ["$5.0\\text{ m}$", "$15.0\\text{ m}$", "$45.0\\text{ m}$", "$90.0\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 水平方向為無加速度的勻速運動：<br>$$x = u_x \\times t = 15\\text{ m s}^{-1} \\times 3.0\\text{ s} = 45.0\\text{ m}$$"
+          },
+          {
+            statement: "一個物體從高為 $80\\text{ m}$ 的高塔頂水平拋出。求物體在落地前的飛行時間。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$2.0\\text{ 秒}$", "$4.0\\text{ 秒}$", "$8.0\\text{ 秒}$", "$16.0\\text{ 秒}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 垂直方向為自由落體運動：$y = \\frac{1}{2}gt^2$：<br>$$80 = \\frac{1}{2}(10)t^2 \\implies 80 = 5t^2 \\implies t^2 = 16 \\implies t = 4.0\\text{ 秒}$$"
+          },
+          {
+            statement: "一個拋體以 $40\\text{ m s}^{-1}$ 的初速度與水平呈 $30^{\\circ}$ 仰角斜向上拋。求該拋體在拋出瞬間的垂直速度分量。（已知 $\\sin 30^{\\circ} = 0.50$）",
+            options: ["$10.0\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$34.6\\text{ m s}^{-1}$", "$40.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 使用正弦分解求垂直分量：<br>$$u_y = u \\sin\\theta = 40\\text{ m s}^{-1} \\times \\sin(30^{\\circ}) = 40 \\times 0.50 = 20.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一隻求以 $15\\text{ m s}^{-1}$ 的速度從高為 $20\\text{ m}$ 的懸崖頂水平拋出。求球落地點與懸崖底部的水平距離。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$15.0\\text{ m}$", "$30.0\\text{ m}$", "$45.0\\text{ m}$", "$60.0\\text{ m}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 1. 先計算垂直落地時間：<br>$$y = \\frac{1}{2}gt^2 \\implies 20 = 5t^2 \\implies t = 2.0\\text{ 秒}$$<br>2. 計算水平落點距離：<br>$$x = u_x \\times t = 15\\text{ m s}^{-1} \\times 2.0\\text{ s} = 30.0\\text{ m}$$"
+          },
+          {
+            statement: "一個石頭以 $10.0\\text{ m s}^{-1}$ 的速度水平拋出。求石頭在飛行 $1.0\\text{ 秒}$ 瞬間總速度的大小。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$10.0\\text{ m s}^{-1}$", "$14.1\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$25.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 水平速度分量恆定：$v_x = 10.0\\text{ m s}^{-1}$。<br>在 $t = 1.0\\text{ s}$ 時垂直速度分量：$v_y = g t = 10 \\times 1.0 = 10.0\\text{ m s}^{-1}$。<br>總速度大小為：<br>$$v = \\sqrt{v_x^2 + v_y^2} = \\sqrt{10.0^2 + 10.0^2} = \\sqrt{200} = 10\\sqrt{2} \\approx 14.14\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一個拋體在水平地面拋出，其水平初速度分量為 $15\\text{ m s}^{-1}$，垂直初速度分量為 $20\\text{ m s}^{-1}$。求拋體能達到的水平射程。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$30.0\\text{ m}$", "$45.0\\text{ m}$", "$60.0\\text{ m}$", "$80.0\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 拋體上升至最高點時間為 $t_{\\text{上}} = \\frac{u_y}{g} = \\frac{20}{10} = 2.0\\text{ 秒}$。總飛行時間為 $t = 2 \\times t_{\\text{上}} = 4.0\\text{ 秒}$。總射程為：<br>$$R = u_x \\times t = 15\\text{ m s}^{-1} \\times 4.0\\text{ s} = 60.0\\text{ m}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "兩個拋體 $P$ 和 $Q$ 自地面相同位置以相同初速率拋出。已知 $P$ 的發射角為 $30^{\\circ}$，$Q$ 的發射角為 $60^{\\circ}$。在忽略空氣阻力的情況下，下列哪項陳述是正確的？",
+            options: [
+              "兩者的水平射程完全相同，但 $Q$ 達到的最大高度較高。",
+              "兩者的水平射程與在空中的總飛行時間均完全相同。",
+              "拋體 $Q$ 的水平射程與總飛行時間均大於 $P$。",
+              "拋體 $P$ 的水平射程大於 $Q$，但總飛行時間較短。"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 當發射角互補（即 $\\theta_1 + \\theta_2 = 90^{\\circ}$），兩者的水平射程必定完全相等。因此 $30^{\\circ}$ 與 $60^{\\circ}$ 射程相同。由於 $Q$ 的發射仰角較大，其垂直初速度分量較高（$\\sin 60^{\\circ} > \\sin 30^{\\circ}$），因此 $Q$ 能上升的最大高度較高且總在空時間較長。"
+          },
+          {
+            statement: "一隻球從高為 $h$ 的塔頂以速率 $u$ 水平拋出。若小球在擊中地面時，其速度方向與水平呈 $45^{\\circ}$ 的夾角，求 $u$ 與 $g, h$ 的關係式。",
+            options: ["$u = \\sqrt{2gh}$", "$u = \\sqrt{gh}$", "$u = 2\\sqrt{gh}$", "$u = \\frac{1}{2}\\sqrt{gh}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 小球落地時，水平速度分量 $v_x = u$。根據自由落體規律，落地時的垂直速度分量 $v_y = \\sqrt{2gh}$。由於落地角度為 $45^{\\circ}$，說明其水平分量與垂直分量大小相等：<br>$$u = v_y \\implies u = \\sqrt{2gh}$$"
+          },
+          {
+            statement: "一個拋體在水平地面被拋出。已知其最大水平射程 $R$ 剛好等於其最大上升高度 $H$。求其發射角 $\\theta$ 的大小。",
+            options: ["$\\theta = \\tan^{-1}(1)$", "$\\theta = \\tan^{-1}(2)$", "$\\theta = \\tan^{-1}(4)$", "$\\theta = \\tan^{-1}(0.25)$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 水平射程 $R = \\frac{u^2 (2 \\sin\\theta \\cos\\theta)}{g}$。最大高度 $H = \\frac{u^2 \\sin^2\\theta}{2g}$。令 $R = H$：<br>$$\\frac{u^2 (2 \\sin\\theta \\cos\\theta)}{g} = \\frac{u^2 \\sin^2\\theta}{2g} \\implies 2\\cos\\theta = \\frac{\\sin\\theta}{2} \\implies \\tan\\theta = 4 \\implies \\theta = \\tan^{-1}(4) \\approx 76^{\\circ}$$"
+          },
+          {
+            statement: "一個拋體在發射時具有初動能 $K$。若發射角與水平呈 $60^{\\circ}$，在忽略空氣阻力的前提下，求拋體在運動最高點處的動能。",
+            options: ["$0$", "$0.25 K$", "$0.50 K$", "$0.75 K$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在最高點處，垂直速度為零。物體僅保留水平速度分量 $v_x = u \\cos(60^{\\circ}) = 0.5 u$。因此最高點處的動能為：<br>$$K_{\\text{最高}} = \\frac{1}{2} m v_x^2 = \\frac{1}{2} m (0.5 u)^2 = 0.25 \\times \\left(\\frac{1}{2} m u^2\right) = 0.25 K$$"
+          },
+          {
+            statement: "一個拋體被拋出，發射角為 $\\theta$。求拋體在最高點處的速率與其初始拋出速率之比。",
+            options: ["$\\sin\\theta$", "$\\cos\\theta$", "$\\tan\\theta$", "$1$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在軌跡最高點，垂直速度 $v_y = 0$。此時物體的速度僅剩水平速度分量 $v_x = u \\cos\\theta$。因此速率比為：<br>$$\\frac{v_{\\text{最高}}}{u} = \\frac{u\\cos\\theta}{u} = \\cos\\theta$$"
+          },
+          {
+            statement: "一個石頭以速度 $u$ 水平拋出。求經歷時間 $t$ 後，其瞬時速度矢量與水平面所夾的角度 $\\phi$ 的表達式。（取重力為 $g$）",
+            options: ["$\\tan^{-1}\\left(\\frac{gt}{u}\\right)$", "$\\sin^{-1}\\left(\\frac{gt}{u}\\right)$", "$\\cos^{-1}\\left(\\frac{gt}{u}\\right)$", "$\\tan^{-1}\\left(\\frac{u}{gt}\\right)$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 在時刻 $t$，水平速度分量 $v_x = u$，垂直速度分量 $v_y = g t$。速度矢量與水平面所夾的角度滿足正切關係：<br>$$\\tan\\phi = \\frac{v_y}{v_x} = \\frac{gt}{u} \\implies \\phi = \\tan^{-1}\\left(\\frac{gt}{u}\\right)$$"
+          }
+        ]
+      },
+      "2.8": {
+        1: [
+          {
+            statement: "關於一個正在作<b>勻速圓周運動（uniform circular motion）</b>的物體，下列哪項陳述是正確的？",
+            options: [
+              "它的速率與速度均保持完全恆定。",
+              "它的速率保持不變，但速度的方向正在持續改變。",
+              "它的瞬時加速度矢量保持完全恆定。",
+              "作用於該物體上的淨合外力為零。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 勻速圓周運動的「勻速」是指速率（大小）不變。由於運動路徑為圓周，其速度矢量方向時時刻刻在發生切向改變，因此具有指向圓心的向心加速度，合外力不為零。"
+          },
+          {
+            statement: "物體在作圓周運動時，其<b>向心加速度（centripetal acceleration）</b>矢量的方向是指向哪裡？",
+            options: [
+              "沿著切線方向，與運動方向一致。",
+              "沿著切線方向，與運動方向相反。",
+              "沿著徑向，指向圓周的圓心。",
+              "沿著徑向，指向背離圓心的外側方向。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 向心（Centripetal）的字面意思即為指向中心。向心加速度與向心力的方向相同，始終垂直於瞬時運動速度，並指向圓弧軌跡的中心。"
+          },
+          {
+            statement: "一輛車在平整、水平的圓形環島車道上以恆定速率轉彎。提供車輛轉彎所需向心力的物理力是什麼？",
+            options: [
+              "路面對車胎施加的支持力（法向反作用力）。",
+              "車胎與地面之間的靜摩擦力（static friction）。",
+              "車子受到的總重量。",
+              "車子在行進中受到的空氣阻力。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在水平轉彎時，車輛並沒有發生垂直運動，支持力與重力平衡。唯有車胎與地面之間指向圓心方向的側向靜摩擦力，提供車輛轉彎所需的向心力。"
+          },
+          {
+            statement: "在圓周運動中，物體的線速度大小 $v$ 與角速度大小 $\\omega$ 具有什麼關係式？（設半徑為 $R$）",
+            options: ["$v = \\frac{\\omega}{R}$", "$v = \\omega \\times R$", "$v = \\omega \\times R^2$", "$v = \\omega + R$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 根據圓弧弧長關係 $s = R \theta$，對時間微分即得線速度與角速度的轉換關係式：$v = R \\omega$。"
+          },
+          {
+            statement: "若將圓周運動的半徑減小一半，並將其角速度 $\\omega$ 增加一倍。求其向心加速度會如何變化？",
+            options: ["變為原來的一半。", "保持完全不變。", "變為原來的兩倍。", "變為原來的四倍。"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 向心加速度公式為 $a_c = \\omega^2 R$。半徑 $R \\to 0.5R$，角速度 $\\omega \\to 2\\omega$。新加速度為：<br>$$a_c' = (2\\omega)^2 \\times (0.5 R) = 4\\omega^2 \\times 0.5R = 2 a_c$$<br>因此加速度變為原來的兩倍。"
+          },
+          {
+            statement: "人造衛星沿穩定圓形軌道繞地球運行。作用在衛星上的淨合力的方向為何？",
+            options: [
+              "指向運動方向（切線方向）。",
+              "背向運動方向。",
+              "徑向指向地球的球心位置。",
+              "徑向指離地球球心的外側方向。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 衛星繞地球運行，提供向心力的唯一物理力是地球施加的萬有引力。萬有引力的作用線始終指向地球的幾何中心（球心）。"
+          }
+        ],
+        2: [
+          {
+            statement: "一個物體沿半徑為 $2.0\\text{ m}$ 的圓周作勻速運動，其線速度大小為 $4.0\\text{ m s}^{-1}$。求其向心加速度的大小。",
+            options: ["$2.0\\text{ m s}^{-2}$", "$4.0\\text{ m s}^{-2}$", "$8.0\\text{ m s}^{-2}$", "$16.0\\text{ m s}^{-2}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 直接代入向心加速度公式：<br>$$a_c = \\frac{v^2}{R} = \\frac{4.0^2}{2.0} = \\frac{16.0}{2.0} = 8.0\\text{ m s}^{-2}$$"
+          },
+          {
+            statement: "一個質量為 $3.0\\text{ kg}$ 的木塊用繩子繫住，在光滑水平桌面上以 $3.0\\text{ m s}^{-1}$ 的恆定速率作半徑為 $1.5\\text{ m}$ 的圓周運動。求繩子中拉力（張力）的大小。",
+            options: ["$6.0\\text{ N}$", "$12.0\\text{ N}$", "$18.0\\text{ N}$", "$27.0\\text{ N}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 繩子張力提供全部的向心力：<br>$$T = F_c = \\frac{m v^2}{R} = \\frac{3.0\\text{ kg} \\times (3.0\\text{ m s}^{-1})^2}{1.5\\text{ m}} = \\frac{3.0 \\times 9.0}{1.5} = 2.0 \\times 9.0 = 18.0\\text{ N}$$"
+          },
+          {
+            statement: "一個質點在半徑為 $4.0\\text{ m}$ 的圓上旋轉，角速度大小為 $2.0\\text{ rad s}^{-1}$。求其線速度的大小。",
+            options: ["$2.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$16.0\\text{ m s}^{-1}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 使用轉換公式：<br>$$v = R \\omega = 4.0\\text{ m} \\times 2.0\\text{ rad s}^{-1} = 8.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一名自行車手沿著半徑為 $10\\text{ m}$ 的圓形賽道騎行。若其承受的向心加速度大小為 $10\\text{ m s}^{-2}$，求其騎行的線速度大小。",
+            options: ["$5.0\\text{ m s}^{-1}$", "$10.0\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$100.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 根據向心加速度公式：<br>$$a_c = \\frac{v^2}{R} \\implies 10 = \\frac{v^2}{10} \\implies v^2 = 100 \\implies v = 10.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "一個質量為 $0.5\\text{ kg}$ 的球用繩子繫住，以 $4.0\\text{ rad s}^{-1}$ 的角速度在光滑水平桌面上作半徑為 $2.0\\text{ m}$ 的圓周運動。求繩子的拉力大小。",
+            options: ["$4.0\\text{ N}$", "$8.0\\text{ N}$", "$16.0\\text{ N}$", "$32.0\\text{ N}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 使用角速度形式的向心力公式：<br>$$T = F_c = m \\omega^2 R = 0.5\\text{ kg} \\times (4.0\\text{ rad s}^{-1})^2 \\times 2.0\\text{ m} = 0.5 \\times 16 \\times 2.0 = 16.0\\text{ N}$$"
+          },
+          {
+            statement: "一輛車沿著半徑為 $50\\text{ m}$ 的平整水平彎道行駛。已知輪胎與路面之間的靜摩擦係數為 $0.80$。求該車在不發生側滑的前提下，所能達到的最大安全速率。（取 $g = 10\\text{ m s}^{-2}$）",
+            options: ["$10.0\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$30.0\\text{ m s}^{-1}$", "$40.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 最大安全速率發生在向心力剛好等於最大靜摩擦力時：<br>$$\\mu_s mg = \\frac{m v^2}{R} \\implies v_{\\text{max}} = \\sqrt{\\mu_s g R} = \\sqrt{0.80 \\times 10 \\times 50} = \\sqrt{400} = 20.0\\text{ m s}^{-1}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "一個質量為 $m$ 的小球用長為 $L$ 的細繩懸掛，在垂直平面內作圓周運動。已知球在圓軌跡的最高點時，繩中的拉力剛好為零。求此時小球的速度大小。",
+            options: ["$v = \\sqrt{2gL}$", "$v = \\sqrt{gL}$", "$v = 2\\sqrt{gL}$", "$v = \\sqrt{0.5gL}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 在最高點，繩拉力 $T$ 與重力 $mg$ 均指向圓心。向心力平衡方程為：<br>$$T + mg = \\frac{m v^2}{L}$$<br>令臨限條件 $T = 0$，則：<br>$$mg = \\frac{m v^2}{L} \\implies v^2 = gL \\implies v = \\sqrt{gL}$$"
+          },
+          {
+            statement: "一輛汽車正在行駛在一條設計半徑為 $R$、向內側傾斜傾角為 $\\theta$ 的無摩擦斜切彎道上。若要令車輛在轉彎時完全不需要依賴輪胎與地面的摩擦力便能安全通過，求設計的安全車速 $v$ 應滿足什麼關係式？",
+            options: ["$v = \\sqrt{R g \\tan\\theta}$", "$v = \\sqrt{R g \\sin\\theta}$", "$v = \\sqrt{R g \\cos\\theta}$", "$v = \\sqrt{\\frac{R g}{\\tan\\theta}}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 支持力 $N$ 與重力 $mg$ 作用。在斜面方向上：<br>垂直方向支持力分量平衡重力：$N \\cos\\theta = mg$<br>水平分量提供向心力：$N \\sin\\theta = \\frac{m v^2}{R}$<br>兩式相除：<br>$$\\tan\\theta = \\frac{v^2}{R g} \\implies v = \\sqrt{R g \\tan\\theta}$$"
+          },
+          {
+            statement: "一枚硬幣置於一個正在旋轉的水平唱盤上，距離旋轉軸的垂直距離為 $r$。若在不發生滑動的前提下，將唱盤旋轉的角速度增加一倍。求硬幣最大能在距離轉軸多遠的地方依然保持不滑動？（設靜摩擦係數不變）",
+            options: ["$2r$", "$4r$", "$0.5r$", "$0.25r$"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> 硬幣不滑動滿足：$m \\omega^2 d \\le \\mu_s mg \\implies d \\le \\frac{\\mu_s g}{\\omega^2}$。可見硬幣最大安全距離與角速度的平方成反比（$d \\propto \\frac{1}{\\omega^2}$）。角速度增加至 2 倍，最大不滑動距離變為原來的 $\\frac{1}{2^2} = 0.25$ 倍，即 $0.25r$。"
+          },
+          {
+            statement: "一個質量為 $m$ 的單擺，小球在擺線水平的位置由靜止釋放。已知擺線長度為 $L$，求小球擺動到最低點瞬間擺線拉力的大小。（取重力加速度為 $g$）",
+            options: ["$mg$", "$2mg$", "$3mg$", "$4mg$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 1. 根據機械能守恆求最低點速度：<br>$$mgL = \\frac{1}{2} m v^2 \\implies v^2 = 2gL$$<br>2. 於最低點處分析受力，拉力 $T$ 向上，重力 $mg$ 向下：<br>$$T - mg = \\frac{m v^2}{L} \\implies T = mg + \\frac{m(2gL)}{L} = mg + 2mg = 3mg$$"
+          },
+          {
+            statement: "一個錐擺（conical pendulum）的小球質量為 $m$，沿水平圓軌跡作半徑為 $R$ 的圓周運動。若擺線角速度為 $\\omega$，求擺線中的拉力在水平方向上的分量大小。",
+            options: ["$m \\omega R$", "$m \\omega^2 R$", "$m g$", "零"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 對小球進行受力分析：(1) 垂直方向：拉力垂直分量平衡重力；(2) 水平方向：拉力的水平分量（指向圓心）是唯一提供圓周運動向心力的力。因此：<br>$$T_x = F_c = m \\omega^2 R$$"
+          },
+          {
+            statement: "一條光滑的「過山車」環形軌道半徑為 $R$。一個小木塊應從距離軌道最低點多高（$h$）的無摩擦起點由靜止下滑，才能恰好安全地通過該圓形豎直環軌？",
+            options: ["$1.5 R$", "$2.0 R$", "$2.5 R$", "$3.0 R$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 1. 安全通過最高點（高度 $2R$）的臨界速度滿足：$v^2 = gR$。<br>2. 根據起點到最高點的機械能守恆（設最低點為勢能零點）：<br>$$mgh = mg(2R) + \\frac{1}{2} m v^2 \\implies gh = 2gR + \\frac{1}{2}(gR) \\implies h = 2.5 R$$"
+          }
+        ]
+      },
+      "2.9": {
+        1: [
+          {
+            statement: "根據牛頓的<b>萬有引力定律</b>，兩個質點之間的引力大小：",
+            options: [
+              "與它們之間的距離成正比。",
+              "與它們之間的距離成反比。",
+              "與兩個質點質量的乘積成正比。",
+              "與兩個質點質量的乘積成反比。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 萬有引力定律公式為 $F_g = G \\frac{M m}{r^2}$。引力與兩物體質量的乘積（$Mm$）成正比，與它們中心距離的平方（$r^2$）成反比。"
+          },
+          {
+            statement: "若一個星球的質量變為原來的兩倍，而半徑保持不變。求該星球表面的重力加速度 $g$ 會如何變化？",
+            options: ["變為原來的一半。", "保持不變。", "變為原來的兩倍。", "變為原來的四倍。"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 星球表面重力加速度公式為 $g = \\frac{G M}{R^2}$。半徑 $R$ 恆定，質量 $M$ 加倍，重力加速度 $g$ 隨之加倍。"
+          },
+          {
+            statement: "為什麼沿著圓形軌道運行的衛星可以長久保持在軌道上，而不會掉落回地球？",
+            options: [
+              "因為衛星在該高度處已完全脫離地球重力的範圍。",
+              "因為地球對衛星施加的萬有引力，剛好作為其繞地作圓周運動所需的向心力。",
+              "因為衛星的推進發動機一直在持續輸出向上的推力。",
+              "因為地球周圍的磁場對衛星產生了巨大的排斥力。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 衛星並非不受重力。事實上，在太空該高度處的萬有引力時時刻刻在向內拉著衛星，使其不斷「跌向」地球，但由於衛星具備極快的切向速度，其下落的弧度剛好與地球的曲率一致，從而形成圓形軌道。"
+          },
+          {
+            statement: "根據<b>開普勒第三定律（Kepler's Third Law）</b>，行星繞太陽運行的公轉週期 $T$ 與其軌道平均半徑 $R$ 有什麼比例關係？",
+            options: ["$T \\propto R$", "$T^2 \\propto R$", "$T^2 \\propto R^3$", "$T \\propto R^2$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 開普勒第三定律（調和定律）指出：行星軌道半長軸（或圓半徑）的立方，與公轉週期的平方成正比，即 $T^2 \\propto R^3$。"
+          },
+          {
+            statement: "太空人在圍繞地球運行的太空站中，會感到完全的<b>失重（weightlessness）</b>。這是因為：",
+            options: [
+              "在該高度處，地球對太空人的引力已經降低到了零。",
+              "太空人與太空艙正處於以相同加速度向地心墜落的「自由落體」狀態中，消除了接觸支持力。",
+              "太空艙外壁擁有能阻斷萬有引力穿透的屏蔽層。",
+              "作用在太空人身上的離心力大於地球引力。"
+            ],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 軌道上的引力依然很強。失重的物理本質是太空人與太空船都在以相同的向心加速度向地心下落，彼此之間沒有相對運動趨勢，因而完全不存在法向接觸支持力（視重為零）。"
+          },
+          {
+            statement: "兩星球之間的萬有引力為 $F$。若將其中一個星球的質量增加一倍，並將兩者中心之間的距離也增加一倍。求新引力的大小。",
+            options: ["$0.5 F$", "$F$", "$2.0 F$", "$4.0 F$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 利用萬有引力公式比例分析：<br>$$F' = G \\frac{(2M) m}{(2r)^2} = \\frac{2 G M m}{4 r^2} = 0.5 F$$"
+          }
+        ],
+        2: [
+          {
+            statement: "一個物體被從地球表面移到距離地心等於兩個地球半徑（$2R_E$）的高度處（即距離地表一個半徑的高度）。求此時物體承受的萬有引力為地表重量的多少倍？",
+            options: ["$0.50$", "$0.25$", "$0.11$", "零"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 地心距離 $r$ 由地表的 $R_E$ 變為地表的 $2R_E$。由於引力大小與距離的平方成反比（$F_g \\propto \\frac{1}{r^2}$）：<br>$$\\frac{F'}{F} = \\left(\\frac{R_E}{2R_E}\\right)^2 = \\frac{1}{4} = 0.25$$"
+          },
+          {
+            statement: "一個衛星在半徑為 $R$ 的軌道上以速度 $v$ 繞星球運行。若將衛星移動到半徑為 $4R$ 的新圓軌道上運作，求其新的軌道速率。",
+            options: ["$2v$", "$0.5 v$", "$0.25 v$", "速率依然為 $v$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 將引力作為軌道運作的向心力：<br>$$G \\frac{M m}{r^2} = \\frac{m v^2}{r} \\implies v = \\sqrt{\\frac{G M}{r}}$$  因此軌道速度與距離的平方根成反比 ($v \\propto \\frac{1}{\\sqrt{r}}$)。半徑增為 4 倍，速度變為 $\\frac{1}{\\sqrt{4}} = 0.5$ 倍。"
+          },
+          {
+            statement: "一輛月球車在地球上的重量為 $600\\text{ N}$。若將其送往月球表面，求它在月球表面承受的重力重量。（已知月球表面的重力加速度為 $1.6\\text{ m s}^{-2}$，地球表面的重力加速度取 $10.0\\text{ m s}^{-2}$）",
+            options: ["$96\\text{ N}$", "$160\\text{ N}$", "$240\\text{ N}$", "$600\\text{ N}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 1. 先計算月球車的質量：$m = \\frac{W_{\\text{地}}}{g_{\\text{地}}} = \\frac{600}{10.0} = 60\\text{ kg}$（質量不隨位置改變）。<br>2. 計算月球上的重量：<br>$$W_{\\text{月}} = m \\times g_{\\text{月}} = 60\\text{ kg} \\times 1.6\\text{ m s}^{-2} = 96\\text{ N}$$"
+          },
+          {
+            statement: "兩個行星 $X$ 和 $Y$ 的質量相等。已知行星 $X$ 的半徑為 $R$，行星 $Y$ 的半徑為 $3R$。求兩個行星表面的重力場強度之比（$g_X : g_Y$）。",
+            options: ["$1 : 3$", "$1 : 9$", "$3 : 1$", "$9 : 1$"],
+            answer: 3,
+            explanation: "<b>解題指南：</b> 重力場強度公式為 $g = \\frac{G M}{R^2}$。在質量 $M$ 相等時，場強與半徑的平方成反比：<br>$$\\frac{g_X}{g_Y} = \\left(\\frac{R_Y}{R_X}\\right)^2 = \\left(\\frac{3R}{R}\\right)^2 = 9$$"
+          },
+          {
+            statement: "求地球對一個質量為 $1000\\text{ kg}$，運作軌道半徑為兩個地球半徑（$2R_E$）的衛星施加的萬有引力大小。（地球表面重力加速度取 $10.0\\text{ m s}^{-2}$）",
+            options: ["$2500\\text{ N}$", "$5000\\text{ N}$", "$10000\\text{ N}$", "$20000\\text{ N}$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 在 $2R_E$ 的軌道處，重力場強度變為地表場強的 $\\frac{1}{2^2} = \\frac{1}{4}$ 倍：<br>$$g' = \\frac{10.0\\text{ m s}^{-2}}{4} = 2.5\\text{ m s}^{-2}$$<br>衛星承受的重力為：<br>$$F = m \\times g' = 1000\\text{ kg} \\times 2.5\\text{ m s}^{-2} = 2500\\text{ N}$$"
+          },
+          {
+            statement: "一個未知行星的表面重力加速度大小為 $5.0\\text{ m s}^{-2}$。已知其星球半徑為地球半徑 $R_E$ 的一半。求該行星的質量相對於地球質量 $M_E$ 的比值。（地球表面重力加速度取 $10.0\\text{ m s}^{-2}$）",
+            options: ["$0.125 M_E$", "$0.25 M_E$", "$0.50 M_E$", "$2.0 M_E$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 根據表面引力公式：$g = \\frac{G M}{R^2} \\implies M = \\frac{g R^2}{G}$：<br>$$\\frac{M_{\\text{星}}}{M_E} = \\left(\\frac{g_{\\text{星}}}{g_E}\\right) \\times \\left(\\frac{R_{\\text{星}}}{R_E}\\right)^2 = \\left(\\frac{5.0}{10.0}\\right) \\times (0.5)^2 = 0.5 \\times 0.25 = 0.125$$"
+          }
+        ],
+        3: [
+          {
+            statement: "一個繞地圓軌道衛星的軌道半徑為 $R$。若將其移至半徑為 $2R$ 的軌道運行，求其軌道週期的變化。",
+            options: [
+              "變為原來的兩倍。",
+              "保持完全不變。",
+              "增加到原來的 $2\\sqrt{2}$ 倍。",
+              "增加到原來的 $8$ 倍。"
+            ],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 根據開普勒第三定律 $T^2 \\propto R^3 \\implies T \\propto R^{1.5}$。當半徑變為 $2$ 倍時，週期 $T$ 的縮放比例為：<br>$$T' = 2^{1.5} \\times T = 2\\sqrt{2} T$$"
+          },
+          {
+            statement: "一個行星的質量是地球的兩倍，半徑也是地球的兩倍。若地球表面的重力加速度為 $g$，求該行星表面的重力加速度。",
+            options: ["$0.5 g$", "$g$", "$2g$", "$4g$"],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 星球表面引力公式比例分析：<br>$$g' = \\frac{G (2 M_E)}{(2 R_E)^2} = \\frac{2 G M_E}{4 R_E^2} = 0.5 g$$"
+          },
+          {
+            statement: "一個質量為 $m$ 的衛星，繞質量為 $M$ 的行星作半徑為 $R$ 的穩定勻速圓周運動。求該衛星的<b>總機械能</b>（位能設無窮遠處為零基準）。",
+            options: [
+              "$E = -\\frac{G M m}{2R}$",
+              "$E = -\\frac{G M m}{R}$",
+              "$E = \\frac{G M m}{2R}$",
+              "$E = 0$"
+            ],
+            answer: 0,
+            explanation: "<b>解題指南：</b> 1. 軌道勢能為 $U = -\\frac{G M m}{R}$。<br>2. 軌道動能可由向心力等於引力求得：$\\frac{m v^2}{R} = \\frac{G M m}{R^2} \\implies K.E. = \\frac{1}{2} m v^2 = \\frac{G M m}{2R}$。<br>3. 總機械能為兩者之和：<br>$$E = K.E. + U = \\frac{G M m}{2R} - \\frac{G M m}{R} = -\\frac{G M m}{2R}$$"
+          },
+          {
+            statement: "一隻「地球靜止同步衛星」（Geostationary satellite）位於地球赤道的正上方運行。求此衛星繞地運行的軌道週期。",
+            options: ["$1.5\\text{ 小時}$", "$12.0\\text{ 小時}$", "$24.0\\text{ 小時}$", "$365.25\\text{ 天}$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 同步（Geostationary）意味著衛星在天空中相對於地面觀察者看起來是完全靜止的。要達成此目的，衛星環繞地球自轉軸公轉的週期和方向，必須與地球自轉的週期完全一致，即 $24.0\\text{ 小時}$（一個恆星日）。"
+          },
+          {
+            statement: "求在極低的高度軌道運行（緊貼著地球表面，半徑可近似看作地球半徑 $R_E$）的「近地衛星」的運行速度大小。（地球半徑取 $R_E = 6.4 \\times 10^6\\text{ m}$，地表 $g = 10.0\\text{ m s}^{-2}$）",
+            options: ["$4.0\\text{ km s}^{-1}$", "$8.0\\text{ km s}^{-1}$", "$11.2\\text{ km s}^{-1}$", "$16.0\\text{ km s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>解題指南：</b> 近地運作時，萬有引力（向心力）可近似為其地面重力：<br>$$mg = \\frac{m v^2}{R_E} \\implies v = \\sqrt{g R_E}$$<br>$$v = \\sqrt{10.0\\text{ m s}^{-2} \\times 6.4 \\times 10^6\\text{ m}} = \\sqrt{6.4 \\times 10^7} = \\sqrt{64 \\times 10^6} = 8.0 \\times 10^3\\text{ m s}^{-1} = 8.0\\text{ km s}^{-1}$$"
+          },
+          {
+            statement: "兩個繞地衛星 $X$ 和 $Y$，其運作軌道的圓半徑分別為 $R$ 和 $4R$。求兩個衛星軌道週期的比例（$T_X : T_Y$）。",
+            options: ["$1 : 2$", "$1 : 4$", "$1 : 8$", "$1 : 16$"],
+            answer: 2,
+            explanation: "<b>解題指南：</b> 根據開普勒第三定律：<br>$$\\left(\\frac{T_X}{T_Y}\\right)^2 = \\left(\\frac{R_X}{R_Y}\\right)^3 = \\left(\\frac{R}{4R}\\right)^3 = \\frac{1}{64}$$<br>$$\\frac{T_X}{T_Y} = \\sqrt{\\frac{1}{64}} = \\frac{1}{8}$$"
+          }
+        ]
+      }
+    };
+
+    // --- GLOBAL SCOPE FUNCTION BINDINGS ---
+    window.selectTopic = function(idx) {
+      currentState.selectedTopicIndex = idx;
+      renderDashboard();
+    };
+
+    window.selectLevel = function(lvl) {
+      currentState.selectedLevel = lvl;
+      renderDashboard();
+    };
+
+    window.goHome = function() {
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+      renderDashboard();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    window.toggleCalc = function() {
+      const calc = document.getElementById('calculator-widget');
+      calc.classList.toggle('hidden');
+    };
+
+    window.resetStats = function() {
+      showCustomConfirm(
+        "重置所有複習進度",
+        "您確定要清除您的物理複習記錄與指標數據，並重新開始嗎？",
+        () => {
+          currentState.scores = {};
+          renderDashboard();
+          showCustomAlert("重置成功", "您所有的複習數據已經完全清零。");
+        }
+      );
+    };
+
+    // --- OPERATOR HELPER FUNCTIONS FOR CALCULATOR TRIGONOMETRY ---
+    window.ASIN_OP = function(x) { return Math.asin(x) * 180 / Math.PI; };
+    window.ACOS_OP = function(x) { return Math.acos(x) * 180 / Math.PI; };
+    window.ATAN_OP = function(x) { return Math.atan(x) * 180 / Math.PI; };
+    window.SIN_OP = function(x) { return Math.sin(x * Math.PI / 180); };
+    window.COS_OP = function(x) { return Math.cos(x * Math.PI / 180); };
+    window.TAN_OP = function(x) { return Math.tan(x * Math.PI / 180); };
+    window.SQRT_OP = function(x) { return Math.sqrt(x); };
+
+    let calcExpression = '';
+    let calcScreen = '0';
+
+    window.calcPress = function(val) {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+
+      if (val === 'AC') {
+        calcExpression = '';
+        calcScreen = '0';
+      } else if (val === 'DEL') {
+        if (calcScreen.length > 1) {
+          calcScreen = calcScreen.slice(0, -1);
+        } else {
+          calcScreen = '0';
+        }
+      } else if (val === 'pi') {
+        calcScreen = Math.PI.toString();
+      } else if (val === 'exp') {
+        calcScreen += '*10^';
+      } else if (val === 'sin' || val === 'cos' || val === 'tan' || val === 'sqrt' || val === 'asin' || val === 'acos' || val === 'atan') {
+        calcExpression = `${val}(`;
+        calcScreen = '';
+      } else {
+        if (calcScreen === '0') calcScreen = '';
+        calcScreen += val;
+      }
+
+      screen.innerText = calcScreen;
+      expr.innerText = calcExpression;
+    };
+
+    window.calcEvaluate = function() {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+      
+      let fullExpr = calcExpression + calcScreen;
+      
+      // Auto-close brackets
+      let openBrackets = (fullExpr.match(/\(/g) || []).length;
+      let closeBrackets = (fullExpr.match(/\)/g) || []).length;
+      while (openBrackets > closeBrackets) {
+        fullExpr += ')';
+        closeBrackets++;
+      }
+
+      // Safe replace operators
+      fullExpr = fullExpr.replace(/asin\(/g, 'ASIN_OP(');
+      fullExpr = fullExpr.replace(/acos\(/g, 'ACOS_OP(');
+      fullExpr = fullExpr.replace(/atan\(/g, 'ATAN_OP(');
+      fullExpr = fullExpr.replace(/sin\(/g, 'SIN_OP(');
+      fullExpr = fullExpr.replace(/cos\(/g, 'COS_OP(');
+      fullExpr = fullExpr.replace(/tan\(/g, 'TAN_OP(');
+      fullExpr = fullExpr.replace(/sqrt\(/g, 'SQRT_OP(');
+      fullExpr = fullExpr.replace(/\^2/g, '**2');
+      fullExpr = fullExpr.replace(/\^/g, '**');
+
+      try {
+        let result = eval(fullExpr);
+        if (isNaN(result) || !isFinite(result)) {
+          screen.innerText = 'Error';
+        } else {
+          screen.innerText = parseFloat(result.toFixed(6)).toString();
+        }
+        calcExpression = '';
+        calcScreen = screen.innerText;
+      } catch (err) {
+        screen.innerText = 'Error';
+      }
+    };
+
+    // --- DASHBOARD RENDERER ---
+    function renderDashboard() {
+      const topicContainer = document.getElementById('topic-list-container');
+      topicContainer.innerHTML = '';
+      topics.forEach((topic, idx) => {
+        const isSelected = currentState.selectedTopicIndex === idx;
+        const scoreKeyEasy = `${idx}-1`;
+        const scoreKeyAvg = `${idx}-2`;
+        const scoreKeyDiff = `${idx}-3`;
+        
+        const easyScore = currentState.scores[scoreKeyEasy]?.score || 0;
+        const avgScore = currentState.scores[scoreKeyAvg]?.score || 0;
+        const diffScore = currentState.scores[scoreKeyDiff]?.score || 0;
+        const totalCompleted = (currentState.scores[scoreKeyEasy]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyAvg]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyDiff]?.completed ? 1 : 0);
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+          isSelected 
+            ? 'bg-purple-50/60 border-brand-violet shadow-md' 
+            : 'bg-white border-slate-200 hover:bg-slate-50'
+        }`;
+        card.onclick = () => selectTopic(idx);
+
+        card.innerHTML = `
+          <div class="flex items-start space-x-3">
+            <div class="mt-1 flex-shrink-0 h-8 w-8 rounded-lg bg-purple-100 text-brand-violet border border-purple-200 flex items-center justify-center font-bold font-mono text-sm">
+              ${topic.id}
+            </div>
+            <div>
+              <h3 class="text-sm md:text-base font-bold text-slate-800">${topic.title}</h3>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-bold border">L1: ${easyScore}/6</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-bold border">L2: ${avgScore}/6</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-bold border">L3: ${diffScore}/6</span>
+            <div class="h-6 w-6 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-brand-violet text-xs font-bold">
+              ${totalCompleted}/3
+            </div>
+          </div>
+        `;
+        topicContainer.appendChild(card);
+      });
+
+      const levelContainer = document.getElementById('level-list-container');
+      levelContainer.innerHTML = '';
+      const levels = [
+        { value: 1, label: '級別 1：基礎根基 (概念與定義)', desc: '文憑試基本力學定性判斷選擇題。', color: 'text-emerald-600' },
+        { value: 2, label: '級別 2：文憑常規 (計算與方程應用)', desc: '經典力學與運動學定量分析及公式代入。', color: 'text-brand-amber' },
+        { value: 3, label: '級別 3：奪星尖兵 (模擬試題與難題挑戰)', desc: '多重陳述、抽象比例、無變量純公式推導挑戰。', color: 'text-brand-pink' }
+      ];
+
+      levels.forEach(level => {
+        const isSelected = currentState.selectedLevel === level.value;
+        const button = document.createElement('div');
+        button.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-amber-50/30 border-brand-pink shadow-md' 
+            : 'bg-white border-slate-200 hover:bg-slate-50'
+        }`;
+        button.onclick = () => selectLevel(level.value);
+
+        button.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-extrabold ${level.color}">${level.label}</span>
+            <input type="radio" name="level-select" class="accent-brand-violet" ${isSelected ? 'checked' : ''}>
+          </div>
+          <p class="text-xs text-slate-500 mt-2 font-medium">${level.desc}</p>
+        `;
+        levelContainer.appendChild(button);
+      });
+
+      const startBox = document.createElement('button');
+      startBox.className = "w-full mt-4 bg-gradient-to-r from-brand-violet to-brand-pink text-white font-extrabold py-3.5 px-6 rounded-xl transition duration-200 shadow-md text-center uppercase tracking-wider text-sm";
+      startBox.innerHTML = `開啟物理挑戰 <i class="fa-solid fa-play ml-1"></i>`;
+      startBox.onclick = startQuiz;
+      levelContainer.appendChild(startBox);
+
+      updateGlobalProgress();
+    }
+
+    // --- NAVIGATION LOGIC ---
+    function startQuiz() {
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('quiz-section').classList.remove('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+
+      currentState.currentQuestionIndex = 0;
+      currentState.currentQuizAnswers = new Array(6).fill(null);
+
+      loadQuestion();
+    }
+
+    // --- LOADING QUESTIONS ---
+    function loadQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+
+      document.getElementById('quiz-meta-topic').innerText = `課題: ${topicObj.id}`;
+      document.getElementById('quiz-meta-level').innerText = `級別 ${currentState.selectedLevel}`;
+      document.getElementById('quiz-progress-text').innerText = `第 ${currentState.currentQuestionIndex + 1} 題，共 6 題`;
+      document.getElementById('quiz-percentage').innerText = `${Math.round((currentState.currentQuestionIndex + 1) * 16.6)}%`;
+      document.getElementById('question-index-display').innerText = `Q${currentState.currentQuestionIndex + 1}/6`;
+      document.getElementById('syllabus-reference-code').innerText = `PHY-${topicObj.id}.${currentState.currentQuestionIndex + 1}`;
+
+      document.getElementById('quiz-step-progress').style.width = `${(currentState.currentQuestionIndex + 1) * 16.6}%`;
+      document.getElementById('question-statement-box').innerHTML = q.statement;
+
+      document.getElementById('explanation-placeholder').classList.remove('hidden');
+      document.getElementById('explanation-content-area').classList.add('hidden');
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      optionsContainer.innerHTML = '';
+
+      const previousResponse = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] ${
+          previousResponse === optIdx
+            ? 'bg-purple-50 border-brand-violet text-brand-violet'
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+        }`;
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        const label = String.fromCharCode(65 + optIdx);
+        optionBtn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="flex-shrink-0 w-6 h-6 rounded bg-slate-100 border flex items-center justify-center font-mono font-bold text-slate-555 text-xs">${label}</span>
+            <span class="tex2jax_process leading-normal">${optText}</span>
+          </div>
+          <div class="h-4 w-4 rounded-full border border-slate-300 flex items-center justify-center flex-shrink-0">
+            ${previousResponse === optIdx ? '<div class="w-2 h-2 rounded-full bg-brand-violet"></div>' : ''}
+          </div>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      const btnPrev = document.getElementById('btn-prev-question');
+      if (currentState.currentQuestionIndex === 0) {
+        btnPrev.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = true;
+      } else {
+        btnPrev.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = false;
+      }
+
+      if (previousResponse !== null) {
+        revealAnswerFeedback();
+      } else {
+        document.getElementById('btn-check-answer').classList.remove('hidden');
+        document.getElementById('btn-next-question').classList.add('hidden');
+      }
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function selectOption(optIdx) {
+      const alreadyAnswered = currentState.currentQuizAnswers[currentState.currentQuestionIndex] !== null;
+      if (alreadyAnswered) return;
+
+      currentState.currentQuizAnswers[currentState.currentQuestionIndex] = optIdx;
+      loadQuestion();
+    }
+
+    // --- CHECKING ANSWERS & FEEDBACK ---
+    function checkAnswer() {
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+      if (selectedIndex === null) {
+        showCustomAlert("輸入錯誤", "請在點擊提交前先選擇一個答案選項。");
+        return;
+      }
+      revealAnswerFeedback();
+      
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('explanation-pane-anchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+
+    function revealAnswerFeedback() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      const isCorrect = selectedIndex === q.answer;
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      const optionButtons = optionsContainer.children;
+
+      for (let i = 0; i < optionButtons.length; i++) {
+        const btn = optionButtons[i];
+        btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-white border-slate-200 text-slate-700";
+        
+        if (i === q.answer) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-emerald-50 border-emerald-500 text-emerald-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        } else if (i === selectedIndex && !isCorrect) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-rose-50 border-rose-500 text-rose-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+        }
+      }
+
+      document.getElementById('explanation-placeholder').classList.add('hidden');
+      const expContent = document.getElementById('explanation-content-area');
+      expContent.classList.remove('hidden');
+
+      const feedbackBox = document.getElementById('explanation-feedback');
+      if (isCorrect) {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-emerald-50 text-emerald-700 border-emerald-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> <span>解答正確！繼續加油。</span>`;
+      } else {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-rose-50 text-rose-700 border-rose-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i> <span>解答錯誤。請閱讀以下文憑試解題邏輯。</span>`;
+      }
+
+      document.getElementById('explanation-body-text').innerHTML = q.explanation;
+
+      document.getElementById('btn-check-answer').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.remove('hidden');
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentState.currentQuestionIndex > 0) {
+        currentState.currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+
+      if (currentState.currentQuestionIndex < questionsList.length - 1) {
+        currentState.currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // --- QUIZ COMPLETION & STATS ---
+    function finishQuiz() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      
+      let correctCount = 0;
+      currentState.currentQuizAnswers.forEach((ans, idx) => {
+        if (ans === questionsList[idx].answer) {
+          correctCount++;
+        }
+      });
+
+      const scoreKey = `${currentState.selectedTopicIndex}-${currentState.selectedLevel}`;
+      currentState.scores[scoreKey] = {
+        completed: true,
+        score: correctCount,
+        responses: [...currentState.currentQuizAnswers]
+      };
+
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.remove('hidden');
+
+      document.getElementById('review-score').innerText = `${correctCount} / 6`;
+      const accuracy = Math.round((correctCount / 6) * 100);
+      document.getElementById('review-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('review-level').innerText = `級別 ${currentState.selectedLevel}`;
+
+      updateGlobalProgress();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function updateGlobalProgress() {
+      let totalCompletedLevels = 0;
+      let grandTotalScore = 0;
+      let possibleMaxScore = 0;
+
+      for (let t = 0; t < topics.length; t++) {
+        for (let l = 1; l <= 3; l++) {
+          const key = `${t}-${l}`;
+          possibleMaxScore += 6;
+          if (currentState.scores[key]?.completed) {
+            totalCompletedLevels++;
+            grandTotalScore += currentState.scores[key].score;
+          }
+        }
+      }
+
+      const totalLevels = topics.length * 3;
+      const progressPercent = Math.round((totalCompletedLevels / totalLevels) * 100);
+
+      document.getElementById('global-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('global-progress-text').innerText = `${progressPercent}%`;
+      document.getElementById('global-score-badge').innerText = `${grandTotalScore} / ${possibleMaxScore}`;
+    }
+
+    function showCustomConfirm(title, message, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.remove('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "確認重置";
+      confirmBtn.className = "px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+      document.getElementById('modal-cancel-btn').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    function showCustomAlert(title, message) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "好";
+      confirmBtn.className = "px-4 py-2 bg-brand-violet text-white text-xs font-bold rounded-lg transition shadow-md font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    // --- LIFE CYCLE INIT ---
+    window.onload = function() {
+      renderDashboard();
+
+      document.getElementById('btn-check-answer').addEventListener('click', checkAnswer);
+      document.getElementById('btn-prev-question').addEventListener('click', prevQuestion);
+      document.getElementById('btn-next-question').addEventListener('click', nextQuestion);
+      document.getElementById('btn-review-restart').addEventListener('click', startQuiz);
+      document.getElementById('btn-calc-toggle').addEventListener('click', toggleCalc);
+
+      // --- CALCULATOR DRAGGABLE IMPLEMENTATION ---
+      const calcWidget = document.getElementById('calculator-widget');
+      const calcHeader = document.getElementById('calculator-header');
+      
+      let isDragging = false;
+      let currentX = 0;
+      let currentY = 0;
+      let initialX = 0;
+      let initialY = 0;
+      let xOffset = 0;
+      let yOffset = 0;
+
+      calcHeader.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+
+      calcHeader.addEventListener('touchstart', dragStart, { passive: true });
+      document.addEventListener('touchmove', drag, { passive: false });
+      document.addEventListener('touchend', dragEnd);
+
+      function dragStart(e) {
+        if (window.innerWidth < 768) return; 
+        if (e.type === 'touchstart') {
+          initialX = e.touches[0].clientX - xOffset;
+          initialY = e.touches[0].clientY - yOffset;
+        } else {
+          initialX = e.clientX - xOffset;
+          initialY = e.clientY - yOffset;
+        }
+        isDragging = true;
+      }
+
+      function drag(e) {
+        if (!isDragging) return;
+        if (e.type === 'touchmove') {
+          e.preventDefault();
+          currentX = e.touches[0].clientX - initialX;
+          currentY = e.touches[0].clientY - initialY;
+        } else {
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+        }
+        xOffset = currentX;
+        yOffset = currentY;
+        calcWidget.style.transform = `translate(${currentX}px, ${currentY}px)`;
+      }
+
+      function dragEnd() {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+      }
+    };
+  </script>
+
+</body>
+</html>

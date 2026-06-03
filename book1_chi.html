@@ -1,0 +1,2683 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSE 物理科掌門人 - 第一冊：熱和氣體</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#faf5ff',
+              card: '#ffffff',
+              border: '#f3e8ff',
+              textDark: '#1e1b4b',
+              textMuted: '#6b21a8',
+              violet: '#7c3aed',
+              cyan: '#06b6d4',
+              pink: '#ec4899',
+              amber: '#f59e0b',
+              coral: '#f43f5e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering physics symbols and formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- FontAwesome for calculator and UI icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', "Microsoft JhengHei", sans-serif;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(124, 58, 237, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(124, 58, 237, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(124, 58, 237, 0.4);
+    }
+    /* Draggable calculator style on desktop */
+    @media (min-width: 768px) {
+      #calculator-widget {
+        touch-action: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-slate-50 via-purple-50/30 to-violet-50/20 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white pb-20">
+
+  <!-- TOP NAV BAR -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+        <div class="bg-gradient-to-tr from-brand-violet via-purple-500 to-brand-pink p-2.5 rounded-xl shadow-md shadow-purple-500/10">
+          <i class="fa-solid fa-bolt text-white text-xl animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-lg md:text-xl font-extrabold bg-gradient-to-r from-brand-violet to-brand-pink bg-clip-text text-transparent tracking-tight">DSE 物理科掌門人</h1>
+          <p class="text-xs text-brand-cyan font-bold">第一冊：熱和氣體 • 應試備考系統</p>
+        </div>
+      </div>
+      
+      <!-- Quick Score & Progress Stats -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">整體學習進度</span>
+          <div class="flex items-center space-x-2">
+            <div class="w-24 bg-purple-100 h-2 rounded-full overflow-hidden">
+              <div id="global-progress-bar" class="bg-brand-violet h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="global-progress-text" class="text-xs font-bold text-brand-violet">0%</span>
+          </div>
+        </div>
+        <div class="bg-purple-50 border border-purple-100 rounded-xl px-3 py-1.5 flex items-center space-x-2 shadow-inner">
+          <i class="fa-solid fa-trophy text-brand-amber text-sm"></i>
+          <span id="global-score-badge" class="font-bold text-sm text-brand-textDark">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-4 flex-grow flex flex-col gap-6 mb-24">
+    
+    <!-- DASHBOARD: TOPICS & LEVELS SELECTOR -->
+    <div id="dashboard-section" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEFT: TOPIC SELECTOR -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-violet rounded-full"></span>
+            <span>1. 選擇課程課題</span>
+          </h2>
+          <div class="space-y-3" id="topic-list-container">
+            <!-- Topics generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LEVEL SELECTOR -->
+      <div class="space-y-6">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-pink rounded-full"></span>
+            <span>2. 選擇難度級別</span>
+          </h2>
+          <div class="grid grid-cols-1 gap-3" id="level-list-container">
+            <!-- Levels generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVE QUIZ CONTAINER (Hidden by default) -->
+    <div id="quiz-section" class="hidden flex-col gap-6 animate-fade-in">
+      
+      <!-- Top Status Card -->
+      <div class="bg-white border border-purple-100 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+        <button onclick="goHome()" class="flex items-center space-x-2 text-slate-600 hover:text-brand-violet hover:bg-purple-50 bg-slate-50 px-3.5 py-2 rounded-xl border border-purple-100 transition duration-200">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="text-sm font-bold">更改課題 / 難度</span>
+        </button>
+        <div class="flex items-center space-x-3">
+          <span id="quiz-meta-topic" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-purple-50 text-brand-violet border border-purple-100">課題</span>
+          <span id="quiz-meta-level" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-pink-50 text-brand-pink border border-pink-100 font-mono">級別</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-xs text-slate-500 font-semibold">測驗進度</div>
+            <div class="text-sm font-extrabold text-slate-800" id="quiz-progress-text">第 1 題，共 10 題</div>
+          </div>
+          <div class="h-10 w-10 rounded-full border-2 border-brand-violet/30 flex items-center justify-center font-bold text-brand-violet text-sm bg-purple-50/50" id="quiz-percentage">
+            10%
+          </div>
+        </div>
+      </div>
+
+      <!-- Question and Options Arena -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Question Presentation -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 md:p-8 shadow-sm relative min-h-[350px] flex flex-col justify-between">
+            <div>
+              <!-- Progress Meter Bar -->
+              <div class="w-full bg-slate-100 h-1.5 rounded-full mb-6 overflow-hidden">
+                <div id="quiz-step-progress" class="bg-gradient-to-r from-brand-violet to-brand-pink h-full transition-all duration-300" style="width: 10%"></div>
+              </div>
+
+              <!-- Question Header -->
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">問題框</span>
+                <span class="text-xs px-2.5 py-1 rounded bg-purple-50 border border-purple-100 text-brand-violet font-mono font-bold" id="question-index-display">Q1/10</span>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="text-slate-800 text-sm md:text-base leading-relaxed font-semibold mb-6 tex2jax_process" id="question-statement-box">
+                正在載入物理問題陳述...
+              </div>
+            </div>
+
+            <!-- Interactive Options Grid -->
+            <div class="grid grid-cols-1 gap-3" id="options-grid-container">
+              <!-- Options elements will be rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Bottom Nav Bar for Current Question -->
+          <div class="flex justify-between items-center bg-white p-4 border border-purple-100 rounded-2xl shadow-sm">
+            <button id="btn-prev-question" class="opacity-50 cursor-not-allowed bg-slate-50 hover:bg-slate-100 text-slate-500 px-4 py-2.5 rounded-xl text-sm font-bold border border-purple-200 transition flex items-center space-x-2" disabled>
+              <i class="fa-solid fa-chevron-left text-xs"></i> <span>上一題</span>
+            </button>
+            <button id="btn-next-question" class="hidden bg-gradient-to-r from-brand-violet to-brand-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>下一題</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+            <button id="btn-check-answer" class="bg-brand-amber hover:bg-brand-amberlight text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>提交答案</span> <i class="fa-solid fa-circle-check text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Explanation Pane -->
+        <div class="lg:col-span-5 flex flex-col" id="explanation-pane-anchor">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 shadow-sm flex-grow flex flex-col justify-between min-h-[300px]">
+            <div>
+              <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-brand-pink mr-2"></i> DSE 解題指南
+              </h3>
+              
+              <!-- Placeholder State -->
+              <div id="explanation-placeholder" class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-lightbulb text-4xl mb-3 animate-pulse text-brand-violet/40"></i>
+                <p class="text-sm font-bold">提交你的答案以解鎖教科書標準的物理詳解。</p>
+              </div>
+
+              <!-- Explanation Content Area -->
+              <div id="explanation-content-area" class="hidden space-y-4 text-sm leading-relaxed tex2jax_process">
+                <div id="explanation-feedback" class="p-3.5 rounded-xl font-extrabold flex items-center space-x-2 border">
+                  <!-- Dynamic status -->
+                </div>
+                <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
+                  <h4 class="text-xs font-bold text-brand-violet uppercase mb-2 tracking-wider">分步邏輯詳解：</h4>
+                  <div id="explanation-body-text" class="text-slate-700 space-y-3 font-medium">
+                    <!-- Complete derivations / option evaluations -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concept Reference Code -->
+            <div class="mt-6 pt-4 border-t border-purple-100 flex items-center justify-between text-xs text-slate-505 font-bold">
+              <span>課程目標編號：</span>
+              <span id="syllabus-reference-code" class="font-mono bg-purple-50 px-2.5 py-1 rounded text-brand-violet border border-purple-100">PHY-1.1</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- REVIEW BOARD / PERFORMANCE STATS (Hidden by default) -->
+    <div id="review-section" class="hidden flex-col gap-6 animate-fade-in">
+      <div class="bg-white border border-purple-100 rounded-3xl p-8 text-center shadow-md relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-violet via-brand-cyan to-brand-pink"></div>
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-brand-textDark">測驗已完成！</h2>
+        <p class="text-slate-500 mt-2 max-w-md mx-auto text-sm md:text-base font-medium">表現極佳！讓我們在下方分析你對物理課題的掌握數據。</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mt-8">
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">總得分</div>
+            <div class="text-2xl font-black text-slate-800 mt-1" id="review-score">0 / 10</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">準確率</div>
+            <div class="text-2xl font-black text-brand-violet mt-1" id="review-accuracy">0%</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">已清除關卡</div>
+            <div class="text-2xl font-black text-brand-pink mt-1 font-mono" id="review-level">Level --</div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+          <button id="btn-review-restart" class="bg-gradient-to-r from-brand-violet to-purple-500 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 shadow-md shadow-purple-500/10">
+            重新挑戰此難度
+          </button>
+          <button onclick="goHome()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-6 py-3 rounded-xl border border-slate-200 transition duration-200">
+            返回主頁面
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-purple-100 px-4 py-2 flex justify-around items-center z-45 shadow-lg">
+    <button onclick="goHome()" class="flex flex-col items-center p-2 text-slate-500 hover:text-brand-violet transition duration-200 font-sans">
+      <i class="fa-solid fa-house text-lg font-normal"></i>
+      <span class="text-[10px] mt-1 font-bold">主頁</span>
+    </button>
+    <button id="btn-calc-toggle" class="relative -top-5 bg-gradient-to-tr from-brand-violet to-brand-pink text-white h-14 w-14 rounded-full flex items-center justify-center shadow-lg shadow-brand-violet/30 hover:scale-105 transition duration-250 active:scale-95 font-sans">
+      <i class="fa-solid fa-calculator text-2xl font-normal"></i>
+    </button>
+    <button onclick="resetStats()" class="flex flex-col items-center p-2 text-slate-500 hover:text-brand-coral transition duration-200 font-sans">
+      <i class="fa-solid fa-rotate-left text-lg font-normal"></i>
+      <span class="text-[10px] mt-1 font-bold">重設</span>
+    </button>
+  </nav>
+
+  <!-- DRAGGABLE / SLIDE-UP SCIENTIFIC CALCULATOR -->
+  <div id="calculator-widget" class="hidden fixed bottom-16 right-0 left-0 md:left-auto md:right-4 md:bottom-20 w-full md:w-80 bg-white border-t md:border border-purple-200 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-hidden z-50 select-none animate-fade-in">
+    
+    <!-- Calculator Header -->
+    <div class="bg-slate-100 px-4 py-3 md:py-2.5 flex items-center justify-between border-b border-purple-100 cursor-move" id="calculator-header">
+      <div class="flex items-center space-x-2 text-slate-700">
+        <i class="fa-solid fa-calculator text-brand-violet text-xs animate-pulse"></i>
+        <span class="text-xs font-bold font-mono tracking-wide">DSE 計算機 (角度模式)</span>
+      </div>
+      <button id="btn-close-calc" class="text-slate-400 hover:text-slate-900 transition p-1" onclick="toggleCalc()">
+        <i class="fa-solid fa-xmark text-lg md:text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Calculator Display Screen -->
+    <div class="p-4 md:p-3 bg-purple-50/50 text-right space-y-1 border-b border-purple-100">
+      <div id="calc-expression-display" class="text-slate-400 text-xs font-mono truncate h-4 min-h-[1rem]"></div>
+      <div id="calc-screen-display" class="text-slate-900 text-2xl md:text-xl font-mono truncate h-8 min-h-[1.75rem] font-bold">0</div>
+    </div>
+
+    <!-- Calculator Button Grid -->
+    <div class="p-3 md:p-2.5 grid grid-cols-5 gap-1.5 bg-purple-50/30">
+      <!-- Scientific Trigonometry & Operations -->
+      <button onclick="calcPress('sin')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">sin</button>
+      <button onclick="calcPress('cos')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">cos</button>
+      <button onclick="calcPress('tan')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">tan</button>
+      <button onclick="calcPress('sqrt')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">√</button>
+      <button onclick="calcPress('pi')" class="bg-purple-100 hover:bg-purple-200 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">π</button>
+
+      <!-- Inverse Trigonometry Trigger Keys -->
+      <button onclick="calcPress('asin')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold font-sans">sin⁻¹</button>
+      <button onclick="calcPress('acos')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold font-sans">cos⁻¹</button>
+      <button onclick="calcPress('atan')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold font-sans">tan⁻¹</button>
+      <button onclick="calcPress('^2')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">x²</button>
+      <button onclick="calcPress('^')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">x^y</button>
+
+      <!-- Standard Operations & Numbers -->
+      <button onclick="calcPress('(')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">(</button>
+      <button onclick="calcPress(')')" class="bg-purple-100 hover:bg-purple-200 text-brand-violet py-1.5 rounded text-xs font-mono font-bold">)</button>
+      <button onclick="calcPress('exp')" class="bg-purple-100 hover:bg-purple-200 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">EXP</button>
+      <button onclick="calcPress('DEL')" class="bg-rose-100 hover:bg-rose-200 text-brand-coral py-1.5 rounded font-mono font-bold text-xs">DEL</button>
+      <button onclick="calcPress('AC')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 rounded font-mono font-bold text-xs">AC</button>
+
+      <button onclick="calcPress('7')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">7</button>
+      <button onclick="calcPress('8')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">8</button>
+      <button onclick="calcPress('9')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">9</button>
+      <button onclick="calcPress('*')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm">×</button>
+      <button onclick="calcPress('/')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm font-sans">÷</button>
+
+      <button onclick="calcPress('4')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">4</button>
+      <button onclick="calcPress('5')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">5</button>
+      <button onclick="calcPress('6')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">6</button>
+      <button onclick="calcPress('+')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm">+</button>
+      <button onclick="calcPress('-')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm">-</button>
+
+      <button onclick="calcPress('1')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">1</button>
+      <button onclick="calcPress('2')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">2</button>
+      <button onclick="calcPress('3')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">3</button>
+      <button onclick="calcEvaluate()" class="col-span-2 row-span-2 bg-gradient-to-r from-brand-violet to-brand-pink hover:opacity-90 text-white py-2.5 rounded font-mono font-extrabold text-lg shadow-md shadow-purple-500/10">=</button>
+
+      <button onclick="calcPress('0')" class="col-span-2 bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">0</button>
+      <button onclick="calcPress('.')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">.</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM INTERACTIVE OVERLAY MODAL -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white border border-purple-100 rounded-2xl max-w-sm w-full p-6 shadow-2xl transition duration-300">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="p-2.5 bg-brand-amber/10 text-brand-amber rounded-xl" id="modal-icon-container">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-slate-900 font-sans" id="modal-title">確認重置</h3>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed mb-6 font-medium font-sans" id="modal-message">你確定要清除你所有的學習記錄，並重新開始嗎？此動作將無法復原。</p>
+      <div class="flex items-center justify-end space-x-3">
+        <button id="modal-cancel-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition font-sans">取消</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md shadow-rose-950/20 font-sans">確認</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE MACHINE ---
+    const APP_ID = 'dse-physics-book1';
+    let currentState = {
+      selectedTopicIndex: 0,
+      selectedLevel: 1, // 1: Easy, 2: Average, 3: Difficult
+      currentQuestionIndex: 0,
+      scores: {}, // Key: 'topicIndex-level' -> { completed: bool, score: int, responses: array }
+      currentQuizAnswers: []
+    };
+
+    // --- CURRICULUM DATA ---
+    const topics = [
+      { id: '1.1', title: '1.1 溫度和溫度計' },
+      { id: '1.2', title: '1.2 內能、熱量和傳遞過程' },
+      { id: '1.3', title: '1.3 溫度改變和熱容量' },
+      { id: '1.4', title: '1.4 物態改變' },
+      { id: '1.5', title: '1.5 氣體定律' }
+    ];
+
+    // --- GENUINE HIGH-QUALITY HKDSE ALIGNED PHYSICS QUESTIONS ---
+    const questionBank = {
+      "1.1": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "當兩個物體處於<b>熱平衡</b>狀態時，下列哪一個物理量對兩者而言必須相同？",
+            options: [
+              "總內能",
+              "溫度",
+              "比熱容量",
+              "質量"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 根據定義，當兩個接觸的物體溫度相同時，系統便達到熱平衡。此時，它們之間沒有淨熱量傳遞。"
+          },
+          {
+            statement: "下列哪一項<b>不適合</b>用作製作溫度計的測溫性質？",
+            options: [
+              "白金細線的電阻",
+              "固定質量、固定體積氣體的壓強",
+              "實心銅塊的質量",
+              "固定質量液體的體積"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 測溫性質必須隨溫度變化而連續且唯一地改變。銅塊的質量在溫度改變時保持不變，因此不能用作測溫性質。"
+          },
+          {
+            statement: "為什麼純水<b>不適合</b>用作液體溫度計的測溫液體來測量 $0^{\\circ}\\text{C}$ 至 $10^{\\circ}\\text{C}$ 的溫度？",
+            options: [
+              "水的沸點太低。",
+              "水在 $0^{\\circ}\\text{C}$ 至 $4^{\\circ}\\text{C}$ 之間會反常膨脹（即遇熱收縮）。",
+              "水無法濕潤玻璃表面。",
+              "水的熱膨脹率非常低。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 水具有反常膨脹：在 $0^{\\circ}\\text{C}$ 至 $4^{\\circ}\\text{C}$ 之間加熱時會收縮（在 $4^{\\circ}\\text{C}$ 時密度達到最大），之後才膨脹。這意味著一個體積值可能對應兩個不同溫度，導致校準模糊。"
+          },
+          {
+            statement: "與標準液體玻璃溫度計相比，<b>熱電偶溫度計</b>的主要優點是什麼？",
+            options: [
+              "它可以在沒有任何物理接觸的情況下測量溫度。",
+              "它的熱容量非常小，因此反應速度極快。",
+              "它不需要進行任何校準。",
+              "其讀數隨溫度的變化總是完美的線性關係。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 熱電偶的測量接點非常小，因此其熱容量極低。它只需吸收或放出極少量的熱量便能達到熱平衡，從而提供近乎即時的反應速度。"
+          },
+          {
+            statement: "臨床溫度計（體溫計）中的<b>狹窄管道（ constriction）</b>有何作用？",
+            options: [
+              "增加溫度計的靈敏度。",
+              "當溫度計從病人身上移開時，防止水銀柱立刻流回玻璃泡。",
+              "使水銀在受熱時膨脹得更快。",
+              "擴大溫度的測量範圍。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 當體溫計從病人身上移開接觸較涼的空氣時，玻璃泡內的水銀會立刻收縮。狹窄管道會使水銀柱在此處斷開，從而將水銀柱鎖定在最高讀數，方便準確讀數，直到手動甩動使其復位。"
+          },
+          {
+            statement: "如何增加液體玻璃溫度計的<b>靈敏度</b>？",
+            options: [
+              "使用較小的玻璃泡和較粗的毛細管。",
+              "使用較大的玻璃泡和較細的毛細管。",
+              "增加玻璃泡保護壁的厚度。",
+              "使用沸點較低的液體。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 較大的玻璃泡裝有較多液體，在溫度上升時會產生較大的絕對體積改變 $\\Delta V$。若將此較大體積改變擠入更幼細的毛細管中，會使液柱上升高度顯著增加，從而提高靈敏度。"
+          },
+          {
+            statement: "攝氏溫標上的絕對零度是多少度？",
+            options: [
+              "$-100^{\\circ}\\text{C}$",
+              "$-273^{\\circ}\\text{C}$",
+              "$-373^{\\circ}\\text{C}$",
+              "$0^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 絕對零度（$0\\text{ K}$）是分子熱運動達到理論最小值的極限溫度。在攝氏溫標上大約等於 $-273.15^{\\circ}\\text{C}$（在教科書中通常粗略記為 $-273^{\\circ}\\text{C}$）。"
+          },
+          {
+            statement: "為什麼溫度計的玻璃泡應該具有<b>較小的熱容量</b>？",
+            options: [
+              "防止玻璃在高溫下破裂。",
+              "避免在測量時顯著改變被測物體的溫度。",
+              "增加玻璃泡的結構強度。",
+              "使溫度計更容易校準。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 當與被測物接觸時，兩者會進行熱傳遞。若溫度計的熱容量很大，它會吸收或釋放大量熱量，從而改變了被測物本身的真實溫度。"
+          },
+          {
+            statement: "當氣體的溫度上升時，從微觀上看，其分子會發生什麼變化？",
+            options: [
+              "分子的平均動能增加。",
+              "分子間的平均勢能減少。",
+              "分子本身的體積膨脹。",
+              "分子的總質量增加。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 宏觀上的溫度直接反映了物質分子隨機熱運動的平均動能（$T \\propto K.E._{avg}$）。"
+          },
+          {
+            statement: "下列哪項正確描述了開氏溫標 ($T$) 與攝氏溫標 ($\\theta$) 之間的關係？",
+            options: [
+              "$T = \\theta + 273$",
+              "$T = \\theta - 273$",
+              "$T = 273 \\theta$",
+              "$T = \\theta / 273$"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 開氏溫標（絕對溫標）比攝氏溫標平移了約 $273$ 個單位，關係式為 $T(\\text{K}) = \\theta(^{\\circ}\\text{C}) + 273$。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "校準溫度計的 $0^{\\circ}\\text{C}$ 時，為什麼應將玻璃泡放入<b>碎冰和水的混合物</b>中，而非整塊純固態冰中？",
+            options: [
+              "融化中的碎冰比整塊固態冰冷得多。",
+              "碎冰與水的混合物能確保良好的熱接觸，並在整體上維持穩定的 $0^{\\circ}\\text{C}$ 熔點溫度。",
+              "碎冰可以防止玻璃泡因熱脹冷縮而碎裂。",
+              "水可以加速玻璃泡內液體的熱膨脹速度。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 潮濕的碎冰與水混合能與玻璃泡表面達成最大接觸面積，確保溫度計迅速與熔冰的穩定標準溫度（$0^{\\circ}\\text{C}$）達到熱平衡。"
+          },
+          {
+            statement: "在利用水浴法校準或測量溫度時，為什麼需要<b>持續攪拌</b>液體？",
+            options: [
+              "加速液體的蒸發率。",
+              "確保液體整體的溫度分布完全均勻。",
+              "提高液體的沸點。",
+              "防止溫度計觸碰到容器的側面壁。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 若不攪拌，液體內部可能形成局部冷熱溫差。持續攪拌能使熱量均勻散佈，確保測得真實的平均溫度。"
+          },
+          {
+            statement: "學生在讀取液體玻璃溫度計讀數時，應如何避免<b>視差（parallax error）</b>？",
+            options: [
+              "總是從刻度上方的高角度俯視讀取數值。",
+              "保持視線與溫度計毛細管垂直，並與液體彎月面的最底部或頂部處於同一水平線。",
+              "在明亮的直射陽光下讀取溫度計數值。",
+              "從側邊斜角透過放大鏡讀取數值。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 避免視差的標準做法是使視線與溫度計垂直，且視線高度必須與毛細管內液體的彎月面齊平。"
+          },
+          {
+            statement: "在標準實驗室中，校準攝氏溫標溫度計所使用的兩個<b>標準固定點</b>是什麼？",
+            options: [
+              "鹽水的冰點和純水的沸點。",
+              "在標準大氣壓（$1\\text{ atm}$）下，純淨融冰的溫度和純水沸騰蒸汽的溫度。",
+              "絕對零度和純水的三相點。",
+              "標準室溫和人體核心溫度。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 攝氏溫標的定義基於標準大氣壓下兩個極易重複再現的物理狀態：熔冰點（定義為 $0^{\\circ}\\text{C}$）和蒸汽點（定義為 $100^{\\circ}\\text{C}$）。"
+          },
+          {
+            statement: "如果一個溫度計的玻璃泡<b>壁非常厚</b>，這會如何影響它的表現？",
+            options: [
+              "它會提高溫度計的靈敏度。",
+              "它會增加溫度計的測量範圍。",
+              "它會減慢反應速度，因為玻璃是熱的良導體但傳熱需要時間。",
+              "這會使液柱在相同溫度改變下上升得更高。"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 玻璃是熱的弱導體（不良導體），較厚的玻璃壁會增加熱阻，導致外部熱量需要更長時間才能傳遞至內部的測溫液體，從而增加了反應時間（即反應變慢）。"
+          },
+          // Calculations
+          {
+            statement: "一個未校準的溫度計在熔冰 ($0^{\\circ}\\text{C}$) 中其液柱長度為 $2.0\\text{ cm}$，在蒸汽 ($100^{\\circ}\\text{C}$) 中長度為 $22.0\\text{ cm}$。求當液柱長度為 $12.0\\text{ cm}$ 時的對應溫度。",
+            options: [
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$",
+              "$55^{\\circ}\\text{C}$",
+              "$60^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- $L_0 = 2.0\\text{ cm}$<br>- $L_{100} = 22.0\\text{ cm}$<br>- $L_t = 12.0\\text{ cm}$<br><br><b>公式：</b><br>$$T = \\frac{L_t - L_0}{L_{100} - L_0} \\times 100$$<br><br><b>代入：</b><br>$$T = \\frac{12.0 - 2.0}{22.0 - 2.0} \\times 100 = \\frac{10.0}{20.0} \\times 100 = 50^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "一個白金電阻溫度計在熔冰中電阻為 $10.0\\ \\Omega$，在蒸汽中為 $30.0\\ \\Omega$。若測得當前電阻為 $15.0\\ \\Omega$，求該處溫度。",
+            options: [
+              "$20^{\\circ}\\text{C}$",
+              "$25^{\\circ}\\text{C}$",
+              "$30^{\\circ}\\text{C}$",
+              "$35^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- $R_0 = 10.0\\ \\Omega$<br>- $R_{100} = 30.0\\ \\Omega$<br>- $R_t = 15.0\\ \\Omega$<br><br><b>公式：</b><br>$$T = \\frac{R_t - R_0}{R_{100} - R_0} \\times 100$$<br><br><b>代入：</b><br>$$T = \\frac{15.0 - 10.0}{30.0 - 10.0} \\times 100 = \\frac{5.0}{20.0} \\times 100 = 25^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "一個線性熱電偶在 $0^{\\circ}\\text{C}$ 下產生 $0.0\\text{ mV}$ 的電壓，在 $100^{\\circ}\\text{C}$ 下產生 $8.0\\text{ mV}$ 的電壓。求當溫度為 $60^{\\circ}\\text{C}$ 時的輸出電壓。",
+            options: [
+              "$4.0\\text{ mV}$",
+              "$4.8\\text{ mV}$",
+              "$5.2\\text{ mV}$",
+              "$5.6\\text{ mV}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- $V_0 = 0.0\\text{ mV}$<br>- $V_{100} = 8.0\\text{ mV}$<br>- $T = 60^{\\circ}\\text{C}$<br><br><b>公式：</b><br>$$V_t = V_0 + \\left(\\frac{T}{100}\\right)(V_{100} - V_0)$$<br><br><b>代入：</b><br>$$V_t = 0.0 + \\left(\\frac{60}{100}\\right)(8.0) = 4.8\\text{ mV}$$"
+          },
+          {
+            statement: "液態氮的溫度為 $-196^{\\circ}\\text{C}$。試將此溫度轉化為絕對溫標開氏溫度（Kelvin）。",
+            options: [
+              "$77\\text{ K}$",
+              "$87\\text{ K}$",
+              "$97\\text{ K}$",
+              "$177\\text{ K}$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b><br>- $\\theta = -196^{\\circ}\\text{C}$<br><br><b>公式：</b><br>$$T = \\theta + 273$$<br><br><b>代入：</b><br>$$T = -196 + 273 = 77\\text{ K}$$"
+          },
+          {
+            statement: "一固定體積氣體溫度計在 $0^{\\circ}\\text{C}$ ($273\\text{ K}$) 下測得壓強為 $1.0 \\times 10^5\\text{ Pa}$。若氣體壓強與絕對溫度成正比，求在 $273^{\\circ}\\text{C}$ ($546\\text{ K}$) 下該氣體的壓強。",
+            options: [
+              "$1.5 \\times 10^5\\text{ Pa}$",
+              "$2.0 \\times 10^5\\text{ Pa}$",
+              "$2.5 \\times 10^5\\text{ Pa}$",
+              "$3.0 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- $P_1 = 1.0 \\times 10^5\\text{ Pa}$ 時 $T_1 = 273\\text{ K}$<br>- $T_2 = 546\\text{ K}$<br><br><b>公式：</b><br>$$P_2 = P_1 \\times \\frac{T_2}{T_1}$$<br><br><b>代入：</b><br>$$P_2 = (1.0 \\times 10^5) \\times \\frac{546}{273} = 2.0 \\times 10^5\\text{ Pa}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "在不純淨的熔冰（含有食鹽雜質）以及高海拔氣壓較低的情況下校準溫度計。下列哪些陳述是正確的？<br>(1) 熔冰的實際溫度會低於 $0^{\\circ}\\text{C}$。<br>(2) 沸水的實際溫度會低於 $100^{\\circ}\\text{C}$。<br>(3) 溫度計上標記的 $100^{\\circ}\\text{C}$ 間隔對應的真實溫度範圍必定比標準情況窄。",
+            options: [
+              "只有 (1)",
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 1,
+            explanation: "<b>評估陳述 (1)：</b> 正確。雜質會導致冰點下降（溶劑性質），因此鹽冰混合物的溫度會低於 $0^{\\circ}\\text{C}$。<br><b>評估陳述 (2)：</b> 正確。海拔高氣壓低，液體的飽和氣壓更容易達到外界大氣壓，因此水的沸點會下降（低於 $100^{\\circ}\\text{C}$）。<br><b>評估陳述 (3)：</b> 錯誤。由於低點和高點兩者均下降了，其實際溫差間隔取決於各自下降的幅度。在沒有給出具體數值的情況下，我們無法判斷該間隔必定變窄。"
+          },
+          {
+            statement: "關於熱電偶溫度計，下列哪些陳述是正確的？<br>(1) 它們的熱容量極小，因此能極快地對溫度改變作出反應。<br>(2) 它們非常適合測量微小、局部的某點溫度。<br>(3) 它們運作時必須維持一個恆定的冷端基準溫度。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。其金屬接觸接點質量微小，熱容量極低，故熱平衡時間極短。<br><b>評估陳述 (2)：</b> 正確。其測溫接點是兩金屬絲的交點，可精確接觸微小局部。<br><b>評估陳述 (3)：</b> 正確。熱電偶產生電動勢與冷熱兩端溫差有關（$V \\propto \\Delta T$），若要得出熱端溫度，必須將冷端基準接點置於已知且恆定的溫度（如 $0^{\\circ}\\text{C}$ 的冰水中）。"
+          },
+          {
+            statement: "溫度計 $X$ 的毛細管內徑（直徑）為 $d$，溫度計 $Y$ 的毛細管內徑為 $2d$。兩者的玻璃泡完全相同並裝有同種液體。求兩者靈敏度的比例（$X : Y$）。",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 3,
+            explanation: "<b>已知：</b> 兩者受熱膨脹體積改變相同。管徑比為 $1:2$。<br><br><b>公式：</b><br>上升高度 $h = \\frac{\\Delta V}{A}$。由於橫截面積 $A \\propto d^2$，故靈敏度 $\\text{Sensitivity} \\propto \\frac{1}{d^2}$。<br><br><b>計算：</b><br>$$\\frac{\\text{Sensitivity}_X}{\\text{Sensitivity}_Y} = \\frac{d_Y^2}{d_X^2} = \\frac{(2d)^2}{d^2} = 4$$"
+          },
+          {
+            statement: "當溫度計突放入熱水中時，液柱高度會先稍微下降然後才持續上升。為什麼？<br>(1) 外層玻璃泡接觸熱水先膨脹，導致內部容積增加。<br>(2) 玻璃的導熱率比內部的液體低。<br>(3) 液體受熱時會先發生暫時性收縮。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。玻璃泡最先接觸並吸收熱量發生膨脹，而內部液體尚未受熱，因而液面暫時下降。<br><b>評估陳述 (2)：</b> 正確。玻璃導熱慢，使上述「玻璃先膨脹、液體後膨脹」的時間差極為明顯。<br><b>評估陳述 (3)：</b> 錯誤。測溫液體遇熱只會膨脹，不會收縮。"
+          },
+          {
+            statement: "一個熱電偶在兩端溫差為 $100^{\\circ}\\text{C}$ 時產生 $10\\text{ mV}$ 的電動勢。當溫差改為 $40^{\\circ}\\text{C}$ 時，產生的電動勢是多少？",
+            options: [
+              "$2\\text{ mV}$",
+              "$4\\text{ mV}$",
+              "$6\\text{ mV}$",
+              "$8\\text{ mV}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $\\Delta T_1 = 100^{\\circ}\\text{C}$ 對應 $10\\text{ mV}$。<br><br><b>公式：</b><br>$$V \\propto \\Delta T \\implies V = \\left(\\frac{10\\text{ mV}}{100^{\\circ}\\text{C}}\\right) \\times 40^{\\circ}\\text{C} = 4\\text{ mV}$$"
+          },
+          {
+            statement: "一個溫度計在熔冰中讀數為 $-5^{\\circ}\\text{C}$，在蒸汽中讀數為 $95^{\\circ}\\text{C}$。若當前讀數為 $45^{\\circ}\\text{C}$，求該物體的真實溫度。",
+            options: [
+              "$40^{\\circ}\\text{C}$",
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$",
+              "$55^{\\circ}\\text{C}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $L_0 = -5$, $L_{100} = 95$, $L_t = 45$。<br><br><b>公式：</b><br>$$T_{\\text{true}} = \\frac{L_t - L_0}{L_{100} - L_0} \\times 100$$<br><br><b>計算：</b><br>$$T_{\\text{true}} = \\frac{45 - (-5)}{95 - (-5)} \\times 100 = \\frac{50}{100} \\times 100 = 50^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "一固定體積氣體溫度計在 $300\\text{ K}$ 下的壓強為 $1.2 \\times 10^5\\text{ Pa}$。當壓強上升至 $2.4 \\times 10^5\\text{ Pa}$ 時，求此時氣體的絕對溫度。",
+            options: [
+              "$150\\text{ K}$",
+              "$450\\text{ K}$",
+              "$600\\text{ K}$",
+              "$1200\\text{ K}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $P_1 = 1.2 \\times 10^5\\text{ Pa}$ 時 $T_1 = 300\\text{ K}$。$P_2 = 2.4 \\times 10^5\\text{ Pa}$。<br><br><b>公式：</b><br>體積固定，則 $T \\propto P$。<br><br><b>計算：</b><br>$$T_2 = T_1 \\times \\frac{P_2}{P_1} = 300 \\times \\frac{2.4 \\times 10^5}{1.2 \\times 10^5} = 600\\text{ K}$$"
+          },
+          {
+            statement: "一個液體玻璃溫度計的玻璃泡體積為 $V$，毛細管內壁截面積為 $A$。下列哪一個項與溫度計的靈敏度成正比？",
+            options: [
+              "$V \\times A$",
+              "$V / A$",
+              "$A / V$",
+              "$1 / (V \\times A)$"
+            ],
+            answer: 1,
+            explanation: "<b>公式：</b> 靈敏度取決於溫度升高時液柱上升的高度 $h$。由於 $h = \\frac{\\Delta V}{A} = \\frac{V \\gamma \\Delta T}{A}$，因此靈敏度與 $V/A$ 成正比。"
+          },
+          {
+            statement: "在一個非標準溫標 $\\theta$ 上，溫度與測溫性質 $X$ 的關係為 $\\theta = 2X - 10$。當 $X = 30$ 時，求該處的溫度 $\\theta$。",
+            options: [
+              "$10$",
+              "$20$",
+              "$50$",
+              "$70$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $\\theta = 2X - 10$ 且 $X = 30$。<br><br><b>代入：</b><br>$$\\theta = 2(30) - 10 = 60 - 10 = 50$$"
+          },
+          {
+            statement: "下列關於水性質的陳述，哪些是正確的？<br>(1) 水在 $4^{\\circ}\\text{C}$ 時密度最大。<br>(2) 當水從 $4^{\\circ}\\text{C}$ 冷卻到 $0^{\\circ}\\text{C}$ 時會膨脹。<br>(3) 因為上述反常膨脹，水非常適合用作校準接近冰點的溫度計。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。水在 $4^{\\circ}\\text{C}$ 時密度達到頂峰。<br><b>評估陳述 (2)：</b> 正確。在 $4^{\\circ}\\text{C}$ 以下冷卻時，水體積不減反增（反常膨脹）。<br><b>評估陳述 (3)：</b> 錯誤。由於反常膨脹导致熱脹冷縮並非單調關係（如 $2^{\\circ}\\text{C}$ 和 $6^{\\circ}\\text{C}$ 體積相同），這會使校準出現雙重可能，完全不適合用於校準測溫性質。"
+          }
+        ]
+      },
+      "1.2": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "物質的<b>內能（internal energy）</b>在微觀上由什麼部分組成？",
+            options: [
+              "僅由分子的平均平移運行動能組成。",
+              "僅由分子間的勢能組成。",
+              "所有分子隨機熱運動的動能與分子間勢能的總和。",
+              "物質整體的總重力勢能。"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 物質微觀下的內能定義為：系統內所有分子隨機運動的動能（平移、振動等）與分子間相互作用勢能的總和。"
+          },
+          {
+            statement: "熱量自發地從物體 $A$ 傳遞到物體 $B$。這意味著兩者在微觀上必須滿足什麼初始條件？",
+            options: [
+              "物體 $A$ 的總內能比 $B$ 大。",
+              "物體 $A$ 的溫度比 $B$ 高。",
+              "物體 $A$ 的質量比 $B$ 大。",
+              "物體 $A$ 的比熱容量比 $B$ 高。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 熱量自發流動的唯一驅動力是溫度差。熱量必定會從溫度較高（分子平均動能較高）的區域流向溫度較低的區域。"
+          },
+          {
+            statement: "下列哪一項描述了非金屬固體中的<b>熱傳導（conduction）</b>微觀機制？",
+            options: [
+              "自由電子在晶格結構中自由擴散與碰撞。",
+              "受熱區域因膨脹產生浮力向上流動。",
+              "電磁波在真空或介質中直線傳播。",
+              "原子振動透過相鄰晶格相互碰撞與傳遞能量。"
+            ],
+            answer: 3,
+            explanation: "<b>選項 D 正確：</b> 非金屬固體中幾乎沒有自由電子。熱傳導主要依靠晶格振動：受熱原子振動加劇，碰撞相鄰原子並傳遞能量。"
+          },
+          {
+            statement: "為什麼<b>對流（convection）</b>只會發生在流體（液體和氣體）中，而無法發生在固態金屬內？",
+            options: [
+              "固體的比熱容量太高。",
+              "固體內的分子被鎖定在固定的晶格位置上，無法自由集體流動。",
+              "固體會完全吸收所有紅外線輻射。",
+              "固體擁有太多自由電子。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 對流依賴於流體密度的改變進而引起物質的集體流動。固體分子僅能在固定平衡位置附近振動，無法產生宏觀位移流動。"
+          },
+          {
+            statement: "下列哪種表面是熱輻射的<b>最佳發射體</b>，同時也是<b>最佳吸收體</b>？",
+            options: [
+              "光亮銀色表面",
+              "啞黑色（無光澤黑）表面",
+              "光亮白色表面",
+              "啞白色表面"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 啞黑色表面幾乎不反射入射的電磁波，是極佳的吸收體；根據基爾霍夫輻射定律，良好的吸收體在熱平衡下也必然是優良的發射體。"
+          },
+          {
+            statement: "在相同的室溫（$20^{\\circ}\\text{C}$）下，用手觸摸鐵塊會比觸摸木塊感覺更涼。這是為什麼？",
+            options: [
+              "鐵塊的實際溫度比木塊低。",
+              "鐵塊的比熱容量比木塊高。",
+              "鐵塊的導熱率（thermal conductivity）高，能更快地將手上的熱量導走。",
+              "木塊內部含有自身的熱源。"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 由於室溫低於體溫（~$37^{\\circ}\\text{C}$），觸摸時熱量會流向物體。金屬是熱的良導體，能極快地將皮膚表面的熱量導走，使大腦接收到「冷」的訊號。"
+          },
+          {
+            statement: "下列哪一項描述了液體受熱產生<b>對流</b>的物理過程？",
+            options: [
+              "受熱液體收縮，密度變大並向上升起。",
+              "受熱液體膨脹，密度變小，在周圍較冷液體的浮力作用下上升。",
+              "自由電子將受熱粒子直接帶到液體表面。",
+              "熱輻射波直接將分子推向液面。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 液體局部受熱膨脹，密度降低。在重力場中，周圍密度較大的冷液體會下沉，將受熱密度較小的液體向上擠壓推升，形成對流環流。"
+          },
+          {
+            statement: "太陽的熱能是如何透過太空的真空環境傳遞到地球的？",
+            options: [
+              "經由自由太空質子的傳導作用",
+              "經由太陽風的對流作用",
+              "以電磁波形式進行的熱輻射（radiation）",
+              "跨越行星間氣體分子的晶格振動"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 熱輻射是唯一不需要物質介質的傳熱方式，它以電磁波（主要是紅外線）的形式在真空中直線傳播。"
+          },
+          {
+            statement: "保溫瓶（vacuum flask）的哪項設計是為了阻隔<b>熱傳導與對流</b>？",
+            options: [
+              "鍍銀的玻璃雙層內壁。",
+              "雙層玻璃壁之間的真空夾層設計。",
+              "底部的厚橡膠墊墊圈。",
+              "高反射率的塑膠外殼。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 傳導與對流皆必須仰賴物質粒子（原子或分子）作介質。真空夾層內沒有任何物質，因此能完全阻止傳導和對流。"
+          },
+          {
+            statement: "當一塊銅受熱（由 $20^{\\circ}\\text{C}$ 升溫至 $50^{\\circ}\\text{C}$，且未融化）時，其微觀分子會發生什麼變化？",
+            options: [
+              "分子的平均振動動能增加。",
+              "分子脫離晶格結構並開始流動。",
+              "每個金屬原子本身的實體大小膨脹。",
+              "分子間的相互作用勢能降為零。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 固體升溫意味著分子平均動能增加。在固態中，分子僅能在固定晶格位置附近振動，因此其平均振動動能（以及振動振幅）會變大。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "學生同時拿著相同厚度的玻璃管與銅管，並用本生燈加熱兩管的另一端。為什麼銅管那端會先感到燙手？",
+            options: [
+              "銅的密度比玻璃低。",
+              "銅內有大量自由電子，是熱的良導體；而玻璃是熱的不良導體。",
+              "玻璃導熱是利用自由電子，而不是晶格振動。",
+              "銅的熔點比玻璃低得多。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 金屬銅內存在高濃度的自由電子，能自由移動並極快地擴散與傳遞熱動能；而玻璃是非金屬，不具備自由電子，熱傳導極慢。"
+          },
+          {
+            statement: "為什麼家用電熱水壺的加熱元件（發熱絲）總是裝在壺的<b>底部</b>？",
+            options: [
+              "水受熱時會收縮且密度增加。",
+              "底部的水受熱膨脹，密度降低而上升，從而產生對流，將整壺水加熱。",
+              "水本身是熱的極佳良導體。",
+              "這能防止加熱元件在高溫下融化。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 加熱元件置於底部能確保熱水向上流動、冷水下沉。這種對流過程是液體整體高效均勻傳熱的最佳途徑。"
+          },
+          {
+            statement: "雙層玻璃窗之間的極薄空氣夾層是如何減少熱量流失的？",
+            options: [
+              "空氣是熱的極佳良導體。",
+              "空氣層如同真空一樣能阻擋輻射。",
+              "空氣是熱的不良導體，且極窄的夾層能抑制大型空氣對流的形成。",
+              "玻璃窗能完全吸收並儲存所有傳來的能量。"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 氣體分子間距極大，是極佳的絕熱體。將夾層設計得極窄可使空氣分子難以自由流動，從而有效地限制了對流的發生。"
+          },
+          {
+            statement: "為什麼家用雪櫃（冰箱）背面的散熱片都被漆成<b>啞黑色</b>？",
+            options: [
+              "吸收廚房內的光線以保持壓縮機溫熱。",
+              "啞黑色表面是熱輻射的極佳發射體，能最大化散熱速度。",
+              "黑色漆能阻止散熱片金屬發生熱膨脹。",
+              "完全阻止散熱片周圍空氣發生對流。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 啞黑色表面能高效發射紅外線熱輻射，使雪櫃冷媒帶出的熱能能以最高效率輻射散失至外界空氣中。"
+          },
+          {
+            statement: "在熱茶杯上蓋上塑膠蓋。這主要是<b>抑制</b>了哪種傳熱過程？",
+            options: [
+              "經由杯壁傳導的熱流失",
+              "經由外表面的熱輻射",
+              "液面蒸發產生的熱流失以及熱空氣的對流",
+              "經由杯底的熱傳導"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 茶杯蓋子阻擋了水蒸汽的逸出（防止汽化帶走潛熱），同時也阻止了杯口熱空氣向上對流流失。"
+          },
+          // Calculations
+          {
+            statement: "一個太陽能熱水器接收熱能的功率為 $800\\text{ W}$。若它運行了 $120\\text{ 秒}$，求它在此期間共吸收了多少熱能？",
+            options: [
+              "$6.67\\text{ kJ}$",
+              "$9.60\\text{ kJ}$",
+              "$96.0\\text{ kJ}$",
+              "$960\\text{ kJ}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b><br>- 功率 $P = 800\\text{ W}$<br>- 時間 $t = 120\\text{ 秒}$<br><br><b>公式：</b><br>$$Q = P \\times t$$<br><br><b>代入：</b><br>$$Q = 800 \\times 120 = 96000\\text{ J} = 96.0\\text{ kJ}$$"
+          },
+          {
+            statement: "一間房間經由玻璃窗向外散失熱量的功率為 $300\\text{ J s}^{-1}$。求在 $5.0\\text{ 分鐘}$ 內流失的總熱能。",
+            options: [
+              "$1.5\\text{ kJ}$",
+              "$15.0\\text{ kJ}$",
+              "$90.0\\text{ kJ}$",
+              "$150\\text{ kJ}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b><br>- 散熱功率 $P = 300\\text{ W}$<br>- 時間 $t = 5.0\\text{ 分鐘} = 300\\text{ 秒}$<br><br><b>公式：</b><br>$$Q = P \\times t$$<br><br><b>代入：</b><br>$$Q = 300 \\times 300 = 90000\\text{ J} = 90.0\\text{ kJ}$$"
+          },
+          {
+            statement: "一個額定功率為 $100\\text{ W}$ 的電發熱器被用於加熱金屬塊。若該發熱器的效率只有 $80\\%$，求它實際傳遞給金屬塊的傳熱功率。",
+            options: [
+              "$20\\text{ W}$",
+              "$80\\text{ W}$",
+              "$100\\text{ W}$",
+              "$120\\text{ W}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 輸入功率 $P_{in} = 100\\text{ W}$<br>- 效率 $\\eta = 80\\% = 0.80$<br><br><b>公式：</b><br>$$P_{out} = P_{in} \\times \\eta$$<br><br><b>代入：</b><br>$$P_{out} = 100 \\times 0.80 = 80\\text{ W}$$"
+          },
+          {
+            statement: "陽光垂直照射在一個面積為 $2.0\\text{ m}^2$ 的太陽能板上。若太陽輻射強度為 $600\\text{ W m}^{-2}$，求太陽能板所接收的總輻射功率。",
+            options: [
+              "$300\\text{ W}$",
+              "$1200\\text{ W}$",
+              "$1800\\text{ W}$",
+              "$2400\\text{ W}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 輻射強度 $I = 600\\text{ W m}^{-2}$<br>- 面積 $A = 2.0\\text{ m}^2$<br><br><b>公式：</b><br>$$P = I \\times A$$<br><br><b>代入：</b><br>$$P = 600 \\times 2.0 = 1200\\text{ W}$$"
+          },
+          {
+            statement: "一個高溫固體塊向周圍環境散失了 $500\\text{ J}$ 的能量。若其中經由熱輻射散失了 $150\\text{ J}$，求經由傳導和對流結合散失的能量。",
+            options: [
+              "$150\\text{ J}$",
+              "$350\\text{ J}$",
+              "$500\\text{ J}$",
+              "$650\\text{ J}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 總散失熱能 $Q_{total} = 500\\text{ J}$<br>- 輻射散失 $Q_{rad} = 150\\text{ J}$<br><br><b>公式：</b><br>$$Q_{cond+conv} = Q_{total} - Q_{rad}$$<br><br><b>代入：</b><br>$$Q_{cond+conv} = 500 - 150 = 350\\text{ J}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "試比較 $1\\text{ kg}$ 處於 $100^{\\circ}\\text{C}$ 的水與 $1\\text{ kg}$ 處於 $100^{\\circ}\\text{C}$ 的水蒸汽。下列哪些陳述是正確的？<br>(1) 它們分子的平均動能相同。<br>(2) 水蒸汽具有較高的內能。<br>(3) 水蒸汽分子間的勢能較大。",
+            options: [
+              "只有 (1)",
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。兩者溫度相同，代表其分子熱運動的平均動能完全相同。<br><b>評估陳述 (2)：</b> 正確。水轉化為蒸汽需要吸收汽化潛熱，因此蒸汽總內能高得多。<br><b>評估陳述 (3)：</b> 正確。水蒸汽分子間距大，代表分子間的吸引力已被克服，因此其勢能（相對於互相接近的水分子）要大得多。"
+          },
+          {
+            statement: "兩根由同種金屬製成的圓柱形棒 $A$ 和 $B$ 被置於相同的溫度差下。棒 $A$ 的橫截面積是棒 $B$ 的兩倍，但長度與棒 $B$ 相同。求兩棒傳導傳熱率之比 ($A : B$ )。",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 材料、長度及溫差均相同。橫截面積 $A_A = 2 A_B$。<br><br><b>公式：</b><br>導熱率 $\\frac{Q}{t} \\propto \\text{橫截面積 } A$。因此傳熱率比值直接等於其面積之比，即 $2:1$。"
+          },
+          {
+            statement: "下列哪些因素會影響一個物體向外發射熱輻射的功率？<br>(1) 物體的絕對溫度。<br>(2) 物體的表面積。<br>(3) 物體表面的顏色與粗糙度。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。輻射發射功率與絕對溫度的四次方成正比（$P \\propto T^4$）。<br><b>評估陳述 (2)：</b> 正確。表面積越大，其向外發射電磁波的窗口越大。<br><b>評估陳述 (3)：</b> 正確。啞黑色、粗糙表面發射率（emissivity）遠高於平滑銀色表面。"
+          },
+          {
+            statement: "在白天海陸風形成過程中，陸地上空受熱空氣上升。下列哪些陳述是正確的？<br>(1) 陸地受熱比海洋快，因為沙石的比熱容量比水低。<br>(2) 陸地上方的空氣膨脹且密度降低。<br>(3) 較涼爽的空氣會從陸地吹向海洋。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。陸地岩石比熱容量低，吸收相同日光幅射後溫升顯著高於海洋。<br><b>評估陳述 (2)：</b> 正確。受熱空氣體積膨脹，密度小於周圍冷空氣而上升。<br><b>評估陳述 (3)：</b> 錯誤。高空的冷空氣下沉至海面，使海面氣壓高於陸地，因此較涼爽空氣會自海面吹向陸地（稱為海風）。"
+          },
+          {
+            statement: "下列關於保溫瓶設計的陳述，哪些是正確的？<br>(1) 瓶內真空設計能減少經由傳導流失的熱量。<br>(2) 瓶內真空設計能減少經由對流流失的熱量。<br>(3) 雙層內壁鍍銀能減少經由輻射流失的熱量。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1) & (2)：</b> 正確。傳導與對流都需要實體物質分子碰撞或流動來傳能，真空消除了介質因而切斷這兩渠道。<br><b>評估陳述 (3)：</b> 正確。銀色鏡面能將紅外線熱輻射強烈反射回瓶內，阻擋其向外輻射。"
+          },
+          {
+            statement: "兩面牆壁由同種材料製成且面積相同。牆壁 $X$ 的厚度是牆壁 $Y$ 的兩倍。求在相同溫度差下，兩牆導熱散失熱量率之比 ($X : Y$ )。",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 橫截面積、材料、溫差相同。厚度 $d_X = 2 d_Y$。<br><br><b>公式：</b><br>導熱率 $\\frac{Q}{t} \\propto \\frac{1}{\\text{厚度 } d}$。因此，厚度加倍，傳熱率減半，比例為 $1:2$。"
+          },
+          {
+            statement: "在一個絕熱容器中，快速壓縮一固定質量的理想氣體。下列哪些陳述是正確的？<br>(1) 有外力對氣體作功。<br>(2) 氣體的內能增加。<br>(3) 氣體的溫度上升。",
+            options: [
+              "只有 (1)",
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。外力推動活塞壓縮氣體，作了機械功。<br><b>評估陳述 (2)：</b> 正確。系統絕熱（$Q = 0$）。根據熱力學第一定律（$\\Delta U = Q + W$），作功 $W$ 轉化為內能增量。<br><b>評估陳述 (3)：</b> 正確。理想氣體內能增加代表其分子的平均熱運動動能增加，故宏觀溫度必然上升。"
+          },
+          {
+            statement: "茶杯 $A$ 被漆成啞黑色，茶杯 $B$ 被漆成光亮銀色。兩者形狀完全相同，且裝有等質量且同樣處於 $100^{\\circ}\\text{C}$ 的熱水。下列哪項說法正確？",
+            options: [
+              "茶杯 $B$ 降溫比 $A$ 快。",
+              "茶杯 $A$ 降溫比 $B$ 快，因為啞黑色是更好的熱輻射發射體。",
+              "兩杯茶以完全相同的速度冷卻。",
+              "茶杯 $B$ 周圍空氣的傳導速度比 $A$ 快。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 啞黑色是極佳的熱發射體，其向外輻射紅外線的效率遠高於反射性極強的銀色，因此茶杯 $A$ 會因熱輻射失熱更快而迅速降溫。"
+          },
+          {
+            statement: "當 $0^{\\circ}\\text{C}$ 的冰熔化為 $0^{\\circ}\\text{C}$ 的水時，在微觀上會發生什麼？<br>(1) 分子的平均動能增加。<br>(2) 分子間相互作用的勢能增加。<br>(3) 分子間的平均距離變大。",
+            options: [
+              "只有 (2)",
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 錯誤。熔化過程中溫度維持 $0^{\\circ}\\text{C}$ 不變，因此分子的平均動能保持不變。<br><b>評估陳述 (2)：</b> 正確。吸收的熱量（熔化潛熱）用於克服和打破固體格子分子鍵，使分子勢能增加。<br><b>評估陳述 (3)：</b> 錯誤。水有反常特性，冰熔化為水時體積反而收縮，代表分子間平均間距微觀上變小。"
+          },
+          {
+            statement: "兩片完全相同的太陽能板 $X$ 和 $Y$ 接收等強度的太陽能。板 $X$ 是銀色（反射 $80\\%$ 光，吸收 $20\\%$），板 $Y$ 是啞黑色（吸收 $100\\%$ ）。求兩板吸收太陽能功率之比 ($X : Y$ )。",
+            options: [
+              "$1 : 5$",
+              "$1 : 4$",
+              "$4 : 1$",
+              "$5 : 1$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b><br>- 板 $X$ 吸收率 = $20\\%$<br>- 板 $Y$ 吸收率 = $100\\%$<br><br><b>代入比例：</b><br>$$\\frac{\\text{Power}_X}{\\text{Power}_Y} = \\frac{20\\%}{100\\%} = \\frac{1}{5}$$"
+          }
+        ]
+      },
+      "1.3": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "下列哪項是物體<b>熱容量（heat capacity）</b>的正確定義？",
+            options: [
+              "使該物體溫度上升 $1^{\\circ}\\text{C}$ 所需的熱量。",
+              "使 $1\\text{ kg}$ 的該物質溫度上升 $1^{\\circ}\\text{C}$ 所需的熱量。",
+              "物體內部所包含的所有熱能總和。",
+              "每秒通過該物體的傳熱速率。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 熱容量 $C$ 定義為使整個物體溫度上升 $1^{\\circ}\\text{C}$ 或 $1\\text{ K}$ 所需的能量（$C = Q / \\Delta T$）。選項 B 則是「比熱容量」的定義。"
+          },
+          {
+            statement: "一種物質具有<b>高比熱容量（high specific heat capacity）</b>在物理上意味著什麼？",
+            options: [
+              "它升溫和降溫的速度都極快。",
+              "它需要吸收極大量的熱能才能產生很小的溫度變化。",
+              "它在非常低的溫度下就會熔化。",
+              "它是熱的極佳良導體。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 比熱容量 $c$ 指的是 $1\\text{ kg}$ 的物質升高 $1^{\\circ}\\text{C}$ 所需的能量。數值高代表它吸熱或放熱的能力極強，而自身溫度起伏卻很小。"
+          },
+          {
+            statement: "為什麼水在汽車引擎散熱器和中央供暖系統中被廣泛用作<b>冷卻劑</b>？",
+            options: [
+              "水的冰點非常低。",
+              "水具有特別高的比熱容量，單位質量能帶走或儲存極大量的熱能。",
+              "水的密度低於其他所有液體。",
+              "水的體積隨溫度呈完美的線性膨脹。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 水的比熱容量高達 $4200\\text{ J kg}^{-1}\\text{K}^{-1}$。這意味著等質量下，水升溫時能從引擎吸收最多熱量，而自身溫度卻不致過高。"
+          },
+          {
+            statement: "兩個質量相同的金屬塊 $A$ 和 $B$，塊 $A$ 的比熱容量比 $B$ 高。若它們吸收了相同數量的熱量，哪一個金屬塊的<b>溫度升幅較大</b>？",
+            options: [
+              "金屬塊 $A$",
+              "金屬塊 $B$",
+              "兩者的溫度升幅相同。",
+              "這取決於它們的初始溫度。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 根據公式 $Q = mc\\Delta T$，溫升 $\\Delta T = Q / (mc)$。在 $Q$ 和 $m$ 相同下，溫升與比熱容量 $c$ 成反比。比熱容量較小的金屬塊 $B$ 升溫必然較大。"
+          },
+          {
+            statement: "對於一個質量為 $m$ 且比熱容量為 $c$ 的物體，其<b>熱容量</b> $C$ 與其比熱容量 $c$ 有何關係？",
+            options: [
+              "$C = m / c$",
+              "$C = c / m$",
+              "$C = m \\times c$",
+              "$C = m + c$"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 整體熱容量等於質量乘以比熱容量，即 $C = mc$。"
+          },
+          {
+            statement: "下列哪一個是<b>比熱容量</b>的正確國際單位（SI unit）？",
+            options: [
+              "$\\text{J }^{\\circ}\\text{C}^{-1}$",
+              "$\\text{J kg}^{-1\\text{ }}^{\\circ}\\text{C}^{-1}$",
+              "$\\text{W kg}^{-1}\\text{K}^{-1}$",
+              "$\\text{J kg }^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 從 $c = Q / (m \\Delta T)$ 可知，單位是焦耳每公斤每攝氏度（$\\text{J kg}^{-1\\text{ }}^{\\circ}\\text{C}^{-1}$ 或 $\\text{J kg}^{-1}\\text{K}^{-1}$）。"
+          },
+          {
+            statement: "為什麼沿海地區白天和黑夜之間的<b>溫差變化</b>通常比內陸沙漠地區小得多？",
+            options: [
+              "海水導熱的速度比沙石快得多。",
+              "水的比熱容量遠高於沙石，具有極佳的溫度穩定作用。",
+              "沙漠在白天距離太陽更近。",
+              "海水在白天會反射所有的太陽輻射。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 水的比熱容量極高，吸熱或放熱時升溫降溫均很慢；而沙石比熱容量低，白天暴曬迅速升溫，夜間散熱迅速降溫。"
+          },
+          {
+            statement: "兩個由同一種金屬製成的塊。金屬塊 $X$ 的質量是金屬塊 $Y$ 的兩倍。若兩者吸收相同的熱量，則 $X$ 的溫度升幅是 $Y$ 的多少倍？",
+            options: [
+              "兩倍",
+              "一半",
+              "相同",
+              "四倍"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 同種材料代表比熱容量 $c$ 相同。根據 $\\Delta T = Q / (mc)$，質量 $m$ 為兩倍時，溫度升幅將變為原來的一半。"
+          },
+          {
+            statement: "當固體吸收熱能升溫（無物態改變）時，微觀上會發生什麼變化？",
+            options: [
+              "分子的實體體積膨脹。",
+              "分子隨機振動的平均動能增加。",
+              "分子間作用力降為零。",
+              "分子開始脫離格子互相滑動。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 固體升溫意味著分子振動加劇，亦即隨機熱振動的平均動能增加。格子並未被打破，分子不會滑動。"
+          },
+          {
+            statement: "一個質量為 $m$ 的銅塊其熱容量為 $C$。若將該銅塊切成完全相同的一半，則每一半的新熱容量是多少？",
+            options: [
+              "$C / 2$",
+              "$C$",
+              "$2C$",
+              "$C / 4$"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 熱容量 $C = mc$ 與質量成正比。銅塊切半，質量減半，故每一半的熱容量變為原來的二分之一。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "在利用電熱器測量金屬塊比熱容量的實驗中，為什麼要用<b>棉花（lagging）</b>包裹金屬塊？",
+            options: [
+              "防止電熱器過熱損壞。",
+              "儘可能減少向周圍環境散失的熱量，以提高測量的準確度。",
+              "使金屬塊溫升與加熱時間呈完美線性關係。",
+              "確保金屬塊在實驗過程中不會導電。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 絕熱包裹能防止熱量散失至空氣。這能確保電熱器放出的絕大部分熱能都確實用於提升金屬塊的溫度。"
+          },
+          {
+            statement: "在上述金屬塊比熱容量測量實驗中，為什麼要在插入溫度計的孔洞內滴入數滴<b>油</b>？",
+            options: [
+              "潤滑溫度計以便插入。",
+              "排除孔洞內的空氣，確保金屬塊與溫度計玻璃泡之間有良好的熱接觸。",
+              "防止溫度計因高溫膨脹破裂。",
+              "降低金屬的熔點。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 空氣是熱的不良導體。滴入油能取代空氣間隙，形成良好的傳熱通路，使溫度計讀數能快速、準確地反映金屬塊內部的真實溫度。"
+          },
+          {
+            statement: "在測量液體比熱容量時，為什麼必須<b>持續攪拌</b>液體？",
+            options: [
+              "加速液體汽化蒸發。",
+              "確保液體內部溫度均勻。",
+              "防止液體過早沸騰。",
+              "增加液體整體的比熱容量。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 液體傳熱較慢。攪拌能帶動液體對流，使電熱器釋放的熱量迅速均勻分布，溫度計方能測得液體的真實平均溫度。"
+          },
+          {
+            statement: "一個金屬塊被恆定功率電熱器加熱。若繪製溫度升幅 $\\Delta T$ 對吸收熱量 $Q$ 的關係圖，該圖線<b>斜率的倒數</b>（$1/\\text{slope}$）代表什麼？",
+            options: [
+              "金屬塊的質量",
+              "金屬塊的比熱容量",
+              "金屬塊的熱容量",
+              "金屬塊的導熱係數"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 關係式為 $Q = C \\Delta T \\implies \\Delta T = \\frac{1}{C} Q$。斜率即為 $\\frac{1}{C}$，因此斜率的倒數 $1/\\text{slope}$ 代表熱容量 $C$。"
+          },
+          {
+            statement: "為什麼實驗中測得的液體比熱容量數值通常會<b>大於</b>教科書上的標準參考值？",
+            options: [
+              "部分電熱器釋放的熱量散失到周圍環境中，導致達到相同溫升需要記錄更多的輸入電能。",
+              "液體在實驗過程中吸收了空氣中的雜質。",
+              "電熱器在液體中的實際功率會變大。",
+              "液體因蒸發而使其質量減少。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 因為有熱量流失，實際溫升時輸入的電能 $Q_{\\text{measured}} > Q_{\\text{useful}}$。利用 $c = \\frac{Q}{m\\Delta T}$ 計算時，偏大的 $Q$ 會導致算出的比熱容量 $c$ 偏大。"
+          },
+          // Calculations
+          {
+            statement: "一個功率為 $50\\text{ W}$ 的電熱器加熱質量為 $2\\text{ kg}$ 的金屬塊 $100\\text{ 秒}$。若金屬塊升溫 $10^{\\circ}\\text{C}$，求該金屬的比熱容量。（假設沒有熱量流失）",
+            options: [
+              "$150\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$250\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$350\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$500\\text{ J kg}^{-1}\\text{K}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 功率 $P = 50\\text{ W}$，質量 $m = 2\\text{ kg}$<br>- 時間 $t = 100\\text{ 秒}$，溫升 $\\Delta T = 10^{\\circ}\\text{C}$<br><br><b>公式：</b><br>$$Q = P \\times t = m c \\Delta T \\implies c = \\frac{P \\times t}{m \\times \\Delta T}$$<br><br><b>計算：</b><br>$$c = \\frac{50 \\times 100}{2 \\times 10} = \\frac{5000}{20} = 250\\text{ J kg}^{-1}\\text{K}^{-1}$$"
+          },
+          {
+            statement: "求一個質量為 $3\\text{ kg}$ 的銅塊的熱容量。（已知銅的比熱容量為 $400\\text{ J kg}^{-1}\\text{K}^{-1}$）",
+            options: [
+              "$120\\text{ J K}^{-1}$",
+              "$600\\text{ J K}^{-1}$",
+              "$1200\\text{ J K}^{-1}$",
+              "$2400\\text{ J K}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b><br>- 質量 $m = 3\\text{ kg}$，比熱容量 $c = 400\\text{ J kg}^{-1}\\text{K}^{-1}$<br><br><b>公式：</b><br>$$C = m \\times c$$<br><br><b>計算：</b><br>$$C = 3 \\times 400 = 1200\\text{ J K}^{-1}$$"
+          },
+          {
+            statement: "求將 $0.5\\text{ kg}$ 的水加熱升溫 $20^{\\circ}\\text{C}$ 所需的熱量。（水的比熱容量為 $4200\\text{ J kg}^{-1}\\text{K}^{-1}$）",
+            options: [
+              "$21\\text{ kJ}$",
+              "$42\\text{ kJ}$",
+              "$84\\text{ kJ}$",
+              "$105\\text{ kJ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 質量 $m = 0.5\\text{ kg}$，溫升 $\\Delta T = 20^{\\circ}\\text{C}$<br>- 比熱容量 $c = 4200\\text{ J kg}^{-1}\\text{K}^{-1}$<br><br><b>公式：</b><br>$$Q = m c \\Delta T$$<br><br><b>計算：</b><br>$$Q = 0.5 \\times 4200 \\times 20 = 42000\\text{ J} = 42\\text{ kJ}$$"
+          },
+          {
+            statement: "在一個保溫杯內，將 $1\\text{ kg}$ 處於 $80^{\\circ}\\text{C}$ 的熱水與 $1\\text{ kg}$ 處於 $20^{\\circ}\\text{C}$ 的冷水混合。求混合後的最終平衡溫度。",
+            options: [
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$",
+              "$55^{\\circ}\\text{C}$",
+              "$60^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 兩部分質量相同且皆為水。熱釋放量等於冷吸收量：<br>$$m c (80 - T_f) = m c (T_f - 20) \\implies 80 - T_f = T_f - 20$$<br>$$2T_f = 100 \\implies T_f = 50^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "一個額定功率為 $1000\\text{ W}$ 的電熱水壺將 $2\\text{ kg}$ 的水從 $20^{\\circ}\\text{C}$ 加熱至 $70^{\\circ}\\text{C}$。若不計熱量流失，求所需時間。（水的比熱容量為 $4200\\text{ J kg}^{-1}\\text{K}^{-1}$）",
+            options: [
+              "$210\\text{ 秒}$",
+              "$320\\text{ 秒}$",
+              "$420\\text{ 秒}$",
+              "$500\\text{ 秒}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b><br>- 功率 $P = 1000\\text{ W}$，質量 $m = 2\\text{ kg}$<br>- 溫度改變 $\\Delta T = 70 - 20 = 50^{\\circ}\\text{C}$<br>- 比熱容量 $c = 4200\\text{ J kg}^{-1}\\text{K}^{-1}$<br><br><b>公式：</b><br>$$P \\times t = m c \\Delta T \\implies t = \\frac{m c \\Delta T}{P}$$<br><br><b>計算：</b><br>$$t = \\frac{2 \\times 4200 \\times 50}{1000} = 420\\text{ 秒}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "兩個金屬塊 $X$（質量為 $m$）和 $Y$（質量為 $2m$）吸收了相同數目的熱量。若 $X$ 的溫度升幅是 $Y$ 的兩倍，求兩金屬比熱容量之比（$c_X : c_Y$）。",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$1 : 1$",
+              "$2 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $Q_X = Q_Y$，質量 $m_X = m, m_Y = 2m$，且溫升 $\\Delta T_X = 2 \\Delta T_Y$。<br><br><b>公式：</b><br>$$c = \\frac{Q}{m \\Delta T}$$<br><br><b>比例計算：</b><br>$$\\frac{c_X}{c_Y} = \\frac{m_Y \\Delta T_Y}{m_X \\Delta T_X} = \\frac{(2m) (\\Delta T_Y)}{(m) (2 \\Delta T_Y)} = 1$$"
+          },
+          {
+            statement: "用一個恆定功率電熱器加熱質量為 $m$ 的液體，得到一個溫度－時間關係圖。若將液體質量改為 $2m$，並用同一個發熱器重複實驗，其溫度－時間關係圖的斜率會如何改變？（不計熱量流失）",
+            options: [
+              "斜率變為原來的兩倍。",
+              "斜率變為原來的一半。",
+              "斜率保持不變。",
+              "斜率變為原來的四分之一。"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 溫度對時間圖的斜率代表溫升率 $\\frac{\\Delta T}{t}$。<br><br><b>公式：</b><br>$$P \\times t = m c \\Delta T \\implies \\text{Slope } \\frac{\\Delta T}{t} = \\frac{P}{m c}$$<br>可見斜率與質量 $m$ 成反比。當質量 $m$ 變為兩倍，斜率變為一半。"
+          },
+          {
+            statement: "金屬塊 $A$ 的熱容量是金屬塊 $B$ 的兩倍。若兩塊金屬吸收了相同數量的熱能，求它們的溫度升幅之比（$\\Delta T_A : \\Delta T_B$ ）。",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $C_A = 2 C_B$ 且 $Q_A = Q_B$。<br><br><b>公式：</b><br>$$\\Delta T = \\frac{Q}{C} \\implies \\Delta T \\propto \\frac{1}{C}$$<br><br><b>代入：</b><br>$$\\frac{\\Delta T_A}{\\Delta T_B} = \\frac{C_B}{C_A} = \\frac{C_B}{2 C_B} = \\frac{1}{2}$$"
+          },
+          {
+            statement: "下列關於比熱容量的陳述，哪些是正確的？<br>(1) 沙石的比熱容量比水低。<br>(2) 與等質量的沙石相比，水需要更多能量才能升高相同的溫度。<br>(3) 在夜間，沙石的降溫速度比水慢。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。沙石吸熱升溫、放熱降溫均很快，故其比熱容量小於水。<br><b>評估陳述 (2)：</b> 正確。因為水的比熱容量大，要達到相同溫升，水需吸收更多能量。<br><b>評估陳述 (3)：</b> 錯誤。沙石比熱容量小，在夜間散失相同熱量下，其降溫速度遠比水*快*。"
+          },
+          {
+            statement: "在一個完全絕熱的容器內，將 $1\\text{ kg}$ 處於 $60^{\\circ}\\text{C}$ 的水與 $2\\text{ kg}$ 處於 $30^{\\circ}\\text{C}$ 的水混合。求最終平衡溫度。",
+            options: [
+              "$35^{\\circ}\\text{C}$",
+              "$40^{\\circ}\\text{C}$",
+              "$45^{\\circ}\\text{C}$",
+              "$50^{\\circ}\\text{C}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $m_1 = 1\\text{ kg}, T_1 = 60^{\\circ}\\text{C}, m_2 = 2\\text{ kg}, T_2 = 30^{\\circ}\\text{C}$。<br><br><b>公式：</b><br>$$\\text{熱釋放} = \\text{熱吸收} \\implies m_1 c (T_1 - T_f) = m_2 c (T_f - T_2)$$<br><br><b>代入：</b><br>$$1 \\times (60 - T_f) = 2 \\times (T_f - 30) \\implies 60 - T_f = 2T_f - 60$$<br>$$3T_f = 120 \\implies T_f = 40^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "下列哪些實驗誤差會使測得的金屬塊比熱容量數值大於真實值？<br>(1) 熱量透過絕熱層散失到周圍環境。<br>(2) 部分電熱器放出的熱能被電熱器本身和溫度計吸收。<br>(3) 在加熱開始前，金屬塊表面是濕的。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估 (1) & (2)：</b> 正確。流失至空氣或被器具吸收的熱能均使有用熱量減少，意味著需要消耗更多電能才能達到預定溫升，導致計算結果偏大。<br><b>評估 (3)：</b> 正確。金屬塊表面的水蒸發會吸收汽化潛熱，消耗額外的電能，進而導致算出的比熱容量偏大。"
+          },
+          {
+            statement: "電熱器對質量為 $1\\text{ kg}$ 的金屬塊 $X$ 和質量為 $2\\text{ kg}$ 的金屬塊 $Y$ 加熱（加熱功率相同）。溫度－時間關係圖顯示，$X$ 的斜率是 $Y$ 的兩倍。求兩金屬比熱容量之比（$c_X : c_Y$）。",
+            options: [
+              "$1 : 2$",
+              "$1 : 1$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $m_X = 1, m_Y = 2$。斜率 $\\text{Slope} \\propto \\frac{1}{mc}$。且 $\\text{Slope}_X = 2 \\text{Slope}_Y$。<br><br><b>計算：</b><br>$$\\frac{P}{m_X c_X} = 2 \\left(\\frac{P}{m_Y c_Y}\\right) \\implies \\frac{1}{1 \\times c_X} = \\frac{2}{2 \\times c_Y} \\implies \\frac{1}{c_X} = \\frac{1}{c_Y}$$<br>得 $c_X = c_Y$，比例為 $1:1$。"
+          },
+          {
+            statement: "為什麼量熱器（calorimeter）應該具有很小的質量，且由比熱容量較低的材料製成？<br>(1) 確保其自身的熱容量極小。<br>(2) 儘可能減少它在實驗過程中吸收的熱量。<br>(3) 防止熱量透過其杯壁散失到周圍空間。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估 (1) & (2)：</b> 正確。根據 $C = mc$，小質量及小比熱容量能使儀器本身的熱容量降到最低。這能使其吸收的熱量變得微不足道，減小系統誤差。<br><b>評估 (3)：</b> 錯誤。阻止熱量向外散失是靠在外圍加設防熱屏障或使用絕熱 lagging，而非改變杯身材料的比熱容量。"
+          },
+          {
+            statement: "一個 $200\\text{ W}$ 的電熱器加熱一塊質量為 $0.5\\text{ kg}$ 的金屬塊。在 $5\\text{ 分鐘}$ 內，金屬塊溫度升高 $40^{\\circ}\\text{C}$。若其中有 $20\\%$ 的熱量散失到空氣中，求該金屬的比熱容量。",
+            options: [
+              "$1200\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$2400\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$3000\\text{ J kg}^{-1}\\text{K}^{-1}$",
+              "$4000\\text{ J kg}^{-1}\\text{K}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $P = 200\\text{ W}, m = 0.5\\text{ kg}, \\Delta T = 40^{\\circ}\\text{C}, t = 300\\text{ 秒}$。有用能量佔 $80\\%$。<br><br><b>公式：</b><br>$$Q_{useful} = 0.80 \\times P \\times t = m c \\Delta T$$<br><br><b>計算：</b><br>$$Q_{useful} = 0.80 \\times 200 \\times 300 = 48000\\text{ J}$$<br>$$c = \\frac{48000}{0.5 \\times 40} = \\frac{48000}{20} = 2400\\text{ J kg}^{-1}\\text{K}^{-1}$$"
+          },
+          {
+            statement: "兩個質量相同的金屬塊 $A$ 和 $B$。當使用相同的發熱器加熱時，金屬塊 $A$ 的溫度上升速率是 $B$ 的兩倍。現將兩金屬塊直接物理接觸，熱量將會如何流動？",
+            options: [
+              "必定從 $B$ 流向 $A$。",
+              "必定從 $A$ 流向 $B$。",
+              "從初始溫度較高的金屬塊流向溫度較低的物體。",
+              "由於質量相同，不會發生任何熱量流遞。"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 比熱容量僅決定物體吸熱時升溫的「速率」，但熱傳遞方向完全由「接觸時兩者的即時溫度差」決定，即熱量必定從高溫物體流向低溫物體。"
+          }
+        ]
+      },
+      "1.4": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "下列哪一項是物質<b>熔化比潛熱（specific latent heat of fusion）</b>的正確定義？",
+            options: [
+              "在不改變溫度的情況下，將 $1\\text{ kg}$ 固態物質轉化為液態所需的熱能。",
+              "在不改變溫度的情況下，將 $1\\text{ kg}$ 液態物質轉化為氣態所需的熱能。",
+              "固體開始熔化為液體時的固定溫度。",
+              "存在於 $1\\text{ kg}$ 固體內的所有熱能總和。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 熔化比潛熱對應固態與液態之間的物態改變。選項 B 則是「汽化比潛熱」的定義。"
+          },
+          {
+            statement: "在固定溫度下，固體在<b>熔化</b>過程中，其微觀分子會發生什麼改變？",
+            options: [
+              "分子的平均熱運動動能增加。",
+              "分子鍵被克服或打破，分子間勢能增加。",
+              "分子本身的實體體積膨脹。",
+              "分子完全失去所有勢能。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 熔化時溫度保持不變，代表分子平均動能不變。吸收的能量全部用於克服分子間的強吸引力，破壞晶格結構，使分子勢能增加。"
+          },
+          {
+            statement: "為什麼水在沸騰過程中，即使持續加熱，<b>溫度仍維持在 $100^{\\circ}\\text{C}$</b>？",
+            options: [
+              "沸騰開始後，發熱器便停止輸出熱能。",
+              "所有輸入的熱能都被用於克服分子間作用力，使液體分子完全脫離轉化為氣體。",
+              "對流在底部迅速將所有熱能帶走散失。",
+              "水分子的動能在此刻全部歸零。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 沸騰是物態改變過程。此時吸收的潛熱不增加分子動能（溫度不變），而是用來完全打破液態分子間的化學鍵以轉化為氣態分子。"
+          },
+          {
+            statement: "下列哪一項正確描述了<b>沸騰（boiling）</b>與<b>蒸發（evaporation）</b>之間的主要區別？",
+            options: [
+              "蒸發只會在某一個固定溫度下發生。",
+              "沸騰在液體內部任何地方同時發生，而蒸發僅在液體表面發生。",
+              "沸騰過程不需要吸收任何熱能。",
+              "蒸發只會在完全真空的環境下發生。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 沸騰是劇烈的汽化現象，在特定沸點下於液體內部及表面同時發生（產生氣泡）；而蒸發是溫和的汽化，在任何溫度下僅在液體表面發生。"
+          },
+          {
+            statement: "下列哪一個是<b>比潛熱（specific latent heat）</b>的正確國際單位？",
+            options: [
+              "$\\text{J kg}^{-1\\text{ }}^{\\circ}\\text{C}^{-1}$",
+              "$\\text{J kg}^{-1}$",
+              "$\\text{W kg}^{-1}$",
+              "$\\text{J }^{\\circ}\\text{C}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 根據 $Q = mL$，比潛熱 $L = Q/m$，其 SI 單位為焦耳每公斤（$\\text{J kg}^{-1}$）。"
+          },
+          {
+            statement: "為什麼水的汽化比潛熱（$L_v$）<b>遠大於</b>冰的熔化比潛熱（$L_f$）？",
+            options: [
+              "水的沸點非常高。",
+              "在汽化過程中，分子必須完全脫離分子間引力完全分離成氣態，這需要克服極大的引力並作外功。",
+              "熔化過程中完全沒有發生對流傳熱。",
+              "水分子在沸騰時會急劇膨脹。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 熔化只需稍微拉開分子間距（破壞固體剛性）；而汽化需將分子完全拉開至互不干涉的距離（轉為氣體），這需要對抗分子引力作極大的功，因此需要多得多的能量。"
+          },
+          {
+            statement: "人體如何透過<b>排汗（sweating）</b>達到降溫效果？",
+            options: [
+              "汗水是熱的良導體，直接將體內熱量導向空氣。",
+              "汗水在皮膚表面蒸發，並從皮膚吸收巨大的汽化潛熱，從而降低體溫。",
+              "汗水具有非常低的熱容量。",
+              "汗水在皮膚形成一層保護層，阻擋冷風入侵。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 汗液（主要為水）蒸發時會發生相變，這過程需要吸收汽化潛熱。這熱量直接取自熱暖的皮膚表面，使得人體溫度下降。"
+          },
+          {
+            statement: "何謂<b>昇華（sublimation）</b>過程？",
+            options: [
+              "固態物質不經過液態而直接轉化為氣態的過程。",
+              "氣態物質直接轉化為液態的過程。",
+              "液態物質轉化為固態的過程。",
+              "固態物質熔化為液態的過程。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 昇華指的是固體不經液化直接相變為氣體（例如室溫乾冰的消散）。"
+          },
+          {
+            statement: "當液體在凝固點<b>凝固（freezing）</b>時，其微觀能量會發生什麼變化？",
+            options: [
+              "分子鍵重新形成，分子勢能減少，但溫度（及分子動能）維持不變。",
+              "分子動能減少，導致溫度急劇下降。",
+              "分子的勢能顯著增加。",
+              "分子的勢能和動能同時翻倍。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 凝固是放熱相變。過程中系統釋放熱量，分子相互靠近並重組化學鍵，因此分子勢能降低，但溫度在此期間保持在凝固點不變（分子平均動能不變）。"
+          },
+          {
+            statement: "下列哪一個物理過程代表<b>凝結（condensation）</b>？",
+            options: [
+              "液體轉化為氣體",
+              "氣體轉化為液體",
+              "固體轉化為氣體",
+              "液體轉化為固體"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 凝結是氣體冷卻相變為液體的放熱過程。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "在測量冰的熔化比潛熱的實驗中，為什麼要使用<b>融化中的碎冰</b>（$0^{\\circ}\\text{C}$），而非整塊完整的固態低溫冰塊？",
+            options: [
+              "整塊冰的熔點比碎冰低。",
+              "融化中的碎冰能確保冰在實驗開始時整體恰好處於 $0^{\\circ}\\text{C}$，並與電熱器有最佳接觸面。",
+              "碎冰在熔化時完全不需要吸收任何潛熱。",
+              "冰塊在整體受熱時會發生不均勻膨脹。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 若冰低於 $0^{\\circ}\\text{C}$，吸收的能量會先用於升溫而非單純相變。融化中的潮濕碎冰能確保其起點恰好為 $0^{\\circ}\\text{C}$，並可緊密包裹電熱器，確保最佳熱接觸。"
+          },
+          {
+            statement: "在上述測量冰的熔化比潛熱實驗中，為什麼需要使用一個<b>對照組（control setup）</b>（即不裝設電熱器的完全相同裝置）？",
+            options: [
+              "用來校準測量燒杯的空重。",
+              "用來扣除因周圍環境熱量而自然融化的冰質量，以求出純由電熱器熔化的冰質量。",
+              "用來測量熔化後所得水的比熱容量。",
+              "用來防止電熱器在無水時過熱燒毀。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 即使不加熱，外界空氣傳熱也會使冰自然融化。對照組能測量出此環境融化量。將加熱組融化的總質量減去對照組融化的質量，方能得出真正由電能熔化的冰質量。"
+          },
+          {
+            statement: "為什麼在高山上，水的沸點會<b>低於 $100^{\\circ}\\text{C}$</b>？",
+            options: [
+              "高山上的氣溫比較低。",
+              "高山上的大氣壓力比海平面低。",
+              "高山上水的密度比較低。",
+              "高山上的風速通常比平地大。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 當液體的飽和蒸汽壓等於外界大氣壓力時，液體便會沸騰。高山上大氣壓力較低，因此水在較低溫度下其蒸汽壓便能與外界大氣壓平衡，即沸點降低。"
+          },
+          {
+            statement: "在觀察液態石蠟凝固的冷卻曲線時，為什麼會出現一段<b>水平平坦部分</b>？",
+            options: [
+              "石蠟此時已經停止向周圍環境放出熱量。",
+              "石蠟正在凝固（相變），釋放出的凝固潛熱補償了向外的散熱，使其維持在固定溫度。",
+              "液態石蠟在此時的比熱容量降為零。",
+              "石蠟在此時已完全蒸發散失。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 水平段代表相變過程。凝固時分子結合會釋放出潛熱，這部分能量恰好補償了向外冷卻散失的能量，使得系統溫度暫時維持在凝固點不變。"
+          },
+          {
+            statement: "為什麼 $100^{\\circ}\\text{C}$ 的水蒸汽所造成的燙傷，往往比 $100^{\\circ}\\text{C}$ 的沸水嚴重得多？",
+            options: [
+              "水蒸汽的溫度本質上比沸水高得多。",
+              "水蒸汽接觸皮膚時會先凝結成水，在此相變過程中釋放出巨大的汽化潛熱，然後熱水才開始降溫。",
+              "水蒸汽的熱傳導率遠高於沸水。",
+              "等質量的沸水體積遠大於蒸汽。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 水蒸汽在皮膚表面先發生放熱凝結。此過程釋放出大量的汽化潛熱（約 $2.26 \\times 10^6\\text{ J/kg}$），這部分熱量會被皮膚快速吸收造成極深層灼傷，之後液化後的水又會像沸水一樣繼續燙傷皮膚。"
+          },
+          // Calculations
+          {
+            statement: "一個功率為 $200\\text{ W}$ 的電熱器被用於將 $100^{\\circ}\\text{C}$ 的水沸騰蒸發。若在 $100\\text{ 秒}$ 內有 $10\\text{ g}$ 的水汽化為蒸汽，求水的汽化比潛熱。",
+            options: [
+              "$1.0 \\times 10^6\\text{ J kg}^{-1}$",
+              "$2.0 \\times 10^6\\text{ J kg}^{-1}$",
+              "$3.0 \\times 10^6\\text{ J kg}^{-1}$",
+              "$4.0 \\times 10^6\\text{ J kg}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 功率 $P = 200\\text{ W}$，時間 $t = 100\\text{ 秒}$<br>- 質量 $m = 10\\text{ g} = 0.01\\text{ kg}$<br><br><b>公式：</b><br>$$Q = P \\times t = m L_v \\implies L_v = \\frac{P \\times t}{m}$$<br><br><b>計算：</b><br>$$L_v = \\frac{200 \\times 100}{0.01} = \\frac{20000}{0.01} = 2.0 \\times 10^6\\text{ J kg}^{-1}$$"
+          },
+          {
+            statement: "將 $2\\text{ kg}$ 處於 $0^{\\circ}\\text{C}$ 的純冰完全熔化為同溫度的水，需要多少熱量？（已知冰的熔化比潛熱為 $3.3 \\times 10^5\\text{ J kg}^{-1}$）",
+            options: [
+              "$1.65 \\times 10^5\\text{ J}$",
+              "$3.3 \\times 10^5\\text{ J}$",
+              "$6.6 \\times 10^5\\text{ J}$",
+              "$9.9 \\times 10^5\\text{ J}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b><br>- 質量 $m = 2\\text{ kg}$，熔化比潛熱 $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$<br><br><b>公式：</b><br>$$Q = m L_f$$<br><br><b>計算：</b><br>$$Q = 2 \\times 3.3 \\times 10^5 = 6.6 \\times 10^5\\text{ J}$$"
+          },
+          {
+            statement: "一壺沸水在 $2000\\text{ W}$ 的電熱器持續加熱下沸騰。若加熱持續 $220\\text{ 秒}$，求有多少水會汽化為蒸汽？（水的汽化比潛熱為 $2.2 \\times 10^6\\text{ J kg}^{-1}$）",
+            options: [
+              "$0.1\\text{ kg}$",
+              "$0.2\\text{ kg}$",
+              "$0.3\\text{ kg}$",
+              "$0.4\\text{ kg}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 功率 $P = 2000\\text{ W}$，時間 $t = 220\\text{ 秒}$<br>- 汽化比潛熱 $L_v = 2.2 \\times 10^6\\text{ J kg}^{-1}$<br><br><b>公式：</b><br>$$m = \\frac{P \\times t}{L_v}$$<br><br><b>計算：</b><br>$$m = \\frac{2000 \\times 220}{2.2 \\times 10^6} = \\frac{440000}{2200000} = 0.2\\text{ kg}$$"
+          },
+          {
+            statement: "計算 $0.1\\text{ kg}$ 處於 $100^{\\circ}\\text{C}$ 的水蒸汽完全凝結為 $100^{\\circ}\\text{C}$ 的液態水時釋放的熱量。（水的汽化比潛熱為 $2.3 \\times 10^6\\text{ J kg}^{-1}$）",
+            options: [
+              "$2.3 \\times 10^4\\text{ J}$",
+              "$2.3 \\times 10^5\\text{ J}$",
+              "$2.3 \\times 10^6\\text{ J}$",
+              "$4.6 \\times 10^5\\text{ J}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b><br>- 質量 $m = 0.1\\text{ kg}$，比潛熱 $L_v = 2.3 \\times 10^6\\text{ J kg}^{-1}$<br><br><b>公式：</b><br>$$Q = m L_v$$<br><br><b>計算：</b><br>$$Q = 0.1 \\times 2.3 \\times 10^6 = 2.3 \\times 10^5\\text{ J}$$"
+          },
+          {
+            statement: "一個電加熱裝置在 $100\\text{ 秒}$ 內將 $0.5\\text{ kg}$ 處於 $0^{\\circ}\\text{C}$ 的冰完全熔化為同溫度的水。求此裝置的有用加熱功率。（冰的熔化比潛熱為 $3.0 \\times 10^5\\text{ J kg}^{-1}$）",
+            options: [
+              "$500\\text{ W}$",
+              "$1000\\text{ W}$",
+              "$1500\\text{ W}$",
+              "$3000\\text{ W}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b><br>- 質量 $m = 0.5\\text{ kg}$，時間 $t = 100\\text{ 秒}$<br>- 熔化比潛熱 $L_f = 3.0 \\times 10^5\\text{ J kg}^{-1}$<br><br><b>公式：</b><br>$$P = \\frac{m L_f}{t}$$<br><br><b>計算：</b><br>$$P = \\frac{0.5 \\times 3.0 \\times 10^5}{100} = 1500\\text{ W}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "一個功率為 $1000\\text{ W}$ 的電熱器加熱 $0^{\\circ}\\text{C}$ 的冰塊。在開始加熱的 $330\\text{ 秒}$ 內，冰塊完全熔化為 $0^{\\circ}\\text{C}$ 的水。求冰塊的質量。（冰的熔化比潛熱 $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$）",
+            options: [
+              "$0.5\\text{ kg}$",
+              "$1.0\\text{ kg}$",
+              "$1.5\\text{ kg}$",
+              "$2.0\\text{ kg}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $P = 1000\\text{ W}, t = 330\\text{ 秒}, L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$。<br><br><b>公式：</b><br>$$P \\times t = m L_f \\implies m = \\frac{P \\times t}{L_f}$$<br><br><b>計算：</b><br>$$m = \\frac{1000 \\times 330}{3.3 \\times 10^5} = \\frac{3.3 \\times 10^5}{3.3 \\times 10^5} = 1.0\\text{ kg}$$"
+          },
+          {
+            statement: "一恆定吸熱功率的冷凍機冷卻質量為 $m$ 的某液體，使其完全凝固需要時間 $t$。若改為冷卻相同液體共 $2m$ 的質量，在相同吸熱功率下，其完全凝固相變所需的時間是多少？",
+            options: [
+              "$0.5 t$",
+              "$t$",
+              "$2 t$",
+              "$4 t$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 凝固所需的相變能量為 $Q = m L_f$，時間 $t = \\frac{m L_f}{P_{absorb}}$。由於比潛熱不變，相變所需能量與質量成正比。質量加倍，相變所需時間亦直接加倍變為 $2t$。"
+          },
+          {
+            statement: "下列關於濕球溫度計（wet-bulb thermometer）與乾球溫度計（dry-bulb thermometer）的陳述，哪些是正確的？<br>(1) 濕球溫度計由於液體蒸發帶走熱量，其讀數通常低於乾球溫度計。<br>(2) 環境濕度越高，兩溫度計之間的讀數差值會越大。<br>(3) 在相對濕度為 $100\\%$ 時，兩溫度計讀數完全相同。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 2,
+            explanation: "<b>評估 (1)：</b> 正確。濕球包裹濕布，水份蒸發會吸熱，使其溫度低於環境氣溫（乾球）。<br><b>評估 (2)：</b> 錯誤。濕度越高，水份蒸發率越低，故蒸發降溫效應減弱，兩者讀數差值應縮小。<br><b>評估 (3)：</b> 正確。相對濕度為 $100\\%$ 時水份完全無法淨蒸發，無相變熱流，兩者讀數必然一致。"
+          },
+          {
+            statement: "求將 $1\\text{ kg}$ 處於 $-10^{\\circ}\\text{C}$ 的冰塊加熱至完全熔化為 $0^{\\circ}\\text{C}$ 的水所需總熱量。（冰比熱容 $c_{ice} = 2000\\text{ J kg}^{-1}\\text{K}^{-1}$，熔化比潛熱 $L_f = 3.3 \\times 10^5\\text{ J kg}^{-1}$）",
+            options: [
+              "$3.1 \\times 10^5\\text{ J}$",
+              "$3.3 \\times 10^5\\text{ J}$",
+              "$3.5 \\times 10^5\\text{ J}$",
+              "$3.7 \\times 10^5\\text{ J}$"
+            ],
+            answer: 2,
+            explanation: "<b>分步計算：</b><br>1. 冰升溫至 $0^{\\circ}\\text{C}$：$$Q_1 = m c \\Delta T = 1 \\times 2000 \\times (0 - (-10)) = 20000\\text{ J}$$<br>2. 冰相變熔化：$$Q_2 = m L_f = 1 \\times 3.3 \\times 10^5 = 330000\\text{ J}$$<br><b>總和：</b> $Q = Q_1 + Q_2 = 20000 + 330000 = 3.5 \\times 10^5\\text{ J}$。"
+          },
+          {
+            statement: "在敞開的容器和加蓋蓋緊的容器內分別燒開水。下列哪些陳述是正確的？<br>(1) 加蓋容器內的水會在較高溫度下沸騰。<br>(2) 在加蓋容器中，水的淨蒸發率較慢。<br>(3) 增加周圍大氣壓強會使水的沸點上升。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估 (1) & (3)：</b> 正確。蓋緊蓋子使蒸汽累積，內壓大於標準大氣壓，沸點隨之升高。<br><b>評估 (2)：</b> 正確。密閉環境下氣相水分子迅速達到飽和，液體蒸發與凝結達到動態平衡，大幅壓低淨蒸發率。"
+          },
+          {
+            statement: "一個恆定功率電熱器加熱質量均為 $1\\text{ kg}$ 的物質 $X$ 和 $Y$。若完全熔化 $X$ 所需的時間是 $Y$ 的兩倍，求兩者熔化比潛熱之比 ($L_{f,X} : L_{f,Y}$ )。",
+            options: [
+              "$1 : 4$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 質量與功率皆相同。熔化時間 $t_X = 2 t_Y$。<br><br><b>公式：</b><br>$$Q = P \\times t = m L_f \\implies L_f \\propto t$$<br>熔化時間為兩倍，說明所需潛熱加倍，即比例為 $2:1$。"
+          },
+          {
+            statement: "下列哪些實驗措施能有效減少利用電加熱法測量液體汽化比潛熱時的誤差？<br>(1) 在加熱容器周圍外加一個雙層真空隔熱玻璃罩。<br>(2) 確保逸出並重新凝結的水蒸汽不會滴回容器內。<br>(3) 在加熱過程中，劇烈搖晃攪拌沸騰中的液體。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估 (1)：</b> 正確。真空罩能阻絕與空氣的熱傳遞，防止熱量外泄。<br><b>評估 (2)：</b> 正確。滴回會導致實際汽化流失的質量被低估。<br><b>評估 (3)：</b> 錯誤。劇烈晃動會使尚未汽化的熱液滴直接濺出容器，造成質量非汽化流失，嚴重扭曲數據。"
+          },
+          {
+            statement: "在一個絕熱杯中，將 $0.1\\text{ kg}$ 處於 $0^{\\circ}\\text{C}$ 的純冰加入 $0.4\\text{ kg}$ 處於 $30^{\\circ}\\text{C}$ 的水中。求達到熱平衡後的最終溫度。（水比熱容量 $c_{water} = 4200\\text{ J kg}^{-1}\\text{K}^{-1}$，冰熔化比潛熱 $L_f = 3.36 \\times 10^5\\text{ J kg}^{-1}$）",
+            options: [
+              "$0^{\\circ}\\text{C}$",
+              "$4^{\\circ}\\text{C}$",
+              "$8^{\\circ}\\text{C}$",
+              "$12^{\\circ}\\text{C}$"
+            ],
+            answer: 2,
+            explanation: "<b>相變計算：</b><br>- 冰完全熔化吸熱：$$Q_f = m L_f = 0.1 \\times 3.36 \\times 10^5 = 33600\\text{ J}$$<br>- 水降溫至 $0^{\\circ}\\text{C}$ 放出最大熱量：$$Q_{max} = 0.4 \\times 4200 \\times 30 = 50400\\text{ J}$$<br>由於 $Q_{max} > Q_f$，冰會完全熔化，最終溫度 $T_f > 0$。<br><b>熱平衡式：</b><br>$$0.4 \\times 4200 \\times (30 - T_f) = 33600 + 0.1 \\times 4200 \\times T_f$$<br>$$50400 - 1680 T_f = 33600 + 420 T_f \\implies 16800 = 2100 T_f \\implies T_f = 8^{\\circ}\\text{C}$$"
+          },
+          {
+            statement: "在保溫容器中向大量冰塊（$0^{\\circ}\\text{C}$）通入少量 $100^{\\circ}\\text{C}$ 的水蒸汽。發現極少質量的蒸汽就能熔化極大質量的冰，這是因為：",
+            options: [
+              "蒸汽分子的平均動能遠大於熱水分子。",
+              "水的汽化比潛熱數值遠大於冰的熔化比潛熱數值。",
+              "熱蒸汽比水更容易在容器內產生向下的對流。",
+              "冰分子的質量大於蒸汽分子。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 汽化比潛熱約為 $2.3 \\times 10^6\\text{ J/kg}$，而熔化比潛熱僅約 $3.3 \\times 10^5\\text{ J/kg}$（約 7 倍差距）。蒸汽凝結相變放出的能量，足以供應其質量約 7 倍的冰完成熔化相變。"
+          },
+          {
+            statement: "關於晶體固體與非晶體固體（如蠟）的熔化過程，下列哪些陳述是正確的？<br>(1) 晶體固體在熔化時具有清晰、恆定的熔點溫度。<br>(2) 非晶體固體在熔化時會隨溫度上升而逐漸軟化。<br>(3) 非晶體固體在熔化相變過程中不需要吸收任何潛熱。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估 (1) & (2)：</b> 正確。晶體具有規則微觀結構，熔化時格子同步崩解，故溫度不變；非晶體長程無序，結合鍵強弱不一，隨溫度逐步軟化。<br><b>評估 (3)：</b> 錯誤。非晶體分子鏈滑動解離同樣需要克服相互作用，此過程依然伴隨潛熱吸收。"
+          }
+        ]
+      },
+      "1.5": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "哪一個氣體定律指出：在溫度恆定時，固定質量氣體的壓強與其體積成反比？",
+            options: [
+              "查理定律",
+              "波義耳定律",
+              "壓強定律",
+              "理想氣體定律"
+            ],
+            answer: 1,
+            explanation: "<b>波義耳定律</b>指出，在恆定溫度下，$P \\propto \\frac{1}{V}$。"
+          },
+          {
+            statement: "哪一個氣體定律指出：在壓強恆定時，固定質量氣體的體積與其絕對開氏溫度成正比？",
+            options: [
+              "波義耳定律",
+              "查理定律",
+              "壓強定律",
+              "蓋-呂薩克定律"
+            ],
+            answer: 1,
+            explanation: "<b>查理定律</b>指出，在恆定壓強下，$V \\propto T$。"
+          },
+          {
+            statement: "若在體積固定時將氣體的開氏溫度翻倍，其壓強會如何變化？",
+            options: [
+              "壓強減半。",
+              "壓強保持不變。",
+              "壓強翻倍。",
+              "壓強變為四倍。"
+            ],
+            answer: 2,
+            explanation: "根據<b>壓強定律</b>，$P \\propto T$。開氏溫度翻倍，壓強直接翻倍。"
+          },
+          {
+            statement: "從微觀分子運動的角度來看，絕對零度（$0\\text{ K}$）代表什麼物理意義？",
+            options: [
+              "氣體體積達到最大值。",
+              "氣體分子的隨機熱運動動能達到 theoretical 理論最小值。",
+              "氣體分子以光速運動。",
+              "分子間的吸引力變為無限大。"
+            ],
+            answer: 1,
+            explanation: "在絕對零度下，氣體分子隨機熱運動的平均平移動能達到理論上的最小值（古典力學中歸零）。"
+          },
+          {
+            statement: "若氣體分子的平均速度加倍，其分子的平均動能會如何改變？",
+            options: [
+              "減半。",
+              "加倍。",
+              "保持不變。",
+              "變為四倍。"
+            ],
+            answer: 3,
+            explanation: "動能公式為 $K.E. = \\frac{1}{2}m v^2$。速度 $v$ 變為 2 倍，動能變為 $2^2 = 4$ 倍。"
+          },
+          {
+            statement: "下列哪一項是<b>理想氣體（ideal gas）</b>的微觀假設之一？",
+            options: [
+              "氣體分子本身體積非常巨大。",
+              "除了在碰撞瞬間外，分子間的相互作用力可忽略不計。",
+              "分子之間的碰撞屬於完全非彈性碰撞。",
+              "氣體分子在容器內不作任何隨機運動。"
+            ],
+            answer: 1,
+            explanation: "理想氣體假設分子間除了碰撞瞬間外無引力或斥力，且分子碰撞均為完全彈性碰撞。"
+          },
+          {
+            statement: "在所有熱力學氣體計算中，必須使用什麼溫標單位？",
+            options: [
+              "攝氏度 ($^{\\circ}\\text{C}$)",
+              "華氏度 ($^{\\circ}\\text{F}$)",
+              "開爾文 / 開氏度 ($\\text{K}$)",
+              "焦耳 ($\\text{J}$)"
+            ],
+            answer: 2,
+            explanation: "開氏溫標（Kelvin, $\\text{K}$）是絕對溫標，所有氣體公式中的溫度 $T$ 必須採用此溫標。"
+          },
+          {
+            statement: "若在恆定溫度下壓縮氣體，其分子的平均速度會發生什麼變化？",
+            options: [
+              "增加。",
+              "減少。",
+              "保持不變。",
+              "驟降為零。"
+            ],
+            answer: 2,
+            explanation: "溫度恆定意味著分子的平均動能不變，因此分子的平均運動速度亦保持不變。"
+          },
+          {
+            statement: "氣體為什麼會對容器壁產生宏觀壓強？",
+            options: [
+              "分子之間相互重力吸引力造成的。",
+              "大量隨機運動的氣體分子持續與容器壁發生彈性碰撞，並傳遞動量。",
+              "氣體分子受熱體積急劇膨脹擠壓牆壁。",
+              "氣體與牆壁之間的靜電排斥力。"
+            ],
+            answer: 1,
+            explanation: "分子撞擊牆壁時速度反向，動量發生改變，對牆壁施加了微小衝力。大量分子的持續撞擊形成了宏觀上均勻的壓力與壓強。"
+          },
+          {
+            statement: "下列哪一個正確描述了開氏溫度（$T$）與攝氏溫度（$\\theta$）的轉換關係？",
+            options: [
+              "$T = \\theta + 273$",
+              "$T = \\theta - 273$",
+              "$T = 273 \\theta$",
+              "$T = \\theta / 273$"
+            ],
+            answer: 0,
+            explanation: "開氏溫度等於攝氏溫度數值加上 $273$（精確值為 $273.15$）。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE ---
+        2: [
+          {
+            statement: "在恆定溫度下，若將固定質量氣體的體積壓縮至原來的一半，其壓強會如何改變？",
+            options: [
+              "減半。",
+              "保持不變。",
+              "翻倍。",
+              "變為四倍。"
+            ],
+            answer: 2,
+            explanation: "根據波義耳定律，$P_1 V_1 = P_2 V_2$。體積變為二分之一，壓強必然變為原來的兩倍。"
+          },
+          {
+            statement: "為什麼在體積固定時，氣體受熱會導致其壓強增加？",
+            options: [
+              "分子運動加快，與器壁碰撞頻率增加，且每次碰撞傳遞的動量（衝量）變大。",
+              "分子實體體積膨脹，擠壓壁面。",
+              "容器外壁會受熱收縮。",
+              "分子間的作用引力變得極強。"
+            ],
+            answer: 0,
+            explanation: "溫升代表分子速度變快，這會導致單位時間內分子撞擊壁面的次數（頻率）增多，且每次撞擊時動量改變量也更大。"
+          },
+          {
+            statement: "若將氣體溫度由 $27^{\\circ}\\text{C}$ 加熱升高至 $327^{\\circ}\\text{C}$，其絕對開氏溫度的比例是多少？",
+            options: [
+              "$1 : 2$",
+              "$1 : 12$",
+              "$2 : 1$",
+              "$12 : 1$"
+            ],
+            answer: 0,
+            explanation: "絕對溫度為 $T_1 = 27 + 273 = 300\\text{ K}$，$T_2 = 327 + 273 = 600\\text{ K}$。比例為 $300:600 = 1:2$。"
+          },
+          {
+            statement: "在恆定壓強下，若將氣體的絕對溫度翻倍，其體積會發生什麼變化？",
+            options: [
+              "減半。",
+              "翻倍。",
+              "保持不變。",
+              "變為四倍。"
+            ],
+            answer: 1,
+            explanation: "根據查理定律，$V \\propto T$。絕對溫度翻倍，體積亦會隨之翻倍。"
+          },
+          {
+            statement: "一個理想氣體被密封在剛性固體容器中。當它被冷卻降溫時，下列哪一個物理量保持不變？",
+            options: [
+              "氣體壓強",
+              "氣體密度",
+              "氣體溫度",
+              "分子的平均動能"
+            ],
+            answer: 1,
+            explanation: "剛性容器體積不變，密封代表氣體總質量不變。根據密度公式 $\\rho = m/V$，其密度必然維持恆定。"
+          },
+          // Calculations
+          {
+            statement: "一氣體在壓強為 $1.0 \\times 10^5\\text{ Pa}$ 時體積為 $4.0\\text{ m}^3$。若在溫度恆定下將其壓縮至 $2.0\\text{ m}^3$，求其新壓強。",
+            options: [
+              "$0.5 \\times 10^5\\text{ Pa}$",
+              "$1.5 \\times 10^5\\text{ Pa}$",
+              "$2.0 \\times 10^5\\text{ Pa}$",
+              "$4.0 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 2,
+            explanation: "波義耳定律：$P_1 V_1 = P_2 V_2 \\implies (1.0 \\times 10^5) \\times 4.0 = P_2 \\times 2.0 \\implies P_2 = 2.0 \\times 10^5\\text{ Pa}$。"
+          },
+          {
+            statement: "一氣體在 $300\\text{ K}$ 時體積為 $2.0\\text{ m}^3$。若在壓強不變下將其加熱至 $600\\text{ K}$，求其新體積。",
+            options: [
+              "$1.0\\text{ m}^3$",
+              "$2.0\\text{ m}^3$",
+              "$3.0\\text{ m}^3$",
+              "$4.0\\text{ m}^3$"
+            ],
+            answer: 3,
+            explanation: "查理定律：$\\frac{V_1}{T_1} = \\frac{V_2}{T_2} \\implies \\frac{2.0}{300} = \\frac{V_2}{600} \\implies V_2 = 4.0\\text{ m}^3$。"
+          },
+          {
+            statement: "一密封硬罐內氣體在 $300\\text{ K}$ 下壓強為 $1.2 \\times 10^5\\text{ Pa}$。若將其加熱至 $450\\text{ K}$，求罐內氣體的新壓強。",
+            options: [
+              "$0.8 \\times 10^5\\text{ Pa}$",
+              "$1.6 \\times 10^5\\text{ Pa}$",
+              "$1.8 \\times 10^5\\text{ Pa}$",
+              "$2.4 \\times 10^5\\text{ Pa}$"
+            ],
+            answer: 2,
+            explanation: "壓強定律：$\\frac{P_1}{T_1} = \\frac{P_2}{T_2} \\implies \\frac{1.2 \\times 10^5}{300} = \\frac{P_2}{450} \\implies P_2 = 1.8 \\times 10^5\\text{ Pa}$。"
+          },
+          {
+            statement: "一固定質量理想氣體在 $27^{\\circ}\\text{C}$ 時體積為 $10\\text{ L}$。若在壓強不變下加熱至 $127^{\\circ}\\text{C}$，求其新體積。",
+            options: [
+              "$11.2\\text{ L}$",
+              "$13.3\\text{ L}$",
+              "$15.0\\text{ L}$",
+              "$20.0\\text{ L}$"
+            ],
+            answer: 1,
+            explanation: "$T_1 = 300\\text{ K}, T_2 = 400\\text{ K}$。查理定律：$\\frac{10}{300} = \\frac{V_2}{400} \\implies V_2 = 13.3\\text{ L}$。"
+          },
+          {
+            statement: "湖底處（壓強 $3.0 \\times 10^5\\text{ Pa}$）一個氣泡的體積為 $1.0\\text{ cm}^3$。當它升到湖面（壓強 $1.0 \\times 10^5\\text{ Pa}$）時，求其新體積。（假設湖水溫度均勻）",
+            options: [
+              "$1.5\\text{ cm}^3$",
+              "$2.0\\text{ cm}^3$",
+              "$3.0\\text{ cm}^3$",
+              "$4.5\\text{ cm}^3$"
+            ],
+            answer: 2,
+            explanation: "$P_1 V_1 = P_2 V_2 \\implies (3.0 \\times 10^5) \\times 1.0 = (1.0 \\times 10^5) \\times V_2 \\implies V_2 = 3.0\\text{ cm}^3$。"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT ---
+        3: [
+          {
+            statement: "一個理想氣體在絕對溫度 $T$、壓強 $P$ 下體積為 $V$。若將壓強翻倍，並將絕對溫度減半，求其新體積。",
+            options: [
+              "$0.25 V$",
+              "$0.5 V$",
+              "$V$",
+              "$2 V$"
+            ],
+            answer: 0,
+            explanation: "理想氣體狀態方程式：$\\frac{P_1 V_1}{T_1} = \\frac{P_2 V_2}{T_2}$。<br>代入得：$\\frac{P V}{T} = \\frac{(2P) V_2}{0.5 T} \\implies V_2 = \\frac{0.5}{2} V = 0.25 V$。"
+          },
+          {
+            statement: "下列關於理想氣體的陳述，哪些是正確的？<br>(1) 氣體分子的平均動能僅與攝氏溫度成正比。<br>(2) 當氣體膨脹時，它必然對周圍大氣作外功。<br>(3) 氣體的宏觀壓強同時取決於分子碰撞頻率與每次碰撞的衝量大小。",
+            options: [
+              "只有 (3)",
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 2,
+            explanation: "<b>評估 (1)：</b> 錯誤。平均動能與*絕對開氏溫度*（Kelvin）成正比，而非攝氏溫度。<br><b>評估 (2)：</b> 正確。膨脹代表體積增加，氣體分子克服外界大氣壓力對外推動邊界作功（$W = P\\Delta V$）。<br><b>評估 (3)：</b> 正確。微觀壓強由分子連續撞擊壁面產生，其大小取決於單位時間撞擊數（頻率）與每次撞擊傳遞的動量大小（衝量）。"
+          },
+          {
+            statement: "玻璃泡 $A$（體積 $V$）與玻璃泡 $B$（體積 $2V$）由一條極細管連接。起初，兩玻璃泡均處於 $300\\text{ K}$ 並含有壓強為 $P$ 的氣體。現將玻璃泡 $A$ 加熱至 $600\\text{ K}$，而 $B$ 仍維持在 $300\\text{ K}$。求混合氣體的新平衡壓強。",
+            options: [
+              "$1.2 P$",
+              "$1.5 P$",
+              "$1.6 P$",
+              "$1.8 P$"
+            ],
+            answer: 0,
+            explanation: "氣體總摩爾數（分子數）$n = n_A + n_B$ 守恆。<br>初始狀態：$n = \\frac{P V}{R(300)} + \\frac{P (2V)}{R(300)} = \\frac{3 P V}{300 R} = \\frac{P V}{100 R}$。<br>末溫狀態（設最終壓強為 $P_f$）：$n = \\frac{P_f V}{R(600)} + \\frac{P_f (2V)}{R(300)} = \\frac{P_f V}{R(600)} + \\frac{4 P_f V}{R(600)} = \\frac{5 P_f V}{600 R} = \\frac{P_f V}{120 R}$。<br>摩爾數守恆相聯：$\\frac{P V}{100 R} = \\frac{P_f V}{120 R} \\implies P_f = 1.2 P$。"
+          },
+          {
+            statement: "一密封可變容積容器內的理想氣體受熱。若其壓強翻倍，且攝氏溫度由 $27^{\\circ}\\text{C}$ 升高至 $327^{\\circ}\\text{C}$。求其最終體積與初始體積之比。",
+            options: [
+              "$1 : 1$",
+              "$1 : 2$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 0,
+            explanation: "起點開氏溫度 $T_1 = 300\\text{ K}$，末點開氏溫度 $T_2 = 600\\text{ K}$。<br>$$\\frac{P_1 V_1}{T_1} = \\frac{P_2 V_2}{T_2} \\implies \\frac{1 \\times V_1}{300} = \\frac{2 \\times V_2}{600} \\implies V_1 = V_2$$<br>因此體積比為 $1:1$。"
+          },
+          {
+            statement: "下列哪一個是表示理想氣體密度的正確單位？",
+            options: [
+              "$\\text{kg m}^{-3}$",
+              "$\\text{g L}^{-1}$",
+              "上述兩者均是物理上等價的密度表達單位。",
+              "$\\text{kg s}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "氣體密度可採用標準 SI 單位（$\\text{kg m}^{-3}$），亦常於化學與氣體實驗中表示為克每升（$\\text{g L}^{-1}$）。由於 $1\\text{ g/L} = 1\\text{ kg/m}^3$，兩者完全等價。"
+          },
+          {
+            statement: "兩個密封固體玻璃泡相連。玻璃泡 $1$ 的容量為 $1\\text{ L}$，氣壓為 $2\\text{ atm}$；玻璃泡 $2$ 的容量為 $3\\text{ L}$，氣壓為 $1\\text{ atm}$。現打開連接閥門，在溫度恆定下，求混合後的新平衡氣壓。",
+            options: [
+              "$1.25\\text{ atm}$",
+              "$1.50\\text{ atm}$",
+              "$1.75\\text{ atm}$",
+              "$2.00\\text{ atm}$"
+            ],
+            answer: 0,
+            explanation: "等溫相混：$P_1 V_1 + P_2 V_2 = P_f V_f \\implies (2 \\times 1) + (1 \\times 3) = P_f \\times (1 + 3)$。<br>$$5 = 4 P_f \\implies P_f = 1.25\\text{ atm}$$。"
+          },
+          {
+            statement: "理想氣體在固定的容器（體積不變）內受熱。若氣體壓強翻倍，其分子的均方根速率（r.m.s. speed）會如何改變？",
+            options: [
+              "減半。",
+              "翻倍。",
+              "變為原來的 $\\sqrt{2}$ 倍。",
+              "變為原來的 $2$ 倍。"
+            ],
+            answer: 2,
+            explanation: "體積不變，壓強翻倍代表其絕對溫度 $T$ 翻倍（根據壓強定律）。由於均方根速率 $v_{rms} \\propto \\sqrt{T}$，當溫度為 2 倍時，速率變為 $\\sqrt{2}$ 倍。"
+          },
+          {
+            statement: "氣缸內的活塞快速壓縮氣體，同時氣體向周圍環境放出熱量。若壓縮後氣體內能保持不變，下列哪項說法正確？",
+            options: [
+              "外力對氣體作的功等於氣體放出的熱量。",
+              "氣體對外作的功大於其放出的熱量。",
+              "此壓縮過程屬於絕熱過程（adiabatic process）。",
+              "氣體整體的溫度必然下降。"
+            ],
+            answer: 0,
+            explanation: "熱力學第一定律：$\\Delta U = Q + W$。當內能增量 $\\Delta U = 0$ 時，外力作功（$W > 0$）大小必須完全等於向外散失的熱量（$Q < 0$）。"
+          },
+          {
+            statement: "若將一個理想氣體放入完全真空的容器中自由膨脹（不與外界交換熱量，且外部無阻力不作功）。求此過程中氣體的溫度會如何改變？",
+            options: [
+              "升高。",
+              "降低。",
+              "保持不變。",
+              "降至絕對零度。"
+            ],
+            answer: 2,
+            explanation: "此過程為自由膨脹。因為不對外作功（$W = 0$）且不吸放熱（$Q = 0$），故其內能 $\\Delta U = 0$。對理想氣體而言，內能不變代表溫度不變。"
+          },
+          {
+            statement: "一個氣球在恆定溫度下被充氣。若充氣過程中氣球內壓強維持不變，而氣球體積翻倍，求氣球內氣體質量的變化。",
+            options: [
+              "減半。",
+              "翻倍。",
+              "保持不變。",
+              "降為零。"
+            ],
+            answer: 1,
+            explanation: "理想氣體狀態方程式為 $PV = nRT$。在 $P, T$ 均恆定下，體積 $V$ 翻倍意味着摩爾數 $n$ 必須翻倍，這對應氣體總質量翻倍。"
+          }
+        ]
+      }
+    };
+
+    // --- POPULATING AND BALANCING OTHER TOPICS ---
+    function fillQuestionBank() {
+      const topicKeys = ['1.1', '1.2', '1.3', '1.4', '1.5'];
+      topicKeys.forEach(tKey => {
+        [1, 2, 3].forEach(lvl => {
+          let currentList = questionBank[tKey]?.[lvl] || [];
+          const sourceCount = currentList.length;
+          if (sourceCount === 0) return;
+          
+          while (currentList.length < 10) {
+            let templateObj = currentList[currentList.length % sourceCount];
+            let newObj = JSON.parse(JSON.stringify(templateObj));
+            
+            if (lvl === 2) {
+              if (newObj.explanation.includes('Given:')) {
+                newObj.statement = "[變式 " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+              } else {
+                newObj.statement = "[情境練習 " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+              }
+            } else {
+              newObj.statement = "[模擬練習 " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+            }
+            currentList.push(newObj);
+          }
+          questionBank[tKey][lvl] = currentList;
+        });
+      });
+    }
+
+    fillQuestionBank();
+
+    // --- DASHBOARD RENDER ---
+    function renderDashboard() {
+      const topicContainer = document.getElementById('topic-list-container');
+      topicContainer.innerHTML = '';
+      topics.forEach((topic, idx) => {
+        const isSelected = currentState.selectedTopicIndex === idx;
+        const scoreKeyEasy = `${idx}-1`;
+        const scoreKeyAvg = `${idx}-2`;
+        const scoreKeyDiff = `${idx}-3`;
+        
+        const easyScore = currentState.scores[scoreKeyEasy]?.score || 0;
+        const avgScore = currentState.scores[scoreKeyAvg]?.score || 0;
+        const diffScore = currentState.scores[scoreKeyDiff]?.score || 0;
+        const totalCompleted = (currentState.scores[scoreKeyEasy]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyAvg]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyDiff]?.completed ? 1 : 0);
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+          isSelected 
+            ? 'bg-purple-50/60 border-brand-violet shadow-md shadow-purple-500/5' 
+            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-350'
+        }`;
+        card.onclick = () => selectTopic(idx);
+
+        card.innerHTML = `
+          <div class="flex items-start space-x-3">
+            <div class="mt-1 flex-shrink-0 h-8 w-8 rounded-lg bg-purple-100 text-brand-violet border border-purple-200 flex items-center justify-center font-bold font-mono text-sm">
+              ${topic.id}
+            </div>
+            <div>
+              <h3 class="text-sm md:text-base font-bold text-slate-800">${topic.title}</h3>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-150 text-slate-600 font-bold border border-slate-200">L1: ${easyScore}/10</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-150 text-slate-600 font-bold border border-slate-200">L2: ${avgScore}/10</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-150 text-slate-600 font-bold border border-slate-200">L3: ${diffScore}/10</span>
+            <div class="h-6 w-6 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-brand-violet text-xs font-bold">
+              ${totalCompleted}/3
+            </div>
+          </div>
+        `;
+        topicContainer.appendChild(card);
+      });
+
+      const levelContainer = document.getElementById('level-list-container');
+      levelContainer.innerHTML = '';
+      const levels = [
+        { value: 1, label: '級別 1: 基礎基礎 (定性概念)', desc: '側重定性物理規律、定義及微觀概念。', color: 'border-emerald-500/30 text-emerald-600' },
+        { value: 2, label: '級別 2: 中等難度 (概念應用與簡單計算)', desc: '教科書經典實驗裝置分析及單步公式計算。', color: 'border-brand-amber/30 text-brand-amber' },
+        { value: 3, label: '級別 3: 挑戰難度 (模擬 DSE 選擇題)', desc: '精簡的多重陳述判斷與比例分析難題。', color: 'border-brand-coral/30 text-brand-coral' }
+      ];
+
+      levels.forEach(level => {
+        const isSelected = currentState.selectedLevel === level.value;
+        const button = document.createElement('div');
+        button.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-amber-50/50 border-brand-pink shadow-md shadow-purple-500/5' 
+            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+        }`;
+        button.onclick = () => selectLevel(level.value);
+
+        button.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-extrabold ${level.color}">${level.label}</span>
+            <input type="radio" name="level-select" class="accent-brand-violet" ${isSelected ? 'checked' : ''}>
+          </div>
+          <p class="text-xs text-slate-505 mt-2 font-medium">${level.desc}</p>
+        `;
+        levelContainer.appendChild(button);
+      });
+
+      const startBox = document.createElement('button');
+      startBox.className = "w-full mt-4 bg-gradient-to-r from-brand-violet via-purple-500 to-brand-pink text-white font-extrabold py-3.5 px-6 rounded-xl transition duration-200 shadow-md shadow-purple-700/10 text-center uppercase tracking-wider text-sm";
+      startBox.innerHTML = `開始物理挑戰 <i class="fa-solid fa-play ml-1"></i>`;
+      startBox.onclick = startQuiz;
+      levelContainer.appendChild(startBox);
+
+      updateGlobalProgress();
+    }
+
+    function selectTopic(idx) {
+      currentState.selectedTopicIndex = idx;
+      renderDashboard();
+    }
+
+    function selectLevel(lvl) {
+      currentState.selectedLevel = lvl;
+      renderDashboard();
+    }
+
+    // --- NAVIGATION LOGIC ---
+    function goHome() {
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+      renderDashboard();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function startQuiz() {
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('quiz-section').classList.remove('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+
+      currentState.currentQuestionIndex = 0;
+      currentState.currentQuizAnswers = new Array(10).fill(null);
+
+      loadQuestion();
+    }
+
+    // --- LOADING QUESTIONS ---
+    function loadQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+
+      document.getElementById('quiz-meta-topic').innerText = `課題: ${topicObj.id}`;
+      document.getElementById('quiz-meta-level').innerText = `級別 ${currentState.selectedLevel}`;
+      document.getElementById('quiz-progress-text').innerText = `第 ${currentState.currentQuestionIndex + 1} 題，共 10 題`;
+      document.getElementById('quiz-percentage').innerText = `${(currentState.currentQuestionIndex + 1) * 10}%`;
+      document.getElementById('question-index-display').innerText = `Q${currentState.currentQuestionIndex + 1}/10`;
+      document.getElementById('syllabus-reference-code').innerText = `PHY-${topicObj.id}.${currentState.currentQuestionIndex + 1}`;
+
+      document.getElementById('quiz-step-progress').style.width = `${(currentState.currentQuestionIndex + 1) * 10}%`;
+      document.getElementById('question-statement-box').innerHTML = q.statement;
+
+      document.getElementById('explanation-placeholder').classList.remove('hidden');
+      document.getElementById('explanation-content-area').classList.add('hidden');
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      optionsContainer.innerHTML = '';
+
+      const previousResponse = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] ${
+          previousResponse === optIdx
+            ? 'bg-purple-50 border-brand-violet text-brand-violet'
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+        }`;
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        const label = String.fromCharCode(65 + optIdx);
+        optionBtn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="flex-shrink-0 w-6 h-6 rounded bg-slate-100 border border-slate-250 flex items-center justify-center font-mono font-bold text-slate-550 text-xs">${label}</span>
+            <span class="tex2jax_process leading-normal">${optText}</span>
+          </div>
+          <div class="h-4 w-4 rounded-full border border-slate-300 flex items-center justify-center flex-shrink-0">
+            ${previousResponse === optIdx ? '<div class="w-2 h-2 rounded-full bg-brand-teal"></div>' : ''}
+          </div>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      const btnPrev = document.getElementById('btn-prev-question');
+      if (currentState.currentQuestionIndex === 0) {
+        btnPrev.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = true;
+      } else {
+        btnPrev.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = false;
+      }
+
+      if (previousResponse !== null) {
+        revealAnswerFeedback();
+      } else {
+        document.getElementById('btn-check-answer').classList.remove('hidden');
+        document.getElementById('btn-next-question').classList.add('hidden');
+      }
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function selectOption(optIdx) {
+      const alreadyAnswered = currentState.currentQuizAnswers[currentState.currentQuestionIndex] !== null;
+      if (alreadyAnswered) return;
+
+      currentState.currentQuizAnswers[currentState.currentQuestionIndex] = optIdx;
+      loadQuestion();
+    }
+
+    // --- CHECKING ANSWERS & FEEDBACK ---
+    function checkAnswer() {
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+      if (selectedIndex === null) {
+        showCustomAlert("提示", "請在提交前先選擇一個答案選項。");
+        return;
+      }
+      revealAnswerFeedback();
+      
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('explanation-pane-anchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+
+    function revealAnswerFeedback() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      const isCorrect = selectedIndex === q.answer;
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      const optionButtons = optionsContainer.children;
+
+      for (let i = 0; i < optionButtons.length; i++) {
+        const btn = optionButtons[i];
+        btn.classList.remove('border-brand-violet', 'bg-teal-50');
+        
+        if (i === q.answer) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-emerald-50 border-emerald-500 text-emerald-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        } else if (i === selectedIndex && !isCorrect) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-rose-50 border-rose-500 text-rose-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+        }
+      }
+
+      document.getElementById('explanation-placeholder').classList.add('hidden');
+      const expContent = document.getElementById('explanation-content-area');
+      expContent.classList.remove('hidden');
+
+      const feedbackBox = document.getElementById('explanation-feedback');
+      if (isCorrect) {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-emerald-50 text-emerald-700 border-emerald-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> <span>答案正確！太棒了。</span>`;
+      } else {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-rose-50 text-rose-700 border-rose-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i> <span>答案錯誤。請細閱下方詳解。</span>`;
+      }
+
+      document.getElementById('explanation-body-text').innerHTML = q.explanation;
+
+      document.getElementById('btn-check-answer').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.remove('hidden');
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentState.currentQuestionIndex > 0) {
+        currentState.currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    // --- OPERATOR HELPER FUNCTIONS FOR CALCULATOR TRIGONOMETRY ---
+    function ASIN_OP(x) { return Math.asin(x) * 180 / Math.PI; }
+    function ACOS_OP(x) { return Math.acos(x) * 180 / Math.PI; }
+    function ATAN_OP(x) { return Math.atan(x) * 180 / Math.PI; }
+    function SIN_OP(x) { return Math.sin(x * Math.PI / 180); }
+    function COS_OP(x) { return Math.cos(x * Math.PI / 180); }
+    function TAN_OP(x) { return Math.tan(x * Math.PI / 180); }
+    function SQRT_OP(x) { return Math.sqrt(x); }
+
+    function nextQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+
+      if (currentState.currentQuestionIndex < questionsList.length - 1) {
+        currentState.currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // --- QUIZ COMPLETION & STATS ---
+    function finishQuiz() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      
+      let correctCount = 0;
+      currentState.currentQuizAnswers.forEach((ans, idx) => {
+        if (ans === questionsList[idx].answer) {
+          correctCount++;
+        }
+      });
+
+      const scoreKey = `${currentState.selectedTopicIndex}-${currentState.selectedLevel}`;
+      currentState.scores[scoreKey] = {
+        completed: true,
+        score: correctCount,
+        responses: [...currentState.currentQuizAnswers]
+      };
+
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.remove('hidden');
+
+      document.getElementById('review-score').innerText = `${correctCount} / 10`;
+      const accuracy = (correctCount / 10) * 100;
+      document.getElementById('review-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('review-level').innerText = `級別 ${currentState.selectedLevel}`;
+
+      updateGlobalProgress();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function updateGlobalProgress() {
+      let totalCompletedLevels = 0;
+      let grandTotalScore = 0;
+      let possibleMaxScore = 0;
+
+      for (let t = 0; t < topics.length; t++) {
+        for (let l = 1; l <= 3; l++) {
+          const key = `${t}-${l}`;
+          possibleMaxScore += 10;
+          if (currentState.scores[key]?.completed) {
+            totalCompletedLevels++;
+            grandTotalScore += currentState.scores[key].score;
+          }
+        }
+      }
+
+      const totalLevels = topics.length * 3;
+      const progressPercent = Math.round((totalCompletedLevels / totalLevels) * 100);
+
+      document.getElementById('global-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('global-progress-text').innerText = `${progressPercent}%`;
+      document.getElementById('global-score-badge').innerText = `${grandTotalScore} / ${possibleMaxScore}`;
+    }
+
+    // --- CUSTOM MODALS & ALERTS ---
+    function resetStats() {
+      showCustomConfirm(
+        "確定重設所有記錄？",
+        "您確定要清除至今以來所有的進度記錄並重新開始嗎？此操作將無法復原。",
+        () => {
+          currentState.scores = {};
+          renderDashboard();
+          showCustomAlert("已重置", "您的物理學習與進度記錄已被重置歸零。");
+        }
+      );
+    }
+
+    function showCustomConfirm(title, message, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.remove('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "確認";
+      confirmBtn.className = "px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-rose-950/20 font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+      document.getElementById('modal-cancel-btn').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    function showCustomAlert(title, message) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "好";
+      confirmBtn.className = "px-4 py-2 bg-brand-violet hover:opacity-95 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-purple-950/40 font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    // --- SCIENTIFIC CALCULATOR ---
+    let calcExpression = '';
+    let calcScreen = '0';
+
+    function toggleCalc() {
+      const calc = document.getElementById('calculator-widget');
+      calc.classList.toggle('hidden');
+    }
+
+    function calcPress(val) {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+
+      if (val === 'AC') {
+        calcExpression = '';
+        calcScreen = '0';
+      } else if (val === 'DEL') {
+        if (calcScreen.length > 1) {
+          calcScreen = calcScreen.slice(0, -1);
+        } else {
+          calcScreen = '0';
+        }
+      } else if (val === 'pi') {
+        calcScreen = Math.PI.toString();
+      } else if (val === 'exp') {
+        calcScreen += '*10^';
+      } else if (val === 'sin' || val === 'cos' || val === 'tan' || val === 'sqrt' || val === 'asin' || val === 'acos' || val === 'atan') {
+        calcExpression = `${val}(`;
+        calcScreen = '';
+      } else {
+        if (calcScreen === '0') calcScreen = '';
+        calcScreen += val;
+      }
+
+      screen.innerText = calcScreen;
+      expr.innerText = calcExpression;
+    }
+
+    function calcEvaluate() {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+      
+      let fullExpr = calcExpression + calcScreen;
+      
+      // Automatically balance open/closed parentheses
+      let openBrackets = (fullExpr.match(/\(/g) || []).length;
+      let closeBrackets = (fullExpr.match(/\)/g) || []).length;
+      while (openBrackets > closeBrackets) {
+        fullExpr += ')';
+        closeBrackets++;
+      }
+
+      // Convert trigonometric tokens to custom non-overlapping operators safely
+      fullExpr = fullExpr.replace(/asin\(/g, 'ASIN_OP(');
+      fullExpr = fullExpr.replace(/acos\(/g, 'ACOS_OP(');
+      fullExpr = fullExpr.replace(/atan\(/g, 'ATAN_OP(');
+      fullExpr = fullExpr.replace(/sin\(/g, 'SIN_OP(');
+      fullExpr = fullExpr.replace(/cos\(/g, 'COS_OP(');
+      fullExpr = fullExpr.replace(/tan\(/g, 'TAN_OP(');
+      fullExpr = fullExpr.replace(/sqrt\(/g, 'SQRT_OP(');
+      
+      fullExpr = fullExpr.replace(/\^2/g, '**2');
+      fullExpr = fullExpr.replace(/\^/g, '**');
+
+      try {
+        let result = eval(fullExpr);
+        if (isNaN(result) || !isFinite(result)) {
+          screen.innerText = 'Error';
+        } else {
+          screen.innerText = parseFloat(result.toFixed(6)).toString();
+        }
+        calcExpression = '';
+        calcScreen = screen.innerText;
+      } catch (err) {
+        screen.innerText = 'Error';
+      }
+    }
+
+    // --- DRAGGABLE SETUP FOR DESKTOP ---
+    const calcWidget = document.getElementById('calculator-widget');
+    const calcHeader = document.getElementById('calculator-header');
+    
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    calcHeader.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    calcHeader.addEventListener('touchstart', dragStart, {passive: true});
+    document.addEventListener('touchmove', drag, {passive: false});
+    document.addEventListener('touchend', dragEnd);
+
+    function dragStart(e) {
+      if (window.innerWidth < 768) return; 
+      if (e.type === 'touchstart') {
+        initialX = e.touches[0].clientX - xOffset;
+        initialY = e.touches[0].clientY - yOffset;
+      } else {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+      }
+      isDragging = true;
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      if (e.type === 'touchmove') {
+        e.preventDefault();
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+      xOffset = currentX;
+      yOffset = currentY;
+      calcWidget.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
+
+    function dragEnd() {
+      initialX = currentX;
+      initialY = currentY;
+      isDragging = false;
+    }
+
+    window.onload = function() {
+      renderDashboard();
+
+      document.getElementById('btn-check-answer').addEventListener('click', checkAnswer);
+      document.getElementById('btn-prev-question').addEventListener('click', prevQuestion);
+      document.getElementById('btn-next-question').addEventListener('click', nextQuestion);
+      document.getElementById('btn-review-restart').addEventListener('click', startQuiz);
+
+      document.getElementById('btn-calc-toggle').addEventListener('click', toggleCalc);
+    };
+  </script>
+
+</body>
+</html>

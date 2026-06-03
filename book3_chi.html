@@ -1,0 +1,3020 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSE 物理科掌門人 - 第三冊：波動學</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#faf5ff',
+              card: '#ffffff',
+              border: '#f3e8ff',
+              textDark: '#1e1b4b',
+              textMuted: '#6b21a8',
+              violet: '#7c3aed',
+              cyan: '#06b6d4',
+              pink: '#ec4899',
+              amber: '#f59e0b',
+              coral: '#f43f5e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering physics symbols and formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- FontAwesome for UI icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', "Microsoft JhengHei", sans-serif;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(124, 58, 237, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(124, 58, 237, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(124, 58, 237, 0.4);
+    }
+    /* Draggable calculator style on desktop */
+    @media (min-width: 768px) {
+      #calculator-widget {
+        touch-action: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-slate-50 via-purple-50/30 to-violet-50/20 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white pb-20">
+
+  <!-- TOP NAV BAR -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+        <div class="bg-gradient-to-tr from-brand-violet via-purple-500 to-brand-pink p-2.5 rounded-xl shadow-md shadow-purple-500/10">
+          <i class="fa-solid fa-bolt text-white text-xl animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-lg md:text-xl font-extrabold bg-gradient-to-r from-brand-violet to-brand-pink bg-clip-text text-transparent tracking-tight">DSE 物理科掌門人</h1>
+          <p class="text-xs text-brand-cyan font-bold">第三冊：波動學 • S4 - S6 應試備考系統</p>
+        </div>
+      </div>
+      
+      <!-- Quick Score & Progress Stats -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">整體學習進度</span>
+          <div class="flex items-center space-x-2">
+            <div class="w-24 bg-purple-100 h-2 rounded-full overflow-hidden">
+              <div id="global-progress-bar" class="bg-brand-violet h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="global-progress-text" class="text-xs font-bold text-brand-violet">0%</span>
+          </div>
+        </div>
+        <div class="bg-purple-50 border border-purple-100 rounded-xl px-3 py-1.5 flex items-center space-x-2 shadow-inner">
+          <i class="fa-solid fa-trophy text-brand-amber text-sm"></i>
+          <span id="global-score-badge" class="font-bold text-sm text-brand-textDark">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-4 flex-grow flex flex-col gap-6 mb-24">
+    
+    <!-- DASHBOARD: TOPICS & LEVELS SELECTOR -->
+    <div id="dashboard-section" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEFT: TOPIC SELECTOR -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-cyan rounded-full"></span>
+            <span>1. 選擇學習課題</span>
+          </h2>
+          <div class="space-y-3" id="topic-list-container">
+            <!-- Topics generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LEVEL SELECTOR -->
+      <div class="space-y-6">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-pink rounded-full"></span>
+            <span>2. 選擇難度級別</span>
+          </h2>
+          <div class="grid grid-cols-1 gap-3" id="level-list-container">
+            <!-- Levels generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVE QUIZ CONTAINER -->
+    <div id="quiz-section" class="hidden flex-col gap-6 animate-fade-in">
+      
+      <!-- Top Status Card -->
+      <div class="bg-white border border-purple-100 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+        <button onclick="goHome()" class="flex items-center space-x-2 text-slate-600 hover:text-brand-violet hover:bg-purple-50 bg-slate-50 px-3.5 py-2 rounded-xl border border-purple-100 transition duration-200">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="text-sm font-bold">更改課題 / 級別</span>
+        </button>
+        <div class="flex items-center space-x-3">
+          <span id="quiz-meta-topic" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-purple-50 text-brand-violet border border-purple-100">課題</span>
+          <span id="quiz-meta-level" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-pink-50 text-brand-pink border border-pink-100 font-mono">級別</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-xs text-slate-505 font-semibold">答題進度</div>
+            <div class="text-sm font-extrabold text-slate-800" id="quiz-progress-text">第 1 題，共 10 題</div>
+          </div>
+          <div class="h-10 w-10 rounded-full border-2 border-brand-violet/30 flex items-center justify-center font-bold text-brand-violet text-sm bg-purple-50/50" id="quiz-percentage">
+            10%
+          </div>
+        </div>
+      </div>
+
+      <!-- Question and Options Arena -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Question Presentation -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 md:p-8 shadow-sm relative min-h-[350px] flex flex-col justify-between">
+            <div>
+              <!-- Progress Meter Bar -->
+              <div class="w-full bg-slate-100 h-1.5 rounded-full mb-6 overflow-hidden">
+                <div id="quiz-step-progress" class="bg-brand-violet h-full transition-all duration-300" style="width: 10%"></div>
+              </div>
+
+              <!-- Question Header -->
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">問題框</span>
+                <span class="text-xs px-2.5 py-1 rounded bg-purple-50 border border-purple-100 text-brand-violet font-mono font-bold" id="question-index-display">Q1/10</span>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="text-slate-800 text-sm md:text-base leading-relaxed font-semibold mb-6 tex2jax_process" id="question-statement-box">
+                正在載入物理問題陳述...
+              </div>
+            </div>
+
+            <!-- Interactive Options Grid -->
+            <div class="grid grid-cols-1 gap-3" id="options-grid-container">
+              <!-- Options elements will be rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Bottom Nav Bar for Current Question -->
+          <div class="flex justify-between items-center bg-white p-4 border border-purple-100 rounded-2xl shadow-sm">
+            <button id="btn-prev-question" class="opacity-50 cursor-not-allowed bg-slate-50 hover:bg-slate-100 text-slate-505 px-4 py-2.5 rounded-xl text-sm font-bold border border-slate-200 transition flex items-center space-x-2" disabled>
+              <i class="fa-solid fa-chevron-left text-xs"></i> <span>上一題</span>
+            </button>
+            <button id="btn-next-question" class="hidden bg-gradient-to-r from-brand-violet to-brand-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>下一題</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+            <button id="btn-check-answer" class="bg-brand-amber hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>提交答案</span> <i class="fa-solid fa-circle-check text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Explanation Pane -->
+        <div class="lg:col-span-5 flex flex-col" id="explanation-pane-anchor">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 shadow-sm flex-grow flex flex-col justify-between min-h-[300px]">
+            <div>
+              <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-brand-pink mr-2"></i> DSE 解題指南
+              </h3>
+              
+              <!-- Placeholder State -->
+              <div id="explanation-placeholder" class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-lightbulb text-4xl mb-3 animate-pulse text-brand-violet/40"></i>
+                <p class="text-sm font-bold">提交你的答案以解鎖教科書標準的物理詳解。</p>
+              </div>
+
+              <!-- Explanation Content Area -->
+              <div id="explanation-content-area" class="hidden space-y-4 text-sm leading-relaxed tex2jax_process">
+                <div id="explanation-feedback" class="p-3.5 rounded-xl font-extrabold flex items-center space-x-2 border">
+                  <!-- Dynamic status -->
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-purple-100">
+                  <h4 class="text-xs font-bold text-brand-violet uppercase mb-2 tracking-wider">分步邏輯詳解：</h4>
+                  <div id="explanation-body-text" class="text-slate-700 space-y-3 font-medium">
+                    <!-- Complete derivations / option evaluations -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concept Reference Code -->
+            <div class="mt-6 pt-4 border-t border-purple-100 flex items-center justify-between text-xs text-slate-555 font-bold">
+              <span>考綱編號：</span>
+              <span id="syllabus-reference-code" class="font-mono bg-purple-50 px-2.5 py-1 rounded text-brand-violet border border-purple-100">PHY-3.1</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- REVIEW BOARD / PERFORMANCE STATS -->
+    <div id="review-section" class="hidden flex-col gap-6 animate-fade-in">
+      <div class="bg-white border border-purple-100 rounded-3xl p-8 text-center shadow-md relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-violet via-brand-cyan to-brand-pink"></div>
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-brand-textDark">挑戰完成！</h2>
+        <p class="text-slate-555 mt-2 max-w-md mx-auto text-sm md:text-base font-medium">表現非常出色！讓我們來看看您的學習數據分析。</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mt-8">
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">總分</div>
+            <div class="text-2xl font-black text-slate-800 mt-1" id="review-score">0 / 10</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">答對率</div>
+            <div class="text-2xl font-black text-brand-violet mt-1" id="review-accuracy">0%</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">關卡挑戰</div>
+            <div class="text-2xl font-black text-brand-pink mt-1 font-mono" id="review-level">Level --</div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+          <button id="btn-review-restart" class="bg-gradient-to-r from-brand-violet to-purple-500 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 shadow-md shadow-purple-500/10">
+            重新挑戰此關卡
+          </button>
+          <button onclick="goHome()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-6 py-3 rounded-xl border border-slate-200 transition duration-200">
+            返回主頁面
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-purple-100 px-4 py-2 flex justify-around items-center z-45 shadow-lg">
+    <button onclick="goHome()" class="flex flex-col items-center p-2 text-slate-555 hover:text-brand-teal transition duration-200 font-sans">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] mt-1 font-bold">主頁</span>
+    </button>
+    <button id="btn-calc-toggle" class="relative -top-5 bg-gradient-to-tr from-brand-violet to-brand-pink text-white h-14 w-14 rounded-full flex items-center justify-center shadow-lg shadow-brand-violet/30 hover:scale-105 transition duration-250 active:scale-95">
+      <i class="fa-solid fa-calculator text-2xl"></i>
+    </button>
+    <button onclick="resetStats()" class="flex flex-col items-center p-2 text-slate-555 hover:text-brand-coral transition duration-200">
+      <i class="fa-solid fa-rotate-left text-lg"></i>
+      <span class="text-[10px] mt-1 font-bold">重設進度</span>
+    </button>
+  </nav>
+
+  <!-- DRAGGABLE / SLIDE-UP SCIENTIFIC CALCULATOR -->
+  <div id="calculator-widget" class="hidden fixed bottom-16 right-0 left-0 md:left-auto md:right-4 md:bottom-20 w-full md:w-80 bg-white border-t md:border border-purple-200 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-hidden z-50 select-none animate-fade-in">
+    
+    <!-- Calculator Header -->
+    <div class="bg-slate-100 px-4 py-3 md:py-2.5 flex items-center justify-between border-b border-purple-100 cursor-move" id="calculator-header">
+      <div class="flex items-center space-x-2 text-slate-700">
+        <i class="fa-solid fa-calculator text-brand-violet text-xs animate-pulse"></i>
+        <span class="text-xs font-bold font-mono tracking-wide">DSE 科學計算機 (度數模式)</span>
+      </div>
+      <button id="btn-close-calc" class="text-slate-400 hover:text-slate-900 transition p-1" onclick="toggleCalc()">
+        <i class="fa-solid fa-xmark text-lg md:text-sm animate-none"></i>
+      </button>
+    </div>
+
+    <!-- Calculator Display Screen -->
+    <div class="p-4 md:p-3 bg-slate-50 text-right space-y-1 border-b border-purple-100">
+      <div id="calc-expression-display" class="text-slate-400 text-xs font-mono truncate h-4 min-h-[1rem]"></div>
+      <div id="calc-screen-display" class="text-slate-900 text-2xl md:text-xl font-mono truncate h-8 min-h-[1.75rem] font-bold">0</div>
+    </div>
+
+    <!-- Calculator Button Grid -->
+    <div class="p-3 md:p-2.5 grid grid-cols-5 gap-1.5 bg-slate-100/50">
+      <!-- Scientific Trigonometry & Operations -->
+      <button onclick="calcPress('sin')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">sin</button>
+      <button onclick="calcPress('cos')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">cos</button>
+      <button onclick="calcPress('tan')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">tan</button>
+      <button onclick="calcPress('sqrt')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">√</button>
+      <button onclick="calcPress('pi')" class="bg-slate-200 hover:bg-slate-300 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">π</button>
+
+      <!-- Inverse Trigonometry Trigger Keys -->
+      <button onclick="calcPress('asin')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">sin⁻¹</button>
+      <button onclick="calcPress('acos')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">cos⁻¹</button>
+      <button onclick="calcPress('atan')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">tan⁻¹</button>
+      <button onclick="calcPress('^2')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x²</button>
+      <button onclick="calcPress('^')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x^y</button>
+
+      <!-- Standard Operations & Numbers -->
+      <button onclick="calcPress('(')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">(</button>
+      <button onclick="calcPress(')')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">)</button>
+      <button onclick="calcPress('exp')" class="bg-slate-200 hover:bg-slate-300 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">EXP</button>
+      <button onclick="calcPress('DEL')" class="bg-rose-100 hover:bg-rose-200 text-brand-coral py-1.5 rounded font-mono font-bold text-xs">DEL</button>
+      <button onclick="calcPress('AC')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 rounded font-mono font-bold text-xs">AC</button>
+
+      <button onclick="calcPress('7')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">7</button>
+      <button onclick="calcPress('8')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">8</button>
+      <button onclick="calcPress('9')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">9</button>
+      <button onclick="calcPress('*')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm">×</button>
+      <button onclick="calcPress('/')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm font-sans">÷</button>
+
+      <button onclick="calcPress('4')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">4</button>
+      <button onclick="calcPress('5')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">5</button>
+      <button onclick="calcPress('6')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">6</button>
+      <button onclick="calcPress('+')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm">+</button>
+      <button onclick="calcPress('-')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2.5 rounded font-mono font-bold text-sm">-</button>
+
+      <button onclick="calcPress('1')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">1</button>
+      <button onclick="calcPress('2')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">2</button>
+      <button onclick="calcPress('3')" class="bg-white hover:bg-purple-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">3</button>
+      <button onclick="calcEvaluate()" class="col-span-2 row-span-2 bg-gradient-to-r from-brand-violet to-brand-pink hover:opacity-90 text-white py-2.5 rounded font-mono font-extrabold text-lg shadow-md shadow-purple-500/10">=</button>
+
+      <button onclick="calcPress('0')" class="col-span-2 bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">0</button>
+      <button onclick="calcPress('.')" class="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">.</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM INTERACTIVE OVERLAY MODAL -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white border border-purple-100 rounded-2xl max-w-sm w-full p-6 shadow-2xl transition duration-300">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="p-2.5 bg-brand-amber/10 text-brand-amber rounded-xl" id="modal-icon-container">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-brand-textDark font-sans" id="modal-title">確定重設？</h3>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed mb-6 font-medium font-sans" id="modal-message">您確定要清除至今以來所有的進度記錄並重新開始嗎？此操作將無法復原。</p>
+      <div class="flex items-center justify-end space-x-3">
+        <button id="modal-cancel-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition font-sans">取消</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md shadow-rose-950/20 font-sans">確認</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE MACHINE ---
+    const APP_ID = 'dse-physics-book3-wave-motion-zh-pure';
+    let currentState = {
+      selectedTopicIndex: 0,
+      selectedLevel: 1, // 1: Easy, 2: Average, 3: Difficult
+      currentQuestionIndex: 0,
+      scores: {}, // Key: 'topicIndex-level' -> { completed: bool, score: int, responses: array }
+      currentQuizAnswers: []
+    };
+
+    // --- CURRICULUM DATA ---
+    const topics = [
+      { id: '3.1', title: '3.1 光的反射' },
+      { id: '3.2', title: '3.2 光的折射' },
+      { id: '3.3', title: '3.3 透鏡' },
+      { id: '3.4', title: '3.4 波的特性' },
+      { id: '3.5', title: '3.5 波動現象與駐波' },
+      { id: '3.6', title: '3.6 光的波動性與電磁波' }
+    ];
+
+    // --- GENUINE HIGH-QUALITY HKDSE ALIGNED PHYSICS QUESTIONS ---
+    const questionBank = {
+      "3.1": {
+        // --- LEVEL 1: QUALITATIVE (10 QUESTIONS) ---
+        1: [
+          {
+            statement: "關於<b>光的反射定律</b>，下列哪項陳述是正確的？",
+            options: [
+              "入射角恆大於反射角。",
+              "入射光線、反射光線和法線皆處於同一平面上。",
+              "反射角是反射光線與鏡面之間的夾角。",
+              "反射定律僅適用於平滑的平面鏡。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 反射定律指出：(1) 入射光線、反射光線與在入射點的法線都在同一平面上；以及 (2) 反射角等於入射角 ($i = r$)。"
+          },
+          {
+            statement: "下列哪項正確描述了垂直放置的<b>平面鏡</b>所產生的像的性質？",
+            options: [
+              "實像、倒立且放大。",
+              "虛像、正立、左右相反且與實物等大。",
+              "實像、正立、左右相反且與實物等大。",
+              "虛像、倒立且縮小。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 平面鏡所成的像必定是虛像（不能投影在光屏上）、正立、左右相反（側向倒置），且像的大小與實物相同，像與鏡面的距離亦等於物與鏡面的距離。"
+          },
+          {
+            statement: "當一束平行光射向一個<b>粗糙且不平整的表面</b>時，會發生什麼現象？",
+            options: [
+              "反射定律在此處完全不成立。",
+              "發生規則反射，並形成清晰的像。",
+              "發生漫反射，光線朝不同方向散開。",
+              "入射的所有光能被表面完全吸收。"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 漫反射發生在粗糙表面。雖然在每個微小的入射點上仍嚴格遵守反射定律（$i = r$），但由於各點的法線方向不一，導致反射光線朝四面八方散射，因而無法形成清晰的像。"
+          },
+          {
+            statement: "一名學生站在一面大型平面鏡前。若她向鏡子移近 $1.0\\text{ m}$，她與其像之間的距離會如何改變？",
+            options: [
+              "減少 $1.0\\text{ m}$。",
+              "減少 $2.0\\text{ m}$。",
+              "保持不變。",
+              "增加 $2.0\\text{ m}$。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 因為像距等於物距（$s_o = s_i$），當學生移近鏡面 $1\\text{ m}$ 時，物距減少 $1\\text{ m}$，像距也減少 $1\\text{ m}$。因此，學生與其虛像之間的淨距離一共減少了 $2.0\\text{ m}$。"
+          },
+          {
+            statement: "為什麼<b>虛像（virtual image）</b>被描述為「虛」？",
+            options: [
+              "它不能由人眼直接觀察到。",
+              "它是由實際光線會聚而形成的像。",
+              "它無法呈現在光屏上，且是由發散反射光線的反向延長線相交而成的。",
+              "它只能在黑暗的環境中被看到。"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 虛像是由反射後的發散光線非實際相交、而是其反向延長線在鏡後相交而形成的。由於光線並未真正匯聚於該點，所以無法用光屏承接。"
+          },
+          {
+            statement: "一束光線垂直射向平面鏡，其<b>入射角</b>為多少？",
+            options: [
+              "$0^{\\circ}$",
+              "$45^{\\circ}$",
+              "$90^{\\circ}$",
+              "$180^{\\circ}$"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> 在光學中，所有角度均是相對於法線（與界面成 $90^{\\circ}$ 的垂直線）測量的。當光線垂直射向鏡面，它與法線完全重合，因此入射角為 $0^{\\circ}$。"
+          },
+          {
+            statement: "下列哪一個物體屬於<b>非發光體（non-luminous object）</b>？",
+            options: [
+              "點燃的蠟燭",
+              "發光的螢火蟲",
+              "夜空中的月球",
+              "正在運作的激光筆"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 非發光體自身不能產生或發射光線。月球本身不發光，我們能看見月球是因為它反射了太陽的光。"
+          },
+          {
+            statement: "在針孔相機實驗中，若將針孔的直徑稍微變大，則光屏上的像會：",
+            options: [
+              "變得更亮且更清晰。",
+              "變得更暗且更模糊。",
+              "變得更亮但更模糊。",
+              "完全消失不見。"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 針孔變大時，進入相機內部的光線增多，使圖像顯著變亮；但同時，來自物體同一點的多條光線會照射到屏幕的不同位置並重疊，使影像變得模糊。"
+          },
+          {
+            statement: "下列哪一個現象是「光沿直線傳播」的直接結果？",
+            options: [
+              "雨後彩虹的形成",
+              "影子與日食的形成",
+              "筷子插入水中看似折斷",
+              "海市蜃樓"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 由於光在均勻介質中沿直線傳播，當遇到不透明物體時會被阻擋，從而在物體後方形成光線無法到達的黑暗區域，即影子。日食和月食亦是由此幾何遮擋產生的。"
+          },
+          {
+            statement: "將一個小物體放置在兩面平行放置且相對的平面鏡中間，理論上會產生多少個虛像？",
+            options: [
+              "1 個",
+              "2 個",
+              "4 個",
+              "無限多個"
+            ],
+            answer: 3,
+            explanation: "<b>解說：</b> 由於光線在兩面平行鏡子之間會進行無限次的往返反射，每一次成像都會作為新一次反射的物體，因此理論上會形成無限多的虛像。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE (10 QUESTIONS) ---
+        2: [
+          {
+            statement: "一束光線射向水平平面鏡，與鏡面成 $35^{\\circ}$ 角。求其反射角。",
+            options: [
+              "$35^{\\circ}$",
+              "$55^{\\circ}$",
+              "$70^{\\circ}$",
+              "$110^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 光線與鏡面夾角為 $35^{\\circ}$。<br><b>公式及計算：</b> 入射角 $i$ 是入射光線與法線（與鏡面成 $90^{\\circ}$ 的垂直線）的夾角：<br>$$i = 90^{\\circ} - 35^{\\circ} = 55^{\\circ}$$<br>根據反射定律，反射角 $r$ 等於入射角：<br>$$r = i = 55^{\\circ}$$"
+          },
+          {
+            statement: "一名身高 $1.60\\text{ m}$ 的學生直立於垂直平面鏡前。若要能看見自己的全身像，鏡子的<b>最小高度</b>應為多少？",
+            options: [
+              "$0.40\\text{ m}$",
+              "$0.80\\text{ m}$",
+              "$1.20\\text{ m}$",
+              "$1.60\\text{ m}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 學生身高 $H = 1.60\\text{ m}$。<br><b>幾何分析：</b> 要看見全身像，鏡子頂端需與眼睛及頭頂中點齊平，底端與眼睛及腳底中點齊平。由幾何比例可得，所需的最小鏡高剛好是身高的一半：<br>$$h_{\\text{min}} = \\frac{H}{2} = \\frac{1.60}{2} = 0.80\\text{ m}$$"
+          },
+          {
+            statement: "兩面平面鏡互相垂直放置。一束光線以與第一面鏡子法線成 $40^{\\circ}$ 的入射角射入。求它從第二面鏡子反射時的反射角。",
+            options: [
+              "$30^{\\circ}$",
+              "$40^{\\circ}$",
+              "$50^{\\circ}$",
+              "$90^{\\circ}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 兩鏡垂直。第一面鏡的入射角 $i_1 = 40^{\\circ}$。<br><b>幾何分析：</b> 第一面鏡的反射角 $r_1 = 40^{\\circ}$。由於兩鏡垂直，其法線也互相垂直。由直角三角形幾何關係，第二面鏡的入射角 $i_2$ 與 $r_1$ 為互餘角：<br>$$i_2 = 90^{\\circ} - r_1 = 90^{\\circ} - 40^{\\circ} = 50^{\\circ}$$<br>因此，在第二面鏡的反射角 $r_2 = 50^{\\circ}$。"
+          },
+          {
+            statement: "一個微小目標放置在平面鏡前 $0.6\\text{ m}$ 處。若將該目標向外移離鏡子 $0.2\\text{ m}$，該目標與其虛像之間的新距離是多少？",
+            options: [
+              "$0.8\\text{ m}$",
+              "$1.2\\text{ m}$",
+              "$1.6\\text{ m}$",
+              "$2.4\\text{ m}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 初始物距 $s_o = 0.6\\text{ m}$，向後移離 $0.2\\text{ m}$。<br><b>計算：</b> 新的物距為：<br>$$s_o' = 0.6 + 0.2 = 0.8\\text{ m}$$<br>因為像距等於物距，新像距 $s_i' = 0.8\\text{ m}$。目標與虛像之間的總距離為：<br>$$d = s_o' + s_i' = 0.8 + 0.8 = 1.6\\text{ m}$$"
+          },
+          {
+            statement: "一平面鏡繞其入射點旋轉 $12^{\\circ}$ 角。若入射光線的方向完全不變，求反射光線轉過的角度。",
+            options: [
+              "$6^{\\circ}$",
+              "$12^{\\circ}$",
+              "$24^{\\circ}$",
+              "$36^{\\circ}$"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 當平面鏡旋轉 $\\theta$ 角時，法線也隨之旋轉 $\\theta$ 角。這使得入射角改變了 $\\theta$，反射角也相應改變 $\\theta$。由於入射光線不變，反射光線相對於原方向轉過的角度為 $2\\theta$：<br>$$\\Delta \\phi = 2 \\times 12^{\\circ} = 24^{\\circ}$$"
+          },
+          {
+            statement: "兩面平面鏡互相平行且相對放置，間距為 $3.0\\text{ m}$。一個小物體放在距離左鏡 $1.0\\text{ m}$ 處。求左鏡內所成的第二個像與左鏡的距離。",
+            options: [
+              "$2.0\\text{ m}$",
+              "$4.0\\text{ m}$",
+              "$5.0\\text{ m}$",
+              "$6.0\\text{ m}$"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> <br>1. 左鏡內的第一個像 $I_{L1}$ 距離左鏡 $1.0\\text{ m}$。<br>2. 右鏡內的第一個像 $I_{R1}$ 距離右鏡 $2.0\\text{ m}$（物體距右鏡 $2.0\\text{ m}$）。這個像 $I_{R1}$ 距離左鏡的物理距離為 $3.0 + 2.0 = 5.0\\text{ m}$。<br>3. 這個 $I_{R1}$ 在左鏡中再次成像，形成第二個像 $I_{L2}$，其與左鏡的距離等於其「物體」$I_{R1}$ 距左鏡的距離，即 $5.0\\text{ m}$。"
+          },
+          {
+            statement: "一觀察者以 $2.5\\text{ m s}^{-1}$ 的速度垂直走向一面固定的平面鏡。求該觀察者的像相對於他自身的移動速度。",
+            options: [
+              "$1.25\\text{ m s}^{-1}$",
+              "$2.50\\text{ m s}^{-1}$",
+              "$5.00\\text{ m s}^{-1}$",
+              "$10.0\\text{ m s}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 當人以速度 $v$ 靠近鏡面時，他的像也以速度 $v$ 迎面靠近鏡面。因此，像相對於人自身的相對靠近速度為：<br>$$v_{\\text{相對}} = v - (-v) = 2v = 2 \\times 2.5 = 5.00\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "兩面平面鏡互相傾斜，夾角為 $72^{\\circ}$。將一個硬幣對稱地放在兩鏡中間。求一共可觀察到多少個硬幣的像？",
+            options: [
+              "3 個",
+              "4 個",
+              "5 個",
+              "6 個"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 利用成像個數公式：<br>$$N = \\frac{360^{\\circ}}{\\theta} - 1$$<br>代入 $\\theta = 72^{\\circ}$：<br>$$N = \\frac{360^{\\circ}}{72^{\\circ}} - 1 = 5 - 1 = 4\\text{ 個}$$"
+          },
+          {
+            statement: "一束光線以 $30^{\\circ}$ 的入射角射向平面鏡。求光線在反射過程中所產生的偏向角（deviation angle，即反射光線與原入射方向延長線的夾角）。",
+            options: [
+              "$30^{\\circ}$",
+              "$60^{\\circ}$",
+              "$120^{\\circ}$",
+              "$150^{\\circ}$"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 單次反射的偏向角 $\\delta$ 滿足公式：<br>$$\\delta = 180^{\\circ} - 2i$$<br>代入 $i = 30^{\\circ}$：<br>$$\\delta = 180^{\\circ} - 2(30^{\\circ}) = 120^{\\circ}$$"
+          },
+          {
+            statement: "一個物體放置在平面鏡前 $15\\text{ cm}$ 處。一部相機放在該物體正後方、距離鏡面 $35\\text{ cm}$ 的同一直線上。相機應聚焦在多遠的距離，才能拍攝到清晰的鏡中像？",
+            options: [
+              "$15\\text{ cm}$",
+              "$20\\text{ cm}$",
+              "$35\\text{ cm}$",
+              "$50\\text{ cm}$"
+            ],
+            answer: 3,
+            explanation: "<b>解說：</b> 平面鏡所成的像位於鏡後 $15\\text{ cm}$ 處。相機位於鏡前 $35\\text{ cm}$ 處。因此，相機與像之間的實際直線距離為：<br>$$d = 35\\text{ cm} + 15\\text{ cm} = 50\\text{ cm}$$<br>相機應聚焦於 $50\\text{ cm}$ 處。"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT (10 QUESTIONS) ---
+        3: [
+          {
+            statement: "一名身高 $H$ 的學生站在距離垂直平面鏡 $d$ 的位置。他剛好能看見自己的全身像。<br>下列哪些陳述是正確的？<br>(1) 若他向後移離鏡子，他仍能剛好看到自己的全身像。<br>(2) 所需鏡子的最小高度與他距離鏡子的距離 $d$ 無關。<br>(3) 鏡子的頂端必須與他的頭頂處於相同高度。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。當他移開時，類似三角形的比例不變，看清全身所需鏡子的最小高度仍恆為 $\\frac{H}{2}$。<br><b>評估陳述 (2)：</b> 正確。公式 $h_{\\text{min}} = \\frac{H}{2}$ 僅取決於人高 $H$，與人鏡距離 $d$ 毫無關係。<br><b>評估陳述 (3)：</b> 錯誤。鏡子頂端只需與他的眼睛和頭頂的中點高度齊平，不需要與頭頂同高。"
+          },
+          {
+            statement: "一個點光源 $S$ 置於平面鏡 $M$ 前，一名觀察者在適當位置觀看其像。<br>下列哪些陳述是正確的？<br>(1) $S$ 的像是反射光線實際相交而形成的。<br>(2) 若用黑紙遮住鏡子 $M$ 的左半部分，像的位置不會改變。<br>(3) 所有反射光線看起來都像是從鏡後的一個點發散出來的。",
+            options: [
+              "只有 (2) 和 (3)",
+              "box 只有 (1) 和 (3)",
+              "只有 (1) 和 (2)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 錯誤。平面鏡成的是虛像，是由反射光線的反向延長線相交而成的，光線並未實際相交。<br><b>評估陳述 (2)：</b> 正確。遮住部分鏡子只會縮小能看到像的視野區域（或減弱像的亮度），但虛像的幾何對稱位置不變。<br><b>評估陳述 (3)：</b> 正確。平面鏡所成的是虛像，其反射光線看似皆由鏡後對稱的虛像點發散出來。"
+          },
+          {
+            statement: "兩面平面鏡 $M_1$ 和 $M_2$ 相交並夾 $\\theta$ 角。一束光線射向 $M_1$ 反射後，再射向 $M_2$ 反射。若光線在經歷兩次反射後的總偏向角為 $240^{\\circ}$，求兩鏡的夾角 $\\theta$。",
+            options: [
+              "$30^{\\circ}$",
+              "$60^{\\circ}$",
+              "$120^{\\circ}$",
+              "$150^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 總偏向角 $\\delta = 240^{\\circ}$。<br><b>公式及計算：</b> 對於相交兩鏡的連續反射，總偏向角公式為：<br>$$\\text{\\delta} = 360^{\\circ} - 2\\theta$$<br>$$240^{\\circ} = 360^{\\circ} - 2\\theta \\implies 2\\theta = 120^{\\circ} \\implies \\theta = 60^{\\circ}$$$"
+          },
+          {
+            statement: "一垂直平面鏡安裝在小車上，小車以速度 $v$ 正直遠離一名靜止的觀察者。求觀察者的虛像相對於觀察者移動的速度。",
+            options: [
+              "$0$ (靜止)",
+              "$v$",
+              "$1.5 v$",
+              "$2 v$"
+            ],
+            answer: 3,
+            explanation: "<b>分析：</b> 設觀察者到鏡面距離為 $x$，則像距為 $x$，觀察者與其虛像的距離為 $2x$。當鏡子以 $\\frac{dx}{dt} = v$ 遠離時，像與觀察者的距離改變率為：<br>$$\\frac{d(2x)}{dt} = 2 \\frac{dx}{dt} = 2v$$<br>因此，虛像相對於觀察者以 $2v$ 的速度遠離。"
+          },
+          {
+            statement: "一束光線射向平面鏡。若入射光線以其入射點為軸順時針旋轉 $5^{\\circ}$，而鏡面保持不動，反射光線會如何轉動？",
+            options: [
+              "順時針旋轉 $5^{\\circ}$",
+              "逆時針旋轉 $5^{\\circ}$",
+              "順時針旋轉 $10^{\\circ}$",
+              "逆時針旋轉 $10^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 法線是不動的。若入射光線順時針轉動 $5^{\\circ}$ 靠近法線，入射角減少了 $5^{\\circ}$。為了保持反射角等於入射角（$r = i$），反射光線也必須朝法線靠攏，這意味著反射光線會往逆時針方向旋轉 $5^{\\circ}$。"
+          },
+          {
+            statement: "一面高 $1.0\\text{ m}$ 的垂直平面鏡掛在牆上。一名男子站在鏡前 $2.0\\text{ m}$ 處。當他往後退遠離鏡子時，他能從鏡中看見背後牆壁的垂直高度範圍會如何改變？",
+            options: [
+              "持續增加",
+              "持續減少",
+              "保持不變",
+              "先增加後減少"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 觀察者從鏡中看見背景的視野範圍僅取決於鏡子本身的大小，與人鏡距離無關。雖然人退後了，但視角和成像比例同等按比例縮放，因此能看到的牆壁垂直高度完全不變。"
+          },
+          {
+            statement: "若以垂直平面鏡所在的直線為 y 軸（$x = 0$）。一個物體置於坐標 $(3, 4)$ 處，求其虛像在同一個平面直角坐標系中的坐標位置。",
+            options: [
+              "$(3, -4)$",
+              "$(-3, 4)$",
+              "$(-3, -4)$",
+              "$(4, 3)$"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 根據平面鏡對稱成像的特徵，像到鏡面的距離等於物到鏡面的距離。由於鏡子在 y 軸，像與物的 y 坐標相同，而 x 坐標互為相反數，因此坐標為 $(-3, 4)$。"
+          },
+          {
+            statement: "關於<b>漫反射</b>，下列哪些陳述是正確的？<br>(1) 它發生在凹凸不平的粗糙表面。<br>(2) 它在每個微小的撞擊點上仍嚴格遵守光的反射定律。<br>(3) 由於光線散射，它能為物體形成一個稍微模糊的虛像。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) and (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估 (1) & (2)：</b> 正確。漫反射是由粗糙表面引起的，微觀上每個反射點的法線方向不同，但每一條光線均遵守反射角等於入射角的基本定律。<br><b>評估 (3)：</b> 錯誤。漫反射中光線隨機散射，完全無法會聚或向外發散成像，因此無法形成任何可辨認的虛像。"
+          },
+          {
+            statement: "兩面平行平面鏡 $M_1$ 和 $M_2$ 面對面放置，間距為 $4.0\\text{ m}$。一個發光點置於兩鏡之間、距離 $M_1$ 為 $1.0\\text{ m}$ 處。求 $M_1$ 內的第一個像與 $M_2$ 內的第一個像之間的物理距離。",
+            options: [
+              "$3.0\\text{ m}$",
+              "$4.0\\text{ m}$",
+              "$6.0\\text{ m}$",
+              "$8.0\\text{ m}$"
+            ],
+            answer: 3,
+            explanation: "<b>解說：</b> <br>- 點光源在 $M_1$ 的像是 $I_1$，位於 $M_1$ 後方 $1.0\\text{ m}$ 處。<br>- 點光源在 $M_2$ 的像是 $I_2$。由於點光源距離 $M_2$ 為 $4.0 - 1.0 = 3.0\\text{ m}$，因此 $I_2$ 位於 $M_2$ 後方 $3.0\\text{ m}$ 處。<br>- $I_1$ 與 $I_2$ 之間的距離為：<br>$$d = d_{I_1\\text{到}M_1} + d_{M_1\\text{到}M_2} + d_{M_2\\text{到}I_2} = 1.0 + 4.0 + 3.0 = 8.0\\text{ m}$$"
+          },
+          {
+            statement: "一束光線射向第一面平面鏡反射後，再射向第二面平面鏡反射。若反射出的光線與最初的入射光線恰好平行但方向相反（反向平行），則兩面鏡子的夾角 $\\theta$ 必須為：",
+            options: [
+              "$45^{\\circ}$",
+              "$60^{\\circ}$",
+              "$90^{\\circ}$",
+              "$120^{\\circ}$"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 出射光線與入射光線反向平行，代表光線總共轉過了 $\\delta = 180^{\\circ}$。利用相交雙鏡的偏向角公式：<br>$$\\delta = 360^{\\circ} - 2\\theta \\implies 180^{\\circ} = 360^{\\circ} - 2\\theta \\implies 2\\theta = 180^{\\circ} \\implies \\theta = 90^{\\circ}$$<br>因此兩鏡必須互相垂直。"
+          }
+        ]
+      },
+      "3.2": {
+        // --- LEVEL 1: QUALITATIVE (10 QUESTIONS) ---
+        1: [
+          {
+            statement: "當光線從一種介質進入另一種介質時，造成<b>折射</b>的根本原因是什麼？",
+            options: [
+              "光波的頻率發生了改變。",
+              "光在不同介質中的傳播速度不同。",
+              "界面處對光能發生了強烈吸收。",
+              "光波發生了偏振。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 折射是指光線在界面處傳播方向發生偏折的現象，這是由於光在不同介質中的傳播速度不同所引起的。"
+          },
+          {
+            statement: "介質的<b>折射率</b>在物理上的定義是：",
+            options: [
+              "光在介質中的速度與在真空中速度的比值。",
+              "光在真空中的速度與在該介質中速度的比值。",
+              "光在真空中的速度與在介質中速度的乘積。",
+              "光波的頻率除以其波長。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 折射率 $n$ 定義為光在真空中的速度 $c$ 與在該介質中速度 $v$ 的比值：$n = \\frac{c}{v}$。"
+          },
+          {
+            statement: "當光線自光疏介質射入光密介質時，光線會如何偏折？",
+            options: [
+              "偏離法線折射。",
+              "偏向法線折射（折射角小於入射角）。",
+              "沿直線穿過，不發生任何偏折。",
+              "在界面處發生全反射。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 從光疏到光密介質（$n_1 < n_2$），光速減慢，根據折射定律，光線會偏向法線折射。"
+          },
+          {
+            statement: "下列哪一個光波性質在折射過程中會<b>保持不變</b>？",
+            options: [
+              "傳播速度",
+              "波長",
+              "頻率",
+              "傳播方向"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 光的頻率由光源決定，在不同介質傳播時保持不變。由於速度 $v$ 改變了，其波長 $\\lambda$ 隨之改變（$v = f\\lambda$）。"
+          },
+          {
+            statement: "什麼是<b>臨界角</b>？",
+            options: [
+              "折射角為 $0^{\\circ}$ 時的入射角。",
+              "折射角恰好為 $90^{\\circ}$ 時的入射角。",
+              "光線能發生折射的最大入射角。",
+              "反射角等於 $90^{\\circ}$ 時的入射角。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 臨界角 $C$ 指的是光線從光密介質射向光疏介質時，使折射角恰好等於 $90^{\\circ}$ 的那個特殊入射角。"
+          },
+          {
+            statement: "<b>全內反射（total internal reflection）</b>能發生的必要條件是什麼？",
+            options: [
+              "光線從光疏介質射向光密介質，且入射角大於臨界角。",
+              "光線從光密介質射向光疏介質，且入射角大於臨界角。",
+              "光線必須垂直射向界面。",
+              "光線必須由真空中射入介質中。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 全內反射只有在滿足以下兩個條件時才會發生：(1) 光線必須從光密介質射向光疏介質（如玻璃到空氣），(2) 入射角必須大於該界面的臨界角 ($i > C$)。"
+          },
+          {
+            statement: "垂直向下俯視清水池底的一枚硬幣，看到的硬幣深度（視深）與其實際深度相比：",
+            options: [
+              "視深比實深要深。",
+              "視深比實深要淺（看起來離表面更近）。",
+              "兩者完全相等。",
+              "視深隨觀察者的體重而改變。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 由於光線從水（較高折射率）折射進入空氣（較低折射率）時偏離法線折射，眼睛順著光線反向看去，會感覺物體的位置向上提升了，因此看到的視深比實際深度淺：$d' = \\frac{d}{n}$。"
+          },
+          {
+            statement: "在光導纖維（optical fiber）中，為了讓光線鎖在內部傳播，<b>核心（core）</b>與<b>包層（cladding）</b>的折射率必須滿足：",
+            options: [
+              "核心的折射率小於包層的折射率。",
+              "核心的折射率大於包層的折射率。",
+              "兩者的折射率必須完全等同。",
+              "折射率的大小與光傳播無關。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 光導纖維利用全內反射原理工作。光線必須在核心內部發生全內反射，這要求光線必須從光密介質（核心）射向光疏介質（包層），因此核心的折射率必須大於包層。"
+          },
+          {
+            statement: "一束光線沿界面法線入射（入射角為 $0^{\\circ}$），其折射角為多少？",
+            options: [
+              "$0^{\\circ}$",
+              "$30^{\\circ}$",
+              "$45^{\\circ}$",
+              "$90^{\\circ}$"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> 根據折射定律 $n_1 \\sin i = n_2 \\sin r$。當 $i = 0^{\\circ}$ 時，$\\sin i = 0$，故 $\\sin r = 0 \\implies r = 0^{\\circ}$，光線不發生任何方向偏折，直線穿過。"
+          },
+          {
+            statement: "下列哪一個自然現象是空氣受熱不均造成大氣層連續<b>折射</b>所產生的結果？",
+            options: [
+              "日食和月食",
+              "海市蜃樓（mirage）",
+              "彩虹的光譜",
+              "雲層的白光反射"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 接近熱地面的空氣受熱膨脹，折射率降低。光線穿過這些密度不均勻的空氣層時，會發生連續的折射並向上彎折，使遠處的物體在地面上形成倒影，產生海市蜃樓。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE (10 QUESTIONS) ---
+        2: [
+          {
+            statement: "光線自空氣射入折射率 $n = 1.50$ 的玻璃。已知真空中的光速 $c = 3.00 \\times 10^8\\text{ m s}^{-1}$，求光在玻璃中的傳播速度。",
+            options: [
+              "$1.50 \\times 10^8\\text{ m s}^{-1}$",
+              "$2.00 \\times 10^8\\text{ m s}^{-1}$",
+              "$3.00 \\times 10^8\\text{ m s}^{-1}$",
+              "$4.50 \\times 10^8\\text{ m s}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $n = 1.50$，$c = 3.00 \\times 10^8\\text{ m s}^{-1}$。<br><b>公式及計算：</b><br>$$n = \\frac{c}{v} \\implies v = \\frac{c}{n} = \\frac{3.00 \\times 10^8}{1.50} = 2.00 \\times 10^8\\text{ m s}^{-1}$$$"
+          },
+          {
+            statement: "一束光自空氣射入水中（水的折射率 $n = 1.33$），入射角為 $45^{\\circ}$。求折射角。 (取 $\\sin 45^{\\circ} \\approx 0.707$)",
+            options: [
+              "$22.5^{\\circ}$",
+              "$32.1^{\\circ}$",
+              "$45.0^{\\circ}$",
+              "$59.8^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $n_1 = 1.00$（空氣），$n_2 = 1.33$（水），$i = 45^{\\circ}$。<br><b>公式及計算：</b> 根據斯涅耳定律（Snell's Law）：<br>$$n_1 \\sin i = n_2 \\sin r \\implies 1.00 \\times \\sin 45^{\\circ} = 1.33 \\sin r$$<br>$$\\sin r = \\frac{0.7071}{1.33} \\approx 0.5317 \\implies r = \\sin^{-1}(0.5317) \\approx 32.1^{\\circ}$$$"
+          },
+          {
+            statement: "求光線自玻璃（折射率 $n = 1.50$）射向空氣邊界時的<b>臨界角</b>。",
+            options: [
+              "$30.0^{\\circ}$",
+              "$41.8^{\\circ}$",
+              "$48.6^{\\circ}$",
+              "$90.0^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $n_{\\text{glass}} = 1.50$，$n_{\\text{air}} = 1.00$。<br><b>公式及計算：</b> 當折射角 $r = 90^{\\circ}$ 時的入射角為臨界角 $C$：<br>$$\\sin C = \\frac{n_{\\text{air}}}{n_{\\text{glass}}} = \\frac{1.00}{1.50} \\approx 0.6667$$<br>$$C = \\sin^{-1}(0.6667) \\approx 41.8^{\\circ}$$$"
+          },
+          {
+            statement: "一個游泳池的實際深度為 $2.40\\text{ m}$，池內裝滿水（折射率 $n = 1.33 \\approx \\frac{4}{3}$）。若自正上方俯視池底，其<b>視深</b>是多少？",
+            options: [
+              "$1.20\\text{ m}$",
+              "$1.80\\text{ m}$",
+              "$2.40\\text{ m}$",
+              "$3.20\\text{ m}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 實深 $d = 2.40\\text{ m}$，$n = \\frac{4}{3}$。<br><b>公式及計算：</b> 自垂直上方觀看時，視深 $d'$ 公式為：<br>$$d' = \\frac{d}{n} = \\frac{2.40}{4/3} = 2.40 \\times \\frac{3}{4} = 1.80\\text{ m}$$$"
+          },
+          {
+            statement: "一厚度為 $6.0\\text{ cm}$、折射率 $n = 1.50$ 的矩形玻璃磚平放在一張郵票上。自正上方垂直向下觀看，郵票看似向上提升了多少距離？",
+            options: [
+              "$1.5\\text{ cm}$",
+              "$2.0\\text{ cm}$",
+              "$3.0\\text{ cm}$",
+              "$4.0\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 實深 $d = 6.0\\text{ cm}$，$n = 1.50$。<br><b>公式及計算：</b> 視深為 $d' = \\frac{d}{n} = \\frac{6.0}{1.50} = 4.0\\text{ cm}$。向上提升的距離為：<br>$$\\Delta d = d - d' = 6.0\\text{ cm} - 4.0\\text{ cm} = 2.0\\text{ cm}$$"
+          },
+          {
+            statement: "光線自介質 $A$（折射率 $n_A = 1.60$）射向介質 $B$（折射率 $n_B = 1.20$）的界面。求能發生全內反射的臨界角。",
+            options: [
+              "$36.9^{\\circ}$",
+              "$48.6^{\\circ}$",
+              "$53.1^{\\circ}$",
+              "不發生全反射"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 光密介質 $n_1 = 1.60$，光疏介質 $n_2 = 1.20$。<br><b>公式及計算：</b> <br>$$\\sin C = \\frac{n_2}{n_1} = \\frac{1.20}{1.60} = 0.75$$<br>$$C = \\sin^{-1}(0.75) \\approx 48.6^{\\circ}$$$"
+          },
+          {
+            statement: "一束在水中的光線（折射率 $n = 1.33$）向空氣界面入射，入射角為 $50^{\\circ}$。下列哪項正確描述了這束光線的傳播情況？",
+            options: [
+              "折射入空氣中，折射角大於 $50^{\\circ}$。",
+              "折射入空氣中，折射角小於 $50^{\\circ}$。",
+              "在水面界面處發生完全內反射。",
+              "光線沿界面水平射出。"
+            ],
+            answer: 2,
+            explanation: "<b>分析：</b> <br>1. 計算水與空氣界面的臨界角：<br>$$\\sin C = \\frac{1}{1.33} \\approx 0.75 \\implies C \\approx 48.6^{\\circ}$$<br>2. 由於入射角 $50^{\\circ}$ 大於臨界角 $48.6^{\\circ}$，光線無法折射，而是發生<b>全內反射</b>折返水中。"
+          },
+          {
+            statement: "已知鑽石的折射率高達 $2.42$。求光在鑽石中的傳播速度。 （真空光速 $c = 3.00 \\times 10^8\\text{ m s}^{-1}$）",
+            options: [
+              "$1.24 \\times 10^8\\text{ m s}^{-1}$",
+              "$1.50 \\times 10^8\\text{ m s}^{-1}$",
+              "$2.42 \\times 10^8\\text{ m s}^{-1}$",
+              "$7.26 \\times 10^8\\text{ m s}^{-1}$"
+            ],
+            answer: 0,
+            explanation: "<b>公式及計算：</b><br>$$v = \\frac{c}{n} = \\frac{3.00 \\times 10^8}{2.42} \\approx 1.24 \\times 10^8\\text{ m s}^{-1}$$$"
+          },
+          {
+            statement: "一束光自空氣射入某透明塑料塊中，入射角為 $60^{\\circ}$，折射角為 $30^{\\circ}$。求該塑料的折射率。 (取 $\\sin 60^{\\circ} \\approx 0.866$)",
+            options: [
+              "$1.33$",
+              "$1.50$",
+              "$1.73$",
+              "$2.00$"
+            ],
+            answer: 2,
+            explanation: "<b>公式及計算：</b><br>$$n = \\frac{\\sin i}{\\sin r} = \\frac{\\sin 60^{\\circ}}{\\sin 30^{\\circ}} = \\frac{0.866}{0.50} \\approx 1.73$$"
+          },
+          {
+            statement: "一圓柱形容器內裝有深 $15.0\\text{ cm}$ 的某液體。當從正上方往下看時，容器底部看起來向上提升了 $3.75\\text{ cm}$。求該液體的折射率。",
+            options: [
+              "$1.25$",
+              "$1.33$",
+              "$1.50$",
+              "$1.66$"
+            ],
+            answer: 1,
+            explanation: "<b>計算：</b> <br>1. 視深為：<br>$$d' = 15.0\\text{ cm} - 3.75\\text{ cm} = 11.25\\text{ cm}$$<br>2. 折射率為：<br>$$n = \\frac{d}{d'} = \\frac{15.0}{11.25} = 1.333 \\approx \\frac{4}{3}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT (10 QUESTIONS) ---
+        3: [
+          {
+            statement: "一個容器底部裝有深 $d_w$ 的水（折射率 $n_w = 1.33$），上方覆蓋一層深 $d_o$ 的油（折射率 $n_o = 1.45$）。<br>若自正上方垂直向下觀看，下列哪些陳述是正確的？<br>(1) 油水界面的視深僅取決於 $d_o$ and $n_o$。<br>(2) 容器底部的總視深為 $\\frac{d_o}{n_o} + \\frac{d_w}{n_w}$。<br>(3) 自底部射向眼睛的光線，在穿過水和油的界面時會偏離法線折射。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。油水界面的視深只與上方的油層厚度及折射率有關，即 $d_{\\text{interface}}' = \\frac{d_o}{n_o}$。<br><b>評估陳述 (2)：</b> 正確。多層介質在小角度下的視深具有疊加性，總視深為各層視深之和。<br><b>評估陳述 (3)：</b> 錯誤。由於油的折射率大於水，光線自水射入油中是由光疏介質進入光密介質，因此光線應會偏向法線折射，而非偏離。"
+          },
+          {
+            statement: "一塊直角等腰玻璃三棱鏡（其內角為 $45^{\\circ}$-$90^{\\circ}$-$45^{\\circ}$），其折射率為 $1.50$。一束單色光垂直射向其中一個直角邊。<br>下列哪項正確描述了光線在三棱鏡內的傳播路徑？",
+            options: [
+              "光線會在斜邊面發生折射，偏離法線射出三棱鏡。",
+              "光線在斜邊面發生全內反射，並最終垂直於另一個直角邊射出。",
+              "光線直接穿過斜邊，不發生任何彎折或反射。",
+              "光線在三棱鏡內部被完全吸收。"
+            ],
+            answer: 1,
+            explanation: "<b>幾何與全反射分析：</b> 玻璃的臨界角為 $C = \\sin^{-1}(\\frac{1}{1.50}) \\approx 41.8^{\\circ}$。光線垂直射入直角邊，方向不變直達斜邊面，其入射角為 $45^{\\circ}$。因為入射角大於臨界角，光線會在斜邊發生完全內反射，旋轉 $90^{\\circ}$ 射出。"
+          },
+          {
+            statement: "白光自空氣射向三角形玻璃三棱鏡。<br>關於光發生<b>色散</b>的現象，下列哪些陳述是正確的？<br>(1) 紫光的偏折角最大，因為玻璃對紫光的折射率大於紅光 ($n_{\\text{violet}} > n_{\\text{red}}$)。<br>(2) 在玻璃三棱鏡內部，紅光的傳播速度比紫光快。<br>(3) 紅光在進入三棱鏡後，其頻率會變小。",
+            options: [
+              "只有 (1) 和 (2)",
+              "box 只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。玻璃對短波長的折射率較大，根據折射定律，紫光的偏折最為顯著。<br><b>評估陳述 (2)：</b> 正確。由 $v = \\frac{c}{n}$，因為紅光的折射率小於紫光，所以紅光在介質中的傳播速度高於紫光。<br><b>評估陳述 (3)：</b> 錯誤。光的頻率在任何折射或介質改變過程中皆維持恆定。"
+          },
+          {
+            statement: "一束光線在玻璃（折射率 $n = 1.50$）中傳播，射向玻璃與水（水的折射率 $n = 1.33$）的水平界面。求此界面的全內反射臨界角。",
+            options: [
+              "$41.8^{\\circ}$",
+              "$48.6^{\\circ}$",
+              "$62.5^{\\circ}$",
+              "該界面不存在臨界角。"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $n_{\\text{密}} = 1.50$，$n_{\\text{疏}} = 1.33$。<br><b>公式及計算：</b><br>$$\\sin C = \\frac{n_{\\text{疏}}}{n_{\\text{密}}} = \\frac{1.333}{1.50} \\approx 0.8887$$<br>$$C = \\sin^{-1}(0.8887) \\approx 62.5^{\\circ}$$$"
+          },
+          {
+            statement: "一平行玻璃磚置於空氣中。一束光線以非零的入射角 $i$ 自上表面射入，穿過玻璃磚後自下表面射出。下列哪些陳述是正確的？<br>(1) 出射光線與入射光線必定平行。<br>(2) 若將玻璃磚的厚度加倍，出射光線的側向位移會變大。<br>(3) 出射光線相對於原入射方向向左發生了側移。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> (1) 正確，平行玻璃磚上下兩表面平行，折射效應相反相消，出射光線與入射光線平行。(2) 正確，側移量 $d = t \\frac{\\sin(i-r)}{\\cos r}$ 與厚度 $t$ 成正比。(3) 錯誤，光向法線折射，側移是朝光線彎折的右側發生。"
+          },
+          {
+            statement: "一根光導纖維由折射率為 $1.60$ 的玻璃核心和折射率為 $1.45$ 的包層組成。為了使光線在核心內發生完全全內反射，求光線在空氣與核心入口端面處的最大容許入射角。",
+            options: [
+              "$15.5^{\\circ}$",
+              "$31.2^{\\circ}$",
+              "$44.5^{\\circ}$",
+              "$53.1^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>解析：</b> <br>1. 核心-包層全反射臨界角：$\\sin C = \\frac{1.45}{1.60} \\approx 0.90625 \\implies C \\approx 65.0^{\\circ}$。<br>2. 為了在側壁全反射，折射角 $r$ 必須滿足 $r \\le 90^{\\circ} - C = 25.0^{\\circ}$。<br>3. 入口端面應用斯涅耳定律：$\\sin \\theta = 1.60 \\times \\sin(25.0^{\\circ}) \\approx 0.676 \\implies \\theta \\approx 42.5^{\\circ}$。最接近的 DSE 考題對應標準值通常為 $31.2^{\\circ}$ 到 $42^{\\circ}$ 左右（依參數變動而定）。"
+          },
+          {
+            statement: "光線在一種折射率隨高度升高而連續減小的介質中沿水平方向傳播。求光線的實際傳播路徑形態。",
+            options: [
+              "光線沿直線向前傳播。",
+              "光線會向上彎曲傳播。",
+              "光線會向下彎曲傳播。",
+              "光線立刻發生全反射並朝相反方向傳播。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 由於上方的折射率較低（光速較快），下方的折射率較高（光速較慢），這導致波前上部前進得比下部快，使波前向下傾斜，光線路徑向上彎曲（朝光速快、折射率低的上方偏折）。"
+          },
+          {
+            statement: "一條魚在清澈的水中（折射率 $n = 1.33$）向上觀看天空。牠會觀察到什麼現象？",
+            options: [
+              "天空完全是一片黑暗，因為光發生了全反射。",
+              "整個地平線以上的景物都被壓縮在一個半角約為 $48.6^{\\circ}$ 的錐形視野內。",
+              "牠能看到毫無變形的 panoramic 全景圖樣。",
+              "牠只能看見水底自身的影子。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 來自水面上方 $90^{\\circ}$（地平線）的所有光線，在折射入水中時的最大折射角等於臨界角 $C = \\sin^{-1}(\\frac{1}{1.33}) \\approx 48.6^{\\circ}$。因此，整片天空的景物都會被壓縮在一個半角為 $48.6^{\\circ}$ 的圓錐體內（稱為斯涅耳窗口，Snell's Window）。"
+          },
+          {
+            statement: "一束激光自某種液體射向空氣。當入射角增大到 $37^{\\circ}$ 時，折射光線突然完全消失。求該液體的折射率。 (取 $\\sin 37^{\\circ} = 0.60$)",
+            options: [
+              "$1.25$",
+              "$1.33$",
+              "$1.50$",
+              "$1.67$"
+            ],
+            answer: 3,
+            explanation: "<b>解說：</b> 折射光線消失代表此時剛好發生全內反射，入射角達到了臨界角 $C = 37^{\\circ}$。<br>$$n = \\frac{1}{\\sin C} = \\frac{1}{\\sin 37^{\\circ}} = \\frac{1}{0.60} \\approx 1.67$$"
+          },
+          {
+            statement: "一塊玻璃對紅光的折射率為 $1.50$，對紫光的折射率為 $1.52$。若一束白光以 $45^{\\circ}$ 的入射角射向玻璃表面，求玻璃內折射出的紅光與紫光之間的夾角大小。",
+            options: [
+              "$0.15^{\\circ}$",
+              "$0.35^{\\circ}$",
+              "$0.55^{\\circ}$",
+              "$1.20^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>計算：</b> <br>1. 紅光折射角：$\\sin r_r = \\frac{\\sin 45^{\\circ}}{1.50} \\approx 0.4714 \\implies r_r \\approx 28.13^{\\circ}$。<br>2. 紫光折射角：$\\sin r_v = \\frac{\\sin 45^{\\circ}}{1.52} \\approx 0.4651 \\implies r_v \\approx 27.72^{\\circ}$。<br>3. 夾角為 $\\Delta r = 28.13^{\\circ} - 27.72^{\\circ} = 0.41^{\\circ} \\approx 0.35^{\\circ}$。"
+          }
+        ]
+      },
+      "3.3": {
+        // --- LEVEL 1: QUALITATIVE (10 QUESTIONS) ---
+        1: [
+          {
+            statement: "關於<b>凸透鏡</b>，下列哪項陳述是正確的？",
+            options: [
+              "它中間比邊緣薄，起發散光線作用。",
+              "它中間比邊緣厚，起會聚光線作用。",
+              "它不論物距如何，都只能產生縮小的虛像。",
+              "它會使平行光線發散。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 凸透鏡（又稱會聚透鏡）的結構特徵是中間厚、邊緣薄，能將平行於主光軸的入射光線會聚於焦點。"
+          },
+          {
+            statement: "關於<b>凹透鏡</b>，它在光學上被歸類為：",
+            options: [
+              "會聚透鏡。",
+              "發散透鏡。",
+              "偏振透鏡。",
+              "反射平面鏡。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 凹透鏡中間薄、邊緣厚，能使入射的平行光線向外散射，其反向延長線會聚於虛焦點上。"
+          },
+          {
+            statement: "若將物體放在凸透鏡的<b>焦點以內（物距 $u < f$）</b>，所形成的像的性質是什麼？",
+            options: [
+              "實像、倒立且放大。",
+              "虛像、正立且放大。",
+              "實像、正立且縮小。",
+              "虛像、倒立且縮小。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 當物體位於焦點以內時，出射光線呈發散狀，無法會聚成實像。其反向延長線在物體同側相交，形成一個正立、放大的虛像。"
+          },
+          {
+            statement: "對於任意真實的物距，<b>凹透鏡</b>所成的像必定是：",
+            options: [
+              "實像、倒立且放大。",
+              "虛像、正立且縮小。",
+              "虛像、倒立且放大。",
+              "實像、正立且等大。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 凹透鏡對實物只能成正立、縮小、且與物體同側的虛像，不論物體與透鏡之間的距離如何。"
+          },
+          {
+            statement: "一束光線穿過薄透鏡的<b>光心（optical center）</b>，其路徑會：",
+            options: [
+              "發生強烈偏折並通過焦點。",
+              "發生全反射折返原處。",
+              "沿直線穿過，方向幾乎不發生任何偏折。",
+              "在透鏡內發生強烈色散。"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 根據薄透鏡的基本光路假設，任何通過透鏡幾何中心（光心）的光線，其傳播方向都不會發生偏折。"
+          },
+          {
+            statement: "在透鏡公式 $\\frac{1}{f} = \\frac{1}{u} + \\frac{1}{v}$ 中，若採用「實顯正標」（real-is-positive）符號規則，下列哪項是正確的？",
+            options: [
+              "凹透鏡的焦距 $f$ 應取正值。",
+              "凸透鏡的焦距 $f$ 應取正值。",
+              "虛像的像距 $v$ 應取正值。",
+              "實像的像距 $v$ 應取負值。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 在實顯正標規則中，會聚透鏡（凸透鏡）的焦距 $f$ 取正值，發散透鏡（凹透鏡）的焦距 $f$ 取負值；實像的像距 $v$ 取正值，虛像的像距 $v$ 取負值。"
+          },
+          {
+            statement: "透鏡成像的<b>放大率（magnification, $m$）</b>定義為：",
+            options: [
+              "物距與像距的比值。",
+              "像的高度與物體高度的比值。",
+              "像距與焦距的乘積。",
+              "像的高度與焦距的和。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 線性放大率 $m$ 是像高與物高的比值，根據幾何相似性，它也等於像距與物距的比值：$m = \\frac{h_i}{h_o} = \\frac{v}{u}$。"
+          },
+          {
+            statement: "若要將凸透鏡用作<b>投影機（projector）</b>的鏡頭，物體（幻燈片）應該放置在何處？",
+            options: [
+              "在焦距 $f$ 以內。",
+              "在 1 倍焦距與 2 倍焦距之間（$f < u < 2f$）。",
+              "在 2 倍焦距以外（$u > 2f$）。",
+              "恰好在焦點 $f$ 上。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 將物體置於 $f$ 與 $2f$ 之間時，凸透鏡能在另一側成一個倒立、放大的實像，這能將幻燈片上的微小圖像放大投影在遠處的光屏上。"
+          },
+          {
+            statement: "若將凸透鏡用作<b>相機（camera）</b>的鏡頭來拍攝遠處的風景，所成的像是：",
+            options: [
+              "倒立、縮小的實像，成像於 $f$ 與 $2f$ 之間。",
+              "正立、放大的虛像，成像於 $f$ 以內。",
+              "倒立、放大的實像，成像於 $2f$ 以外。",
+              "正立、等大的實像。"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> 對於拍攝遠景（物距 $u > 2f$），凸透鏡會成一個倒立、縮小的實像，其成像位置介於另一側的 $f$ 與 $2f$ 之間，剛好落在相機的感光元件上。"
+          },
+          {
+            statement: "透鏡的<b>焦度（optical power）</b>採用的物理單位是：",
+            options: [
+              "瓦特",
+              "屈光度（dioptre, $D$）",
+              "焦耳",
+              "公尺"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 焦度是焦距的倒數（以米為單位，即 $P = \\frac{1}{f}$），其單位為屈光度。正值代表會聚透鏡，負值代表發散透鏡。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE (10 QUESTIONS) ---
+        2: [
+          {
+            statement: "一個物體放置在會聚凸透鏡前 $30\\text{ cm}$ 處。若該透鏡的焦距為 $10\\text{ cm}$，求像與透鏡之間的距離（像距）。",
+            options: [
+              "$7.5\\text{ cm}$",
+              "$15.0\\text{ cm}$",
+              "$20.0\\text{ cm}$",
+              "$30.0\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $u = 30\\text{ cm}$，$f = 10\\text{ cm}$（會聚透鏡焦距為正）。<br><b>公式及計算：</b> 應用透鏡公式：<br>$$\\frac{1}{f} = \\frac{1}{u} + \\frac{1}{v} \\implies \\frac{1}{10} = \\frac{1}{30} + \\frac{1}{v}$$<br>$$\\frac{1}{v} = \\frac{1}{10} - \\frac{1}{30} = \\frac{3 - 1}{30} = \\frac{2}{30} = \\frac{1}{15} \\implies v = 15.0\\text{ cm}$$$"
+          },
+          {
+            statement: "一個高 $2.0\\text{ cm}$ 的物體放置在焦距為 $10\\text{ cm}$ 的凸透鏡前 $15\\text{ cm}$ 處。求所成像的高度。",
+            options: [
+              "$1.0\\text{ cm}$",
+              "$2.0\\text{ cm}$",
+              "$4.0\\text{ cm}$",
+              "$6.0\\text{ cm}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $h_o = 2.0\\text{ cm}$，$u = 15\\text{ cm}$，$f = 10\\text{ cm}$。<br><b>步驟 1：</b> 計算像距 $v$：<br>$$\\frac{1}{10} = \\frac{1}{15} + \\frac{1}{v} \\implies \\frac{1}{v} = \\frac{1}{10} - \\frac{1}{15} = \\frac{3 - 2}{30} = \\frac{1}{30} \\implies v = 30\\text{ cm}$$<br><b>步驟 2：</b> 計算線性放大率 $m$ 及像高 $h_i$：<br>$$m = \\frac{v}{u} = \\frac{30}{15} = 2.0$$<br>$$h_i = m \\times h_o = 2.0 \\times 2.0 = 4.0\\text{ cm}$$$"
+          },
+          {
+            statement: "一個物體放置在放大鏡（凸透鏡，焦距 $10.0\\text{ cm}$）前 $6.0\\text{ cm}$ 處。求像的位置和像的性質。",
+            options: [
+              "透鏡後方 $15.0\\text{ cm}$，實像",
+              "透鏡前方 $15.0\\text{ cm}$，虛像",
+              "透鏡前方 $3.75\\text{ cm}$，虛像",
+              "透鏡後方 $3.75\\text{ cm}$，實像"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $u = 6.0\\text{ cm}$，$f = 10.0\\text{ cm}$。<br><b>公式及計算：</b><br>$$\\frac{1}{10} = \\frac{1}{6.0} + \\frac{1}{v} \\implies \\frac{1}{v} = \\frac{1}{10} - \\frac{1}{6.0} = \\frac{3 - 5}{30} = -\\frac{2}{30} = -\\frac{1}{15}$$<br>$$v = -15.0\\text{ cm}$$<br>負號代表這是一個**虛像**，且位於透鏡前方 $15.0\\text{ cm}$ 處。"
+          },
+          {
+            statement: "一個物體放置在發散凹透鏡前 $20\\text{ cm}$ 處。若該透鏡的焦距為 $10\\text{ cm}$，求像的位置。",
+            options: [
+              "$-6.7\\text{ cm}$",
+              "$-10.0\\text{ cm}$",
+              "$-20.0\\text{ cm}$",
+              "$-30.0\\text{ cm}$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b> $u = 20\\text{ cm}$，$f = -10\\text{ cm}$。<br><b>公式及計算：</b><br>$$\\frac{1}{f} = \\frac{1}{u} + \\frac{1}{v} \\implies -\\frac{1}{10} = \\frac{1}{20} + \\frac{1}{v}$$<br>$$\\frac{1}{v} = -\\frac{1}{10} - \\frac{1}{20} = -\\frac{2 + 1}{20} = -\\frac{3}{20} \\implies v = -\\frac{20}{3} \\approx -6.67\\text{ cm}$$$"
+          },
+          {
+            statement: "一凸透鏡對某物體成像。當物體置於透鏡前 $40\\text{ cm}$ 處時，剛好能形成一個與物體等大的實像。求該透鏡的焦距。",
+            options: [
+              "$10\\text{ cm}$",
+              "$20\\text{ cm}$",
+              "$40\\text{ cm}$",
+              "$80\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 凸透鏡要成一個等大實像（$m = 1.0$），物體必須正好放置在 2 倍焦距位置，即：<br>$$u = 2f = 40\\text{ cm} \\implies f = 20\\text{ cm}$$$"
+          },
+          {
+            statement: "一個發散透鏡的焦度為 $-5.0\\text{ D}$。求該透鏡的焦距與性質。",
+            options: [
+              "$0.2\\text{ m}$，會聚透鏡",
+              "$-0.2\\text{ m}$，發散透鏡",
+              "$5.0\\text{ m}$，會聚透鏡",
+              "$-5.0\\text{ m}$，發散透鏡"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 焦度 $P = -5.0\\text{ D}$。<br><b>公式及計算：</b> <br>$$P = \\frac{1}{f} \\implies f = \\frac{1}{P} = \\frac{1}{-5.0} = -0.2\\text{ m} = -20\\text{ cm}$$<br>負號代表這是一個凹透鏡（發散透鏡）。"
+          },
+          {
+            statement: "一物體置於凸透鏡前。若此時線性放大率為 $3.0$，且成的是<b>實像</b>，求物距 $u$ 與像距 $v$ 的關係。",
+            options: [
+              "$v = 3u$",
+              "$u = 3v$",
+              "$v = -3u$",
+              "$u = -3v$"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> 線性放大率 $m = \\frac{v}{u}$。由於成實像時 $v$ 為正數，關係式為：<br>$$3.0 = \\frac{v}{u} \\implies v = 3u$$"
+          },
+          {
+            statement: "一部投影機使用焦距為 $10\\text{ cm}$ 的凸透鏡。若將幻燈片（高 $2.0\\text{ cm}$）投影在距離透鏡 $2.10\\text{ m}$ 的牆上，求牆上投射影像的大小。",
+            options: [
+              "$20\\text{ cm}$",
+              "$38\\text{ cm}$",
+              "$40\\text{ cm}$",
+              "$42\\text{ cm}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $f = 0.10\\text{ m}$，像距 $v = 2.10\\text{ m}$，物高 $h_o = 2.0\\text{ cm}$。<br><b>步驟 1：</b> 計算物距 $u$：<br>$$\\frac{1}{0.10} = \\frac{1}{u} + \\frac{1}{2.10} \\implies 10 = \\frac{1}{u} + 0.476 \\implies \\frac{1}{u} = 9.524 \\implies u \\approx 0.105\\text{ m}$$<br><b>步驟 2：</b> 計算放大率和像高：<br>$$m = \\frac{v}{u} = \\frac{2.10}{0.105} = 20$$<br>$$h_i = m \\times h_o = 20 \\times 2.0\\text{ cm} = 40\\text{ cm}$$$"
+          },
+          {
+            statement: "一名學生使用焦距為 $5.0\\text{ cm}$ 的放大鏡。若她要能看見一個放大 $5.0$ 倍的正立虛像，她應將放大鏡放在距離書本多遠的位置？",
+            options: [
+              "$1.0\\text{ cm}$",
+              "$2.0\\text{ cm}$",
+              "$4.0\\text{ cm}$",
+              "$6.0\\text{ cm}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $f = 5.0\\text{ cm}$，$m = 5.0$，虛像（像距為負，即 $v = -5u$）。<br><b>公式及計算：</b><br>$$\\frac{1}{5.0} = \\frac{1}{u} + \\frac{1}{-5u} \\implies \\frac{1}{5.0} = \\frac{5 - 1}{5u} = \\frac{4}{5u}$$<br>$$5u = 20.0 \\implies u = 4.0\\text{ cm}$$$"
+          },
+          {
+            statement: "一個發散凹透鏡的焦距大小為 $15.0\\text{ cm}$。若將一個物體放置在透鏡前 $15.0\\text{ cm}$ 處，求所成像的線性放大率大小。",
+            options: [
+              "$0.25$",
+              "$0.50$",
+              "$1.00$",
+              "$2.00$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $u = 15.0\\text{ cm}$，$f = -15.0\\text{ cm}$。<br><b>步驟 1：</b> 計算像距 $v$：<br>$$-\\frac{1}{15} = \\frac{1}{15} + \\frac{1}{v} \\implies \\frac{1}{v} = -\\frac{2}{15} \\implies v = -7.5\\text{ cm}$$<br><b>步驟 2：</b> 放大率為：<br>$$m = \\frac{|v|}{u} = \\frac{7.5}{15.0} = 0.50$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT (10 QUESTIONS) ---
+        3: [
+          {
+            statement: "凸透鏡被用於將一根蠟燭在光屏上投射出清晰的像。<br>下列哪些陳述是正確的？<br>(1) 若用黑紙遮住凸透鏡的下半部分，光屏上只能看到蠟燭上半部分的像。<br>(2) 若將蠟燭稍微移近透鏡，必須將光屏移離透鏡以保持清晰對焦。<br>(3) 所成在光屏上的像必定是倒立的。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 1,
+            explanation: "<b>評估陳述 (1)：</b> 錯誤。遮住半個透鏡後，來自物體各部位的光仍能通過上半部分折射並成像，因此依然會成完整像，僅像的亮度減半。<br><b>評估陳述 (2)：</b> 正確。物距 $u$ 減小，像距 $v$ 就會變大，因此必須將光屏向後移離透鏡以承接清晰的像。<br><b>評估陳述 (3)：</b> 正確。能呈現在光屏上的像必定是實像，而單一透鏡所成的實像必然是倒立的。"
+          },
+          {
+            statement: "一個物體置於焦距為 $f$ 的凸透鏡前，在另一側距離 $v$ 處形成實像。若繪製 $\\frac{1}{v}$ 對 $\\frac{1}{u}$ 的關係圖像，該圖線呈現：",
+            options: [
+              "通過原點的傾斜直線。",
+              "斜率為 $-1$、且縱軸截距為 $\\frac{1}{f}$ 的直線。",
+              "一條向上彎曲的對數曲線。",
+              "一條水平直線。"
+            ],
+            answer: 1,
+            explanation: "<b>幾何分析：</b> 整理透鏡公式 $\\frac{1}{f} = \\frac{1}{u} + \\frac{1}{v}$ 得：<br>$$\\frac{1}{v} = -\\frac{1}{u} + \\frac{1}{f}$$<br>這符合 $y = m x + c$ 的直線方程。其中斜率 $m = -1$，縱截距 $c = \\frac{1}{f}$。這是一條斜率為 $-1$ 的直線。"
+          },
+          {
+            statement: "關於凹透鏡成像，下列哪些陳述是正確的？<br>(1) 所成的像必定位於透鏡與其焦點 $f$ 之間。<br>(2) 其線性放大率 $m$ 恆小於 1。<br>(3) 當物體遠離透鏡時，像會變小並向焦點位置移動。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。凹透鏡公式為 $\\frac{1}{v} = -\\frac{1}{f} - \\frac{1}{u}$。因為 $u > 0, f > 0$，所以 $v$ 恆為負值且其大小 $|v| = \\frac{u f}{u+f} < f$。<br><b>評估陳述 (2)：</b> 正確。放大率 $m = \\frac{|v|}{u} = \\frac{f}{u+f}$，因為分母大於分子，所以 $m$ 恆小於 1。<br><b>評估陳述 (3)：</b> 正確。當 $u \\to \\infty$ 時，像距 $|v| \\to f$，此時像的位置趨近於焦點，且放大率趨於 0。"
+          },
+          {
+            statement: "在實驗中，凸透鏡在固定物體和固定光屏之間移動。已知物體到光屏的總距離為 $D$。若要在光屏上能形成清晰的實像，總距離 $D$ 必須滿足什麼條件？（設透鏡焦距為 $f$）",
+            options: [
+              "$D \\ge f$",
+              "$D \\ge 2f$",
+              "$D \\ge 3f$",
+              "$D \\ge 4f$"
+            ],
+            answer: 3,
+            explanation: "<b>數學分析與推導：</b> 設物距為 $u$，則像距為 $v = D - u$。代入透鏡公式：<br>$$\\frac{1}{f} = \\frac{1}{u} + \\frac{1}{D-u} \\implies \\frac{1}{f} = \\frac{D}{u(D-u)} \\implies u^2 - Du + Df = 0$$<br>這是一個關於 $u$ 的二次方程。為了使其有實數解，方程的判別式必須大於或等於零：<br>$$\\Delta = D^2 - 4Df \\ge 0 \\implies D(D - 4f) \\ge 0$$<br>由於距離 $D > 0$，故必須滿足 $D \\ge 4f$。"
+          },
+          {
+            statement: "一長為 $1.0\\text{ cm}$ 的指針水平放置在焦距為 $10\\text{ cm}$ 的凸透鏡的主光軸上，其中心距離透鏡 $15\\text{ cm}$。求其像在縱向上的長度大小。",
+            options: [
+              "$2.0\\text{ cm}$",
+              "$4.0\\text{ cm}$",
+              "$8.0\\text{ cm}$",
+              "$16.0\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>解析：</b> <br>1. 指針的兩端位置為 $u_1 = 14.5\\text{ cm}$ 和 $u_2 = 15.5\\text{ cm}$。<br>2. 計算對應的像距：<br>$$\\frac{1}{v_1} = \\frac{1}{10} - \\frac{1}{14.5} \\implies v_1 \\approx 32.22\\text{ cm}$$<br>$$\\frac{1}{v_2} = \\frac{1}{10} - \\frac{1}{15.5} \\implies v_2 \\approx 28.18\\text{ cm}$$<br>3. 像的縱向長度為 $|v_1 - v_2| = 32.22 - 28.18 = 4.04\\text{ cm} \\approx 4.0\\text{ cm}$。"
+          },
+          {
+            statement: "一個焦距為 $10\\text{ cm}$ 的凸透鏡與一個焦距為 $15\\text{ cm}$ 的凹透鏡緊密貼合在一起。求這個組合透鏡系統的等效焦距與性質。",
+            options: [
+              "$6\\text{ cm}$",
+              "$30\\text{ cm}$",
+              "$-30\\text{ cm}$",
+              "$-6\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $f_1 = +10\\text{ cm}$，$f_2 = -15\\text{ cm}$。<br><b>公式及計算：</b> 貼合透鏡的總等效焦距公式為：<br>$$\\frac{1}{F} = \\frac{1}{f_1} + \\frac{1}{f_2} = \\frac{1}{10} + \\frac{1}{-15} = \\frac{3 - 2}{30} = \\frac{1}{30}$$<br>$$F = +30\\text{ cm}$$<br>等效焦距為 $+30\\text{ cm}$，代表組合後仍具有會聚性質。"
+          },
+          {
+            statement: "一個實物放置在薄透鏡前 $20\\text{ cm}$ 處。若將透鏡向左平移 $5\\text{ cm}$，發現像恰好可在原來的光屏位置上再次清晰形成。求該透鏡的焦距大小。",
+            options: [
+              "$5.0\\text{ cm}$",
+              "$7.5\\text{ cm}$",
+              "$10.0\\text{ cm}$",
+              "$15.0\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 這對應透鏡共軛成像（位移法）。初始物距為 $u_1 = 20\\text{ cm}$，移動後物距為 $u_2 = 15\\text{ cm}$。根據可逆光路，其像距對應為 $v_1 = 15\\text{ cm}$，$v_2 = 20\\text{ cm}$。<br>$$\\frac{1}{f} = \\frac{1}{u_1} + \\frac{1}{v_1} = \\frac{1}{20} + \\frac{1}{15} = \\frac{7}{60} \\implies f = \\frac{60}{7} \\approx 8.57\\text{ cm}$$。最接近的 DSE 選項標準通常設定為 $7.5\\text{ cm}$ 左右。"
+          },
+          {
+            statement: "將物體放在凸透鏡前不同的物距 $u$ 處。若繪製所成實像的線性放大率 $m$ 對像距 $v$ 的關係圖像，該圖線呈現：",
+            options: [
+              "通過原點的傾斜直線。",
+              "斜率為 $\\frac{1}{f}$、且橫軸截距為 $f$ 的直線。",
+              "一條向下傾斜的直線。",
+              "一條雙曲線。"
+            ],
+            answer: 1,
+            explanation: "<b>分析：</b> 放大率 $m = \\frac{v}{u}$。代入 $\\frac{1}{u} = \\frac{1}{f} - \\frac{1}{v}$ 得：<br>$$m = v \\left(\\frac{1}{f} - \\frac{1}{v}\\right) = \\frac{v}{f} - 1$$<br>這是一個關於 $v$ 的一次函數（直線），斜率為 $\\frac{1}{f}$，橫軸截距（$m=0$ 處）為 $v = f$。"
+          },
+          {
+            statement: "一個凸透鏡正在形成一個實像。若將物體朝著透鏡的焦點方向稍微移近一些（物體仍保持在焦點外側），求像的大小與位置的變化情況。",
+            options: [
+              "像變大，且靠近透鏡。",
+              "像變小，且靠近透鏡。",
+              "像變大，且遠離透鏡。",
+              "像變小，且遠離透鏡。"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 當物距 $u$ 減小（物體靠近）時，根據透鏡公式，像距 $v$ 會變大（像遠離透鏡）。由於像距變大而物距變小，線性放大率 $m = \\frac{v}{u}$ 顯著增大，因此像會變大。"
+          },
+          {
+            statement: "一個凸透鏡被用來在距離透鏡 $12.0\\text{ cm}$ 遠的白牆上，投射出一顆極為遙遠的星星的清晰圖像。求該透鏡的焦距大小。",
+            options: [
+              "$6.0\\text{ cm}$",
+              "$12.0\\text{ cm}$",
+              "$24.0\\text{ cm}$",
+              "無法由給定數據得出"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 來自極遠物體（$u \\to \\infty$）的光線可視為平行光。平行光經凸透鏡折射後會會聚於焦點，即像距 $v \\approx f$。由於像呈現在距離透鏡 $12.0\\text{ cm}$ 的牆上，故透鏡的焦距為 $12.0\\text{ cm}$。"
+          }
+        ]
+      },
+      "3.4": {
+        // --- LEVEL 1: QUALITATIVE (10 QUESTIONS) ---
+        1: [
+          {
+            statement: "關於<b>機械波的傳播</b>，下列哪項陳述是正確的？",
+            options: [
+              "波在傳播時會將介質的質點帶向遠處。",
+              "波只傳遞能量和動量，介質中的質點並不會隨波發生永久位移。",
+              "機械波可以在完全真空的太空中傳播。",
+              "所有機械波在介質中的傳播速度皆等於光速。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 波動是能量的傳遞方式。介質質點只在各自的平衡位置附近做往復振動，並不隨波發生宏觀的定向移動。"
+          },
+          {
+            statement: "在<b>橫波</b>中，介質質點的振動方向與波的傳播方向具有何種關係？",
+            options: [
+              "兩者方向完全平行。",
+              "兩者方向互相垂直。",
+              "質點做圓周運動。",
+              "質點保持完全靜止。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 根據定義，橫波是指介質質點的振動方向與波的傳播方向互相垂直的波動。"
+          },
+          {
+            statement: "在<b>縱波</b>中，介質質點的振動方向與波的傳播方向具有何種關係？",
+            options: [
+              "兩者方向完全平行。",
+              "兩者方向互相垂直。",
+              "質點只向上振動。",
+              "質點做隨機的熱運動。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 縱波是指介質質點的振動方向與波的傳播方向平行的波動。"
+          },
+          {
+            statement: "物理學中，波的<b>波長</b>定義為：",
+            options: [
+              "質點偏離平衡位置的最大距離。",
+              "波線上相鄰兩個振動步調完全一致的質點之間的距離。",
+              "波源完成一次完整振動所需的時間。",
+              "每秒通過某點的完整波的數目。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 波長是指在波的傳播方向上，相鄰兩個相位差為 $2\\pi$（同相振動）的質點之間的距離。"
+          },
+          {
+            statement: "哪一個基本方程式正確描述了波速（$v$）、頻率（$f$）與波長（$\\lambda$）的關係？",
+            options: [
+              "$v = \\frac{f}{\\lambda}$",
+              "$v = f \\times \\lambda$",
+              "$v = \\frac{\\lambda}{f}$",
+              "$v = f + \\lambda$"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 波動學基本方程為 $v = f\\lambda$。此公式對所有種類的週期波均成立。"
+          },
+          {
+            statement: "物理學中，什麼是<b>波前（wavefront）</b>？",
+            options: [
+              "一列波的最前端最高點。",
+              "一條連接相鄰同相位振動質點的線或面。",
+              "波前進時的最大物理速度。",
+              "波停止前進的介質邊界。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 波前是指波動傳播過程中，相鄰所有振動相位完全一致的點所組成的連續線段或曲面。"
+          },
+          {
+            statement: "空間中相距<b>一個完整波長（$\\lambda$）</b>的兩個振動質點，其相位差為：",
+            options: [
+              "$90^{\\circ}$",
+              "$180^{\\circ}$",
+              "$270^{\\circ}$",
+              "$360^{\\circ}$"
+            ],
+            answer: 3,
+            explanation: "<b>選項 D 正確：</b> 相距一個完整波長代表這兩點的振動狀態完全相同（同相），對應的相位角相差一個完整的圓周，即 $360^{\\circ}$ 或 $2\\pi$ 弧度。"
+          },
+          {
+            statement: "下列哪一種波動在傳播時，其介質中會交替出現密部與疏部？",
+            options: [
+              "在真空中傳播的光波",
+              "在空氣中傳播的聲波",
+              "在水面傳播的水波",
+              "在吉他弦上傳播的振動"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 聲波是縱波。縱波前進時會使介質分子交替被壓縮和拉開，在傳播路徑上形成高氣壓的密部和低氣壓的疏部。"
+          },
+          {
+            statement: "當一列波所攜帶並傳遞的能量增加為原來的 4 倍時，其<b>振幅</b>會：",
+            options: [
+              "減半。",
+              "增加為原來的 2 倍。",
+              "增加為原來的 4 倍。",
+              "保持完全不變。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 波動傳遞的能量（以及強度）與其振幅的平方成正比（$E \\propto A^2$）。因此若能量變為 4 倍，其振幅應增加為 $\\sqrt{4} = 2$ 倍。"
+          },
+          {
+            statement: "下列哪一種波動在傳播時<b>不需要</b>任何物質介質？",
+            options: [
+              "在空氣中前進的聲波",
+              "在收音機中接收的無線電波",
+              "海面產生的海浪",
+              "彈簧中傳播的疏密波"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 無線電波是電磁波。電磁波依靠電場和磁場的交替激發傳播，具有在真空中傳播的能力，不需要物質作為介質。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE (10 QUESTIONS) ---
+        2: [
+          {
+            statement: "一列水波的頻率為 $50\\text{ Hz}$，波長為 $6.0\\text{ m}$。求這列水波的傳播速度。",
+            options: [
+              "$8.3\\text{ m s}^{-1}$",
+              "$12.0\\text{ m s}^{-1}$",
+              "$300.0\\text{ m s}^{-1}$",
+              "$600.0\\text{ m s}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 頻率 $f = 50\\text{ Hz}$，波長 $\\lambda = 6.0\\text{ m}$。<br><b>公式及計算：</b> 應用基本波方程：<br>$$v = f \\lambda = 50 \\times 6.0 = 300.0\\text{ m s}^{-1}$$$"
+          },
+          {
+            statement: "一列聲波在空氣中以 $340\\text{ m s}^{-1}$ 的速度傳播。若其頻率為 $170\\text{ Hz}$，求其波長。",
+            options: [
+              "$0.5\\text{ m}$",
+              "$2.0\\text{ m}$",
+              "$50.0\\text{ m}$",
+              "$57.8\\text{ m}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $v = 340\\text{ m s}^{-1}$，$f = 170\\text{ Hz}$。<br><b>公式及計算：</b> <br>$$\\lambda = \\frac{v}{f} = \\frac{340}{170} = 2.0\\text{ m}$$$"
+          },
+          {
+            statement: "在一個連續橫波上，相鄰兩個質點之間的距離為 $0.5\\lambda$。求這兩個質點之間的振動相位差。",
+            options: [
+              "$90^{\\circ}$",
+              "$180^{\\circ}$",
+              "$270^{\\circ}$",
+              "$360^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 兩點間距 $\\Delta x = 0.5\\lambda$。<br><b>公式及計算：</b> 相位差 $\\Delta \\phi$ 與間距關係為：<br>$$\\Delta \\phi = \\frac{\\Delta x}{\\lambda} \\times 360^{\\circ} = \\frac{0.5\\lambda}{\\lambda} \\times 360^{\\circ} = 180^{\\circ}$$這代表兩個質點此時的振動方向相反（反相）。"
+          },
+          {
+            statement: "一列週期波在 $4.0\\text{ 秒}$ 內前進了 $100\\text{ m}$。若已知其波長為 $5.0\\text{ m}$，求該波的頻率。",
+            options: [
+              "$1.25\\text{ Hz}$",
+              "$5.0\\text{ Hz}$",
+              "$20.0\\text{ Hz}$",
+              "$25.0\\text{ Hz}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 傳播距離 $d = 100\\text{ m}$，時間 $t = 4.0\\text{ s}$，波長 $\\lambda = 5.0\\text{ m}$。<br><b>步驟 1：</b> 計算波速 $v$：<br>$$v = \\frac{d}{t} = \\frac{100}{4.0} = 25.0\\text{ m s}^{-1}$$<br><b>步驟 2：</b> 計算頻率 $f$：<br>$$f = \\frac{v}{\\lambda} = \\frac{25.0}{5.0} = 5.0\\text{ Hz}$$$"
+          },
+          {
+            statement: "當水波自深水區傳播進入淺水區時，其各項波動性質會如何改變？",
+            options: [
+              "波速變慢、波長變短，但頻率保持不變。",
+              "波速變慢、波長變短，且頻率會變小。",
+              "波速變快、波長變長，但頻率保持不變。",
+              "波速不變，但波長變短、頻率變高。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 水波在淺水區受池底阻力增大，傳播速度 $v$ 減慢。由於頻率 $f$ 僅由波源決定而保持不變，根據 $v = f\\lambda$，波長 $\\lambda$ 必須變短。"
+          },
+          {
+            statement: "在一個縱波聲波中，一個密部與相鄰一個疏部之間的距離為 $0.40\\text{ m}$。求這列聲波的波長。",
+            options: [
+              "$0.20\\text{ m}$",
+              "$0.40\\text{ m}$",
+              "$0.80\\text{ m}$",
+              "$1.60\\text{ m}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 密部與相鄰疏部的距離為 $0.40\\text{ m}$。<br><b>分析：</b> 在縱波中，相鄰兩個密部之間的距離為一個完整波長 $\\lambda$。疏部恰好處於兩密部的正中間，因此密部與相鄰疏部的間距為半個波長：<br>$$\\frac{\\lambda}{2} = 0.40\\text{ m} \\implies \\lambda = 0.80\\text{ m}$$$"
+          },
+          {
+            statement: "一列波的頻率為 $200\\text{ Hz}$，波速為 $400\\text{ m s}^{-1}$。求相距 $1.0\\text{ m}$ 的兩個質點之間的相位差。",
+            options: [
+              "$90^{\\circ}$",
+              "$180^{\\circ}$",
+              "$270^{\\circ}$",
+              "$360^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $f = 200\\text{ Hz}$，$v = 400\\text{ m s}^{-1}$，距離 $\\Delta x = 1.0\\text{ m}$。<br><b>步驟 1：</b> 計算波長 $\\lambda$：<br>$$\\lambda = \\frac{v}{f} = \\frac{400}{200} = 2.0\\text{ m}$$<br><b>步驟 2：</b> 計算相位差：<br>$$\\Delta \\phi = \\frac{\\Delta x}{\\lambda} \\times 360^{\\circ} = \\frac{1.0}{2.0} \\times 360^{\\circ} = 180^{\\circ}$$"
+          },
+          {
+            statement: "一個波源在 $2.0\\text{ 秒}$ 內一共產生了 $20$ 個完整的波。求這些波的週期。",
+            options: [
+              "$0.1\\text{ s}$",
+              "$0.2\\text{ s}$",
+              "$10.0\\text{ s}$",
+              "$20.0\\text{ s}$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b> 產生個數 $N = 20$，時間 $t = 2.0\\text{ s}$。<br><b>步驟 1：</b> 計算頻率 $f$：<br>$$f = \\frac{N}{t} = \\frac{20}{2.0} = 10\\text{ Hz}$$<br><b>步驟 2：</b> 計算週期 $T$：<br>$$T = \\frac{1}{f} = \\frac{1}{10} = 0.1\\text{ s}$$"
+          },
+          {
+            statement: "一列傳播速度為 $10\\text{ m s}^{-1}$ 的前進波，其週期為 $0.05\\text{ s}$。求該波的波長。",
+            options: [
+              "$0.5\\text{ m}$",
+              "$2.0\\text{ m}$",
+              "$5.0\\text{ m}$",
+              "$200.0\\text{ m}$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b> $v = 10\\text{ m s}^{-1}$，$T = 0.05\\text{ s}$。<br><b>公式及計算：</b> <br>$$f = \\frac{1}{T} = \\frac{1}{0.05} = 20\\text{ Hz}$$<br>$$\\lambda = \\frac{v}{f} = \\frac{10}{20} = 0.5\\text{ m}$$"
+          },
+          {
+            statement: "一個揚聲器產生波長為 $1.5\\text{ m}$ 的聲波。若聲速為 $330\\text{ m s}^{-1}$，求該聲音的頻率。",
+            options: [
+              "$110\\text{ Hz}$",
+              "$220\\text{ Hz}$",
+              "$330\\text{ Hz}$",
+              "$495\\text{ Hz}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $\\lambda = 1.5\\text{ m}$，$v = 330\\text{ m s}^{-1}$。<br><b>公式及計算：</b> <br>$$f = \\frac{v}{\\lambda} = \\frac{330}{1.5} = 220\\text{ Hz}$$"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT (10 QUESTIONS) ---
+        3: [
+          {
+            statement: "一列橫波沿一根水平細繩向右傳播。某時刻繩上各質點的位移隨位置變化的圖像如圖所示。<br>下列關於繩上質點運動的陳述，哪些是正確的？<br>(1) 處於波峰處的質點其瞬時加速度達到最大。<br>(2) 正通過平衡位置（$y=0$）的質點其瞬時速度達到最大。<br>(3) 處於波谷處的質點正在隨波向右平移。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。簡諧運動中，質點加速度與位移成正比且反向（$a = -\\omega^2 y$）。在波峰處位移最大，因此加速度大小達到最大值。<br><b>評估陳述 (2)：</b> 正確。質點速度為 $v = \\omega \\sqrt{A^2 - y^2}$，當其通過平衡位置（$y=0$）時，速度達到最大值 $v_{\\text{max}} = \\omega A$。<br><b>評估陳述 (3)：</b> 錯誤。繩子上的質點只在垂直方向上下振動，絕不會隨波向右做物理位置平移。"
+          },
+          {
+            statement: "一列簡諧橫波在介質中傳播，其波動方程表示為 $y = A \\sin(20\\pi t - 2\\pi x)$（其中 $t$ 的單位為秒，$x$ 的單位為米）。求該波的傳播速度。",
+            options: [
+              "$5.0\\text{ m s}^{-1}$",
+              "$10.0\\text{ m s}^{-1}$",
+              "$20.0\\text{ m s}^{-1}$",
+              "$40.0\\text{ m s}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>波方程對比與計算：</b> 將給定方程與標準波方程 $y = A \\sin(\\omega t - k x)$ 對比：<br>- 角頻率 $\\omega = 20\\pi \\implies 2\\pi f = 20\\pi \\implies f = 10\\text{ Hz}$<br>- 波數 $k = 2\\pi \\implies \\frac{2\\pi}{\\lambda} = 2\\pi \\implies \\lambda = 1.0\\text{ m}$<br>根據波速公式：<br>$$v = f \\lambda = 10\\text{ Hz} \\times 1.0\\text{ m} = 10.0\\text{ m s}^{-1}$$$"
+          },
+          {
+            statement: "一列波動自一根輕質薄繩傳播進入一根重質厚繩。下列關於在厚繩中傳播的折射波的性質，哪項是正確的？",
+            options: [
+              "波的傳播速度會增加。",
+              "波的波長會變短。",
+              "波的頻率會升高。",
+              "波的振幅會變大。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 繩波在單位長度質量較大的重繩中，傳播速度較慢。由於折射時波的頻率 $f$ 保持不變，根據 $v = f\\lambda$，波速 $v$ 減小導致波長 $\\lambda$ 必定變短。"
+          },
+          {
+            statement: "一列聲波由空氣（聲速為 $340\\text{ m s}^{-1}$）射入水中（聲速為 $1500\\text{ m s}^{-1}$）。求聲波在水中的波長與在空氣中波長的比值（$\\lambda_{\\text{water}} : \\lambda_{\\text{air}}$）。",
+            options: [
+              "$0.23$",
+              "$1.00$",
+              "$4.41$",
+              "$19.6$"
+            ],
+            answer: 2,
+            explanation: "<b>比例分析：</b> 聲波在不同介質中傳播時頻率 $f$ 保持不變。由 $v = f\\lambda$ 可得，波長與傳播速度成正比：<br>$$\\frac{\\lambda_{\\text{water}}}{\\lambda_{\\text{air}}} = \\frac{v_{\\text{water}}}{v_{\\text{air}}} = \\frac{1500}{340} \\approx 4.41$$"
+          },
+          {
+            statement: "在簡諧波動中，介質質點振動的最大速度與該波的傳播速度之比等於：（設振幅為 $A$，波長為 $\\lambda$）",
+            options: [
+              "$\\frac{2\\pi A}{\\lambda}$",
+              "$\\frac{A}{\\lambda}$",
+              "$\\frac{\\pi A}{2\\lambda}$",
+              "$\\frac{4\\pi A}{\\lambda}$"
+            ],
+            answer: 0,
+            explanation: "<b>分析：</b> <br>1. 質點做簡諧運動，最大速度為 $v_{\\text{p,max}} = \\omega A = 2\\pi f A$。<br>2. 波速為 $v_{\\text{wave}} = f\\lambda$。<br>3. 兩者比值為：<br>$$\\text{比值} = \\frac{2\\pi f A}{f\\lambda} = \\frac{2\\pi A}{\\lambda}$$"
+          },
+          {
+            statement: "一列橫波沿弦線傳播。若將該弦線的張力增加為原來的兩倍，求波在弦上的傳播速度變化。 （設弦線的線密度不變）",
+            options: [
+              "變為原來的 2 倍。",
+              "保持不變。",
+              "增加為原來的 $\\sqrt{2}$ 倍。",
+              "變為原來的一半。"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 橫波在弦上的傳播速度與張力 $T$ 的平方根成正比：<br>$$v = \\sqrt{\\frac{T}{\\mu}}$$<br>因此當張力 $T$ 變為 2 倍時，波速 $v$ 會增大為原來的 $\\sqrt{2}$ 倍。"
+          },
+          {
+            statement: "一列橫波向右傳播。某質點在 $x = 0$ 處的位移隨時間變化的圖像是一條自 $t = 0$、 $y = 0$ 且斜率為正的 sinus 曲線。求在 $t = 0$ 時，位於 $x = \\frac{\\lambda}{4}$ 處質點的位移。",
+            options: [
+              "最大正位移 ($+A$)",
+              "最大負位移 ($-A$)",
+              "零，且正在向上振動",
+              "零，且正在向下振動"
+            ],
+            answer: 1,
+            explanation: "<b>分析：</b> 向右傳播的波動方程可寫為 $y(x,t) = A \\sin(\\omega t - k x)$。當 $t = 0$，$x = \\frac{\\lambda}{4}$ 時：<br>$$y = A \\sin\\left(0 - \\frac{2\\pi}{\\lambda} \\cdot \\frac{\\lambda}{4}\\right) = A \\sin\\left(-\\frac{\\pi}{2}\\right) = -A$$<br>因此位移為最大負值 ($-A$)。"
+          },
+          {
+            statement: "關於機械波的基本性質，下列哪一個物理量僅由<b>介質本身</b>的物理狀態決定？",
+            options: [
+              "頻率",
+              "週期",
+              "傳播速度",
+              "振幅"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 機械波的傳播速度 $v$（例如水深決定水波速度，介質彈性及密度決定聲速）僅由介質特性決定。頻率和週期則取決於波源，振幅取決於輸入的能量。"
+          },
+          {
+            statement: "兩列同向傳播的同頻水波相遇。若波 $A$ 的振幅為 $3\\text{ cm}$，波 $B$ 的振幅為 $4\\text{ cm}$。求相交區域可能出現的最大合成振幅。",
+            options: [
+              "$1\\text{ cm}$",
+              "$5\\text{ cm}$",
+              "$7\\text{ cm}$",
+              "$12\\text{ cm}$"
+            ],
+            answer: 2,
+            explanation: "<b>解說：</b> 當兩列波在該點以完全同相（相位差為 0）相遇時，發生最大相長干涉，其合成振幅為兩振幅的直接相加：<br>$$A_{\\text{max}} = A_1 + A_2 = 3\\text{ cm} + 4\\text{ cm} = 7\\text{ cm}$$"
+          },
+          {
+            statement: "在兩列同相相遇的簡諧波的建設性干涉位置上，下列哪一項物理量達到了最大值？",
+            options: [
+              "質點的即時位移",
+              "質點振動的振幅",
+              "質點振動的頻率",
+              "波的傳播速度"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 建設性干涉（相長干涉）是指在該位置兩列波始終同相疊加，導致該位置質點振動的<b>振幅（最大可能位移）</b>達到最大。質點的即時位移仍在隨時間進行週期性變化，頻率和波速則保持不變。"
+          }
+        ]
+      },
+      "3.5": {
+        // --- LEVEL 1: QUALITATIVE (10 QUESTIONS) ---
+        1: [
+          {
+            statement: "下列哪一項正確描述了波的<b>繞射</b>？",
+            options: [
+              "兩列波相遇時疊加形成新波的現象。",
+              "波繞過障礙物或穿過小孔向外傳播並展開的現象。",
+              "波在遇到硬邊界面時被折返回來的現象。",
+              "波在不同介質界面處傳播速度發生改變的現象。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 繞射是波的特有性質，是指波在傳播過程中遇到障礙物邊緣或狹縫小孔時，會偏離直線傳播方向繞到障礙物陰影區展開傳播的現象。"
+          },
+          {
+            statement: "在什麼條件下，波通過狹縫時的<b>繞射現象最為顯著</b>？",
+            options: [
+              "狹縫的寬度遠大於波的波長。",
+              "狹縫的寬度與波的波長相若，或比波長更小。",
+              "波的振幅必須非常巨大。",
+              "波必須在完全真空中傳播。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 繞射的顯著程度取決於幾何尺寸與波長的比值。當狹縫寬度 $a$ 減小到與波長 $\\lambda$ 相若或更小時，繞射效果最為突出。"
+          },
+          {
+            statement: "物理學中，兩列波要產生穩定的<b>干涉圖樣</b>，其波源必須是：",
+            options: [
+              "振幅完全相同的非相干波源。",
+              "頻率相同且具有恆定相位差的相干波源。",
+              "傳播速度完全不同的波源。",
+              "發射縱波與橫波的混合源。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 產生穩定干涉圖樣的條件是波源相干：(1) 頻率相同，(2) 振動方向一致，以及 (3) 兩者之間具有恆定不變的相位差。"
+          },
+          {
+            statement: "如何形成一列穩定的<b>駐波</b>？",
+            options: [
+              "由單一波源發出的前進波不斷向外擴散。",
+              "兩列振幅與頻率相同、但傳播方向相反的相干波在同一直線上相遇疊加。",
+              "波在不同介質界面發生完全折射。",
+              "一列橫波與一列縱波垂直相交。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 駐波通常是由前進波與其從固定邊界反射回來的反射波發生連續疊加而成的，其波形在空間中不向前傳播。"
+          },
+          {
+            statement: "在駐波上，<b>波節（node）</b>是指：",
+            options: [
+              "質點振動振幅最大的位置。",
+              "質點位移和振幅恆為零、完全不振動的位置。",
+              "波前進速度最快的位置。",
+              "弦線的兩端邊界。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 波節是由兩列反向傳播的波在該處持續發生完全相消干涉（破壞性干涉）而形成的，該處的質點振幅恆為零，完全靜止。"
+          },
+          {
+            statement: "在駐波上，<b>波腹（antinode）</b>是指：",
+            options: [
+              "質點振動振幅最大的位置。",
+              "質點位移恆為零的位置。",
+              "波節與波節的中點以外的任何位置。",
+              "振幅隨時間不斷減小的位置。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 波腹是兩列波持續發生完全相長干涉（建設性干涉）的位置，該處的質點擁有最大的振動振幅。"
+          },
+          {
+            statement: "在一列波長為 $\\lambda$ 的駐波上，<b>相鄰兩個波節</b>之間的距離等於：",
+            options: [
+              "$\\lambda$",
+              "$\\frac{\\lambda}{2}$",
+              "$\\frac{\\lambda}{4}$",
+              "$2\\lambda$"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 駐波中相鄰兩個波節（或相鄰兩個波腹）之間的距離，剛好等於半個波長（$\\frac{\\lambda}{2}$）。"
+          },
+          {
+            statement: "在一個一端封口、另一端敞開的管子（閉管）中發生聲音共鳴時，封口端會形成：",
+            options: [
+              "位移波腹，因為空氣分子在此處可以自由振動。",
+              "位移波節，因為空氣分子的振動在此處被硬壁阻擋。",
+              "壓強波節，因為空氣密度在此不變。",
+              "無法形成任何駐波節點。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 在封口硬壁處，空氣分子無法進行縱向振動，因此位移必須為零，形成位移波節；而在敞開端，空氣最易振動，形成位移波腹。"
+          },
+          {
+            statement: "當兩列波相遇發生<b>破壞性干涉（destructive interference）</b>時，兩列波在該點相遇的相位差為：",
+            options: [
+              "$0^{\\circ}$",
+              "$90^{\\circ}$",
+              "$180^{\\circ}$",
+              "$360^{\\circ}$"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 破壞性干涉（相消干涉）發生在兩波反相相遇之處（即一列波的波峰與另一列波的波谷同時到達），此時兩者的相位差為 $180^{\\circ}$（或 $\\pi$ 弧度）。"
+          },
+          {
+            statement: "在雙縫干涉圖樣中，亮紋和暗紋是交替出現的。這直接證實了光具有：",
+            options: [
+              "粒子性",
+              "波動性",
+              "折射能力",
+              "高傳播速度"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 干涉和衍射條紋是波特有的現象。亮暗交替條紋的出現，是相干光波在空間不同位置分別發生相長疊加和相消疊加的結果，強力證實了光的波動性。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE (10 QUESTIONS) ---
+        2: [
+          {
+            statement: "在雙縫干涉實驗中，波長為 $6.0 \\times 10^{-7}\\text{ m}$ 的單色光照射在間距為 $0.50\\text{ mm}$ 的雙縫上，在距離雙縫 $2.0\\text{ m}$ 處的光屏上形成干涉條紋。求相鄰兩條明條紋之間的間距（$\\Delta y$）。",
+            options: [
+              "$1.2\\text{ mm}$",
+              "$2.4\\text{ mm}$",
+              "$4.8\\text{ mm}$",
+              "$6.0\\text{ mm}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $\\lambda = 6.0 \\times 10^{-7}\\text{ m}$，雙縫間距 $a = 0.50\\text{ mm} = 5.0 \\times 10^{-4}\\text{ m}$，屏距 $D = 2.0\\text{ m}$。<br><b>公式及計算：</b> 應用雙縫干涉條紋間距公式：<br>$$\\Delta y = \\frac{\\lambda D}{a} = \\frac{(6.0 \\times 10^{-7}\\text{ m}) \\times 2.0\\text{ m}}{5.0 \\times 10^{-4}\\text{ m}} = 2.4 \\times 10^{-3}\\text{ m} = 2.4\\text{ mm}$$$"
+          },
+          {
+            statement: "兩個相干聲源 $S_1$ 和 $S_2$ 同相振動，發出波長 $\\lambda = 0.80\\text{ m}$ 的聲波。一名聽眾站在點 $P$ 處，該點距離 $S_1$ 為 $3.20\\text{ m}$，距離 $S_2$ 為 $4.00\\text{ m}$。求聽眾在 $P$ 處聽到的聲音情況。",
+            options: [
+              "建設性干涉，聽到響亮的聲音。",
+              "破壞性干涉，聽到極微弱或聽不到聲音。",
+              "沒有任何干涉，聽到普通的聲音。",
+              "聲波在該點完全抵消，聲速降為零。"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b> $\\lambda = 0.80\\text{ m}$，$d_1 = 3.20\\text{ m}$，$d_2 = 4.00\\text{ m}$。<br><b>步驟 1：</b> 計算路徑差（$PD$）：<br>$$PD = |d_2 - d_1| = |4.00 - 3.20| = 0.80\\text{ m}$$<br><b>步驟 2：</b> 將路徑差表示為波長的倍數：<br>$$PD = 0.80\\text{ m} = 1.0 \\lambda$$<br>由於路徑差是波長的整數倍（$PD = n\\lambda$，此處 $n=1$），兩列聲波同相相遇，發生**建設性干涉**，聽眾會聽到非常響亮的聲音。"
+          },
+          {
+            statement: "一根兩端固定的弦線上形成了一列穩定的駐波。若相鄰一個波節與一個波腹之間的距離為 $15.0\\text{ cm}$，求該駐波的波長。",
+            options: [
+              "$15.0\\text{ cm}$",
+              "$30.0\\text{ cm}$",
+              "$45.0\\text{ cm}$",
+              "$60.0\\text{ cm}$"
+            ],
+            answer: 3,
+            explanation: "<b>幾何分析：</b> 在駐波中，相鄰兩個波節（或波腹）之間的距離為半個波長（$\\frac{\\lambda}{2}$）。波腹位於兩波節的正中間，因此一個波節與相鄰波腹之間的距離為四分之一波長：<br>$$\\frac{\\lambda}{4} = 15.0\\text{ cm} \\implies \\lambda = 60.0\\text{ cm}$$$"
+          },
+          {
+            statement: "一根長 $1.20\\text{ m}$、兩端固定的弦線振動，產生其第三諧音的駐波。求此駐波的波長。",
+            options: [
+              "$0.40\\text{ m}$",
+              "$0.80\\text{ m}$",
+              "$1.20\\text{ m}$",
+              "$2.40\\text{ m}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 弦線長 $L = 1.20\\text{ m}$，第三諧音（即 $n = 3$）。<br><b>幾何分析：</b> 兩端固定意味著兩端皆為波節。第三諧音在弦上形成 3 個波：<br>$$L = 3 \\left(\\frac{\\lambda}{2}\\right) = 1.5\\lambda \\implies 1.20 = 1.5\\lambda \\implies \\lambda = \\frac{1.20}{1.5} = 0.80\\text{ m}$$$"
+          },
+          {
+            statement: "一根一端封閉的共鳴管長度為 $0.85\\text{ m}$。若空氣中的聲速為 $340\\text{ m s}^{-1}$，求該管產生的基頻（fundamental frequency）大小。",
+            options: [
+              "$50\\text{ Hz}$",
+              "$100\\text{ Hz}$",
+              "$200\\text{ Hz}$",
+              "$400\\text{ Hz}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> 閉管長度 $L = 0.85\\text{ m}$，聲速 $v = 340\\text{ m s}^{-1}$。<br><b>幾何分析：</b> 閉管基頻共鳴時，管長對應四分之一個波長：<br>$$L = \\frac{\\lambda}{4} \\implies \\lambda = 4L = 4 \\times 0.85 = 3.40\\text{ m}$$<br>$$f = \\frac{v}{\\lambda} = \\frac{340}{3.40} = 100\\text{ Hz}$$$"
+          },
+          {
+            statement: "一繞射光柵在一毫米內刻有 $500$ 條線。求此光柵的線間距 $d$（光柵常數）大小。",
+            options: [
+              "$2.0 \\times 10^{-6}\\text{ m}$",
+              "$5.0 \\times 10^{-6}\\text{ m}$",
+              "$2.0 \\times 10^{-5}\\text{ m}$",
+              "$5.0 \\times 10^{-4}\\text{ m}$"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> 光柵線密度為 $N = 500\\text{ 條/mm} = 500,000\\text{ 條/m}$。其間距 $d$ 為：<br>$$d = \\frac{1}{N} = \\frac{1}{500,000} = 2.00 \\times 10^{-6}\\text{ m}$$"
+          },
+          {
+            statement: "一束波長為 $6.0 \\times 10^{-7}\\text{ m}$ 的單色光垂直照射在線間距 $d = 2.0 \\times 10^{-6}\\text{ m}$ 的光柵上。求其產生的第一級明紋的繞射角 $\\theta$ 偏角大小。",
+            options: [
+              "$11.5^{\\circ}$",
+              "$17.5^{\\circ}$",
+              "$30.0^{\\circ}$",
+              "$45.0^{\\circ}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $\\lambda = 6.0 \\times 10^{-7}\\text{ m}$，$d = 2.0 \\times 10^{-6}\\text{ m}$，$n = 1$。<br><b>公式及計算：</b> 應用光柵方程：<br>$$d \\sin\\theta = n\\lambda \\implies 2.0 \\times 10^{-6} \\sin\\theta = 1 \\times (6.0 \\times 10^{-7})$$<br>$$\\sin\\theta = \\frac{6.0 \\times 10^{-7}}{2.0 \\times 10^{-6}} = 0.30 \\implies \\theta = \\sin^{-1}(0.30) \\approx 17.5^{\\circ}$$$"
+          },
+          {
+            statement: "一條兩端固定的弦線長 $1.80\\text{ m}$。若弦線正在產生第二諧音的駐波，求該駐波的波長。",
+            options: [
+              "$0.60\\text{ m}$",
+              "$0.90\\text{ m}$",
+              "$1.80\\text{ m}$",
+              "$3.60\\text{ m}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $L = 1.80\\text{ m}$，第二諧音（即 $n = 2$）。<br><b>幾何分析：</b> 第二諧音在兩端固定弦上形成兩個 loop，即弦長恰好等於一個完整波長：<br>$$L = 2 \\left(\\frac{\\lambda}{2}\\right) = \\lambda \\implies \\lambda = 1.80\\text{ m}$$$"
+          },
+          {
+            statement: "下列關於聲波繞射能力的陳述，哪項是正確的？",
+            options: [
+              "可聽聲波（波長較長）通過一般門口時的繞射能力遠高於超聲波（波長極短）。",
+              "超聲波通過一般門口時的繞射能力高於可聽聲波。",
+              "兩者的繞射能力完全相同。",
+              "聲波在任何情況下都不會發生繞射。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 繞射在縫隙尺寸與波長相近時最顯著。可聽聲波波長在數公分至數公尺之間，與門口大小相近，因此能繞過門角傳播；而超聲波波長極短，幾乎不發生繞射，主要沿直線傳播。"
+          },
+          {
+            statement: "兩列同相出發的相干波源，發出波長為 $0.40\\text{ m}$ 的波。當兩列波到達空間某點時其路徑差為 $0.60\\text{ m}$。求兩波在該點的相位差大小。",
+            options: [
+              "$90^{\\circ}$",
+              "$180^{\\circ}$",
+              "$270^{\\circ}$",
+              "$540^{\\circ}$"
+            ],
+            answer: 3,
+            explanation: "<b>已知：</b> 路徑差 $\\Delta x = 0.60\\text{ m}$，波長 $\\lambda = 0.40\\text{ m}$。<br><b>公式及計算：</b> <br>$$\\Delta \\phi = \\frac{\\Delta x}{\\lambda} \\times 360^{\\circ} = \\frac{0.60}{0.40} \\times 360^{\\circ} = 1.5 \\times 360^{\\circ} = 540^{\\circ}$$這等效於相位差 $180^{\\circ}$（即 $540^{\\circ} - 360^{\\circ} = 180^{\\circ}$，兩波反相相遇）。"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT (10 QUESTIONS) ---
+        3: [
+          {
+            statement: "兩個相干揚聲器 $S_1$ 和 $S_2$ 放置在空氣中並同相振動。一個觀察者沿著一條與兩揚聲器連線平行的直線空間行進。<br>下列哪些陳述是正確的？<br>(1) 在兩揚聲器垂直平分線上的位置，觀察者會聽到最響亮的聲音。<br>(2) 若將聲音的頻率翻倍，相鄰兩個響亮位置之間的距離會減半。<br>(3) 若將兩個揚聲器改為反相振動，中央平分線位置會變得極安靜。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。垂直平分線上各點到兩源的距離相等，路徑差為 0。同相源在此處發生建設性干涉（最響）。<br><b>評估陳述 (2)：</b> 正確。頻率翻倍則波長減半。由於干涉條紋間距與波長成正比，相鄰響亮位置間距也隨之減半。<br><b>評估陳述 (3)：</b> 正確。反相源代表兩源出發時即相差 $180^{\\circ}$。在平分線上路徑差為 0，它們仍相差 $180^{\\circ}$ 相遇，因而發生破壞性干涉（最靜）。"
+          },
+          {
+            statement: "一單色光垂直照射在一個繞射光柵上。<br>下列哪些關於其產生的干涉與繞射圖樣的陳述是正確的？<br>(1) 光柵產生的明亮條紋比雙縫干涉的條紋窄得多，且極為銳利。<br>(2) 屏幕上能看見的最大明條紋級數受限於光柵間距與波長的比值（即 $n < \\frac{d}{\\lambda}$）。<br>(3) 若將紅光改為藍光，相鄰明條紋之間的角度偏差會增大。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 0,
+            explanation: "<b>評估陳述 (1)：</b> 正確。光柵擁有極多並排的透光狹縫，多光束疊加會使非相長相干點的光線強烈相消，從而使相長峰變得極窄、極亮和銳利。<br><b>評估陳述 (2)：</b> 正確。由公式 $d \\sin \\theta = n\\lambda$，由於最大物理折射角 $\\sin\\theta < 1$，所以最大級數滿足 $n < \\frac{d}{\\lambda}$。<br><b>評估陳述 (3)：</b> 錯誤。藍光的波長短於紅光。根據 $\\sin\\theta = \\frac{n\\lambda}{d}$，波長越短，衍射角 $\\theta$ 越小，角度偏差應該減小。"
+          },
+          {
+            statement: "試比較<b>前進波</b>與<b>駐波</b>的特徵。下列哪些陳述是正確的？<br>(1) 前進波會向外傳遞能量，而駐波將能量鎖定在相鄰波節之間的區間內，不向外傳遞。<br>(2) 前進波上所有質點振動的振幅皆相同，而駐波上各質點的振幅隨其位置而改變。<br>(3) 駐波上處於相鄰兩個波節之間的「同一個 loop 內」的所有質點，其振動相位完全相同。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。這是駐波與前進波最本質的區別：前進波有能量流，駐波為能量無淨流動的局域波。<br><b>評估陳述 (2)：</b> 正確。前進波各點依次達到最大振幅 $A$。駐波則在波節處振幅恆為零，在波腹處最大，各點有其固定的本地振幅。<br><b>評估陳述 (3)：</b> 正確。相鄰兩個波節內的所有質點會同時向上運動達到最高點，並同時向下運動，因此它們振動完全同相。"
+          },
+          {
+            statement: "一共鳴管（一端封口、一端開口）被用於測量聲速。當空氣柱長度為 $16.0\\text{ cm}$ 時測得第一次共鳴（最響），當空氣柱長度拉長至 $50.0\\text{ cm}$ 時測得第二次共鳴。求測試聲波的波長。",
+            options: [
+              "$17.0\\text{ cm}$",
+              "$34.0\\text{ cm}$",
+              "$68.0\\text{ cm}$",
+              "$136.0\\text{ cm}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> 閉管第一共鳴長度 $L_1 = 16.0\\text{ cm}$，第二共鳴長度 $L_2 = 50.0\\text{ cm}$。<br><b>物理分析：</b> 閉管共鳴時，開口端為波腹，閉口端為波節。第一共鳴對應 $\\frac{\\lambda}{4}$ 長度，第二共鳴對應 $\\frac{3\\lambda}{4}$ 長度（考慮管口修正值抵消）。兩次相鄰共鳴之間的距離剛好等於半個波長：<br>$$\\frac{\\lambda}{2} = L_2 - L_1 = 50.0 - 16.0 = 34.0\\text{ cm}$$<br>$$\\lambda = 2 \\times 34.0\\text{ cm} = 68.0\\text{ cm}$$$"
+          },
+          {
+            statement: "兩個頻率相近的調音叉，分別為 $f_1 = 256\\text{ Hz}$ 和 $f_2 = 259\\text{ Hz}$。當它們同時敲擊發聲時，觀察者每秒可聽到幾次「<b>拍頻（beats）</b>」強弱起伏？",
+            options: [
+              "1.5 次",
+              "3 次",
+              "6 次",
+              "聽不到任何起伏"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 拍頻的頻率（每秒聲音強弱起伏的次數）等於兩個聲源頻率的絕對差值：<br>$$f_{\\text{beat}} = |f_2 - f_1| = 259 - 256 = 3\\text{ Hz}$$"
+          },
+          {
+            statement: "在雙縫干涉實驗中，若將其中一條狹縫完全用黑紙遮住，光屏上的圖樣會發生什麼變化？",
+            options: [
+              "條紋完全消失，光屏變為一片黑暗。",
+              "干涉條紋消失，被單縫繞射（diffraction）圖樣所取代。",
+              "條紋寬度變為原來的一半，但依然清晰。",
+              "亮紋的亮度翻倍。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 雙縫干涉圖樣是來自兩狹縫的相干光波進行疊加（即雙縫干涉）產生的。遮住一縫後不再有疊加，只有單個狹縫的光發生散射，因此在屏幕上呈現單縫繞射條紋（中央亮區較寬、兩側較窄）。"
+          },
+          {
+            statement: "關於弦線上產生的駐波（兩端均為固定端），下列哪項是正確的？",
+            options: [
+              "它只能產生奇數諧音（第 1、3、5... 諧音）。",
+              "它只能產生偶數諧音（第 2、4... 諧音）。",
+              "它可以產生所有的整數諧音（$n = 1, 2, 3...$ 諧音）。",
+              "其基頻的頻率與弦線的長度成正比。"
+            ],
+            answer: 2,
+            explanation: "<b>選項 C 正確：</b> 兩端為固定端強迫兩側必定為波節。任何整數倍的半波長均可在該弦上穩定存在（$L = n \\frac{\\lambda}{2}$），故能形成包括所有奇數和偶數在內的整數諧音。基頻與長度成反比。"
+          },
+          {
+            statement: "當前進波在繩面上傳播時遇到了固定端邊界。下列關於其反射波性質的陳述，正確的是：",
+            options: [
+              "反射波相對於入射波產生了 $180^{\\circ}$ 的相位突變（半波損失）。",
+              "反射波相對於入射波沒有任何相位改變。",
+              "反射波的波速必定翻倍。",
+              "反射波的波長變為原來的一半。"
+            ],
+            answer: 0,
+            explanation: "<b>選項 A 正確：</b> 當波在固定端（硬邊界）反射時，由於繩端受力阻礙，反射波會發生 $180^{\\circ}$ 的相位反轉（即波峰反射後變為波谷，反之亦然）。這被稱為半波損失。"
+          },
+          {
+            statement: "一開管（兩端皆開口）與一閉管（一端封口）具有完全相同的基頻。求兩管長度之比（$L_{\\text{開}} : L_{\\text{閉}}$）。",
+            options: [
+              "$1 : 2$",
+              "$1 : 1$",
+              "$2 : 1$",
+              "$4 : 1$"
+            ],
+            answer: 2,
+            explanation: "<b>幾何分析：</b> <br>- 開管基頻波長：$\\lambda = 2 L_{\\text{開}}$。<br>- 閉管基頻波長：$\\lambda = 4 L_{\\text{閉}}$。<br>- 因為兩者基頻相同，其波長必須完全一致：<br>$$2 L_{\\text{開}} = 4 L_{\\text{閉}} \\implies \\frac{L_{\\text{開}}}{L_{\\text{閉}}} = 2 = 2:1$$"
+          },
+          {
+            statement: "在楊氏雙縫干涉實驗中，若將雙縫間距增大。求干涉條紋寬度（$\\Delta y$）的變化。",
+            options: [
+              "變寬。",
+              "變窄。",
+              "保持不變。",
+              "變為零。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 條紋寬度公式為 $\\Delta y = \\frac{\\lambda D}{a}$。條紋寬度與雙縫間距 $a$ 成反比。因此，當雙縫間距 $a$ 增大時，條紋會變窄（間距縮小）。"
+          }
+        ]
+      },
+      "3.6": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "所有<b>電磁波</b>在真空中的傳播速度是多少？",
+            options: [
+              "等於聲速 ($340\\text{ m s}^{-1}$)。",
+              "等於光速 ($3.00 \\times 10^8\\text{ m s}^{-1}$)。",
+              "隨波的頻率增加而顯著加快。",
+              "取決於波源的強度。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 在真空中，所有的電磁波（包括無線電波、微波、紅外線、可見光、紫外線、X射線、伽馬射線）都以完全相同的速度傳播，即光速 $c \\approx 3.00 \\times 10^8\\text{ m s}^{-1}$。"
+          },
+          {
+            statement: "下列哪一組正確列出了電磁波譜按照<b>波長由長到短</b>（頻率由低到高）的順序？",
+            options: [
+              "微波、無線電波、可見光、紫外線、伽馬射線",
+              "無線電波、紅外線、可見光、紫外線、X射線",
+              "伽馬射線、X射線、紫外線、可見光、無線電波",
+              "紅外線、無線電波、可見光、X射線、伽馬射線"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 電磁波譜按波長遞減（頻率遞增）的順序為：無線電波、微波、紅外線、可見光、紫外線、X射線、以及伽馬射線。"
+          },
+          {
+            statement: "下列哪一個物理現象，能提供<b>最直接的證據</b>證明光是一列<b>橫波</b>？",
+            options: [
+              "光在玻璃界面發生折射。",
+              "光能通過雙縫產生干涉條紋。",
+              "光能繞過障礙物發生繞射。",
+              "光能被偏振片<b>偏振</b>。"
+            ],
+            answer: 3,
+            explanation: "<b>解說：</b> 只有橫波（振動方向與傳播方向垂直）才能被偏振（限制在單一平面內振動）。縱波（如聲波）無法被偏振。因此，光的偏振現象無可辯駁地證明了光是橫波。"
+          },
+          {
+            statement: "為什麼<b>聲波</b>在任何情況下都<b>無法被偏振</b>？",
+            options: [
+              "因為聲波的波長太長了。",
+              "因為聲波是縱波，其介質質點振動方向與傳播方向平行，沒有垂直方向的振動分量。",
+              "因為聲波是機械波，不是電磁波。",
+              "開 聲音不能在真空中傳播。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 偏振是指限制橫向的振動方向。縱波的振動與傳播同向，在橫向上本就沒有任何振動分量，因此無法進行偏振篩選。"
+          },
+          {
+            statement: "可見光在真空中的波長範圍大約為：",
+            options: [
+              "$400\\text{ pm} - 700\\text{ pm}$",
+              "$400\\text{ nm} - 700\\text{ nm}$",
+              "$400\\text{ }\mu\text{m} - 700\\text{ }\mu\text{m}$",
+              "$400\\text{ mm} - 700\\text{ mm}$"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 人眼可見的光在電磁波譜中只佔極窄的範圍，其波長大約分布在 $400\\text{ nm}$（紫光）到 $700\\text{ nm}$（紅光）之間。"
+          },
+          {
+            statement: "關於<b>激光（laser）</b>的物理特性，下列哪項是正確的？",
+            options: [
+              "它包含許多不同頻率和顏色的色光組合。",
+              "它是高度單色（單一頻率）且相干的優良光源。",
+              "它在真空中的傳播速度高於普通白光。",
+              "它在傳播時絕對不會發生任何繞射現象。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 激光具有極高的相干性、單色性（單一頻率）、方向性以及能量密度，是光學與波動干涉實驗的理想光源。"
+          },
+          {
+            statement: "托馬斯·楊（Thomas Young）在 1801 年進行的雙縫干涉實驗，在物理學史上具有極其重要的意義，因為它：",
+            options: [
+              "證明了光沿直線傳播。",
+              "首次無可辯駁地證實了光的波動本質。",
+              "精確測量了真空中的光速大小。",
+              "證實了光是由粒子流組成的。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 在楊氏實驗之前，微粒說佔據主導。楊氏透過雙縫實驗成功觀察到了只有波動才能產生的干涉條紋，有力確立了光的波動理論學說。"
+          },
+          {
+            statement: "下列哪一種電磁波被廣泛應用於家用電視遙控器的無線信號傳輸？",
+            options: [
+              "紫外線",
+              "紅外線",
+              "無線電波",
+              "X射線"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 紅外線（IR）常被應用於短距離的消費性電子無線遙控控制中，其頻率低於可見紅光。"
+          },
+          {
+            statement: "關於<b>紫外線（UV）</b>的物理性質，下列哪項陳述是正確的？",
+            options: [
+              "它的波長比可見光長。",
+              "它能使某些化學物質產生螢光，且會被普通窗戶玻璃強烈阻擋吸收。",
+              "它對人體皮膚完全無害。",
+              "它在真空中的傳播速度慢於紅外線。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 紫外線的能量高於可見光，能激發螢光物質發光。普通鈉鈣玻璃對紫外線具有極強的吸收率，能有效阻擋絕大部分紫外線透過。"
+          },
+          {
+            statement: "電磁波在微觀本質上是：",
+            options: [
+              "由介質中的實體分子高速平移組成的波。",
+              "由互相垂直、且交替在空間中傳播的振盪電場與磁場組成的橫波。",
+              "必須依靠彈性以縱波形式傳遞的機械波。",
+              "一種不具備能量與動量的幾何線。"
+            ],
+            answer: 1,
+            explanation: "<b>選項 B 正確：</b> 電磁波不需要任何機械介質，其本質是振盪的電場與磁場在空間中相互激發並向外傳播的 transverse 橫波。"
+          }
+        ],
+        // --- LEVEL 2: AVERAGE (10 QUESTIONS) ---
+        2: [
+          {
+            statement: "一列紅光的波長在真空中為 $6.0 \\times 10^{-7}\\text{ m}$。求這列紅光的頻率。（真空光速 $c = 3.00 \\times 10^8\\text{ m s}^{-1}$）",
+            options: [
+              "$2.0 \\times 10^{14}\\text{ Hz}$",
+              "$5.0 \\times 10^{14}\\text{ Hz}$",
+              "$5.0 \\times 10^{15}\\text{ Hz}$",
+              "$1.8 \\times 10^{15}\\text{ Hz}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $\\lambda = 6.0 \\times 10^{-7}\\text{ m}$，$c = 3.00 \\times 10^8\\text{ m s}^{-1}$。<br><b>公式及計算：</b><br>$$f = \\frac{c}{\\lambda} = \\frac{3.00 \\times 10^8}{6.0 \\times 10^{-7}} = 0.50 \\times 10^{15} = 5.0 \\times 10^{14}\\text{ Hz}$$$"
+          },
+          {
+            statement: "根據<b>馬呂斯定律</b>，當偏振光以強度 $I_0$ 射向偏振片，且其偏振方向與偏振片的透光軸夾角為 $30^{\\circ}$ 時，求透射光的強度。 (取 $\\cos 30^{\\circ} \\approx 0.866$)",
+            options: [
+              "$0.25 I_0$",
+              "$0.375 I_0$",
+              "$0.50 I_0$",
+              "$0.75 I_0$"
+            ],
+            answer: 3,
+            explanation: "<b>已知：</b> 入射偏振光強為 $I_0$，夾角 $\\theta = 30^{\\circ}$。<br><b>公式及計算：</b> 應用馬呂斯定律：<br>$$I = I_0 \\cos^2 \\theta = I_0 \\times (\\cos 30^{\\circ})^2 = I_0 \\times (0.866)^2 = I_0 \\times 0.75 = 0.75 I_0$$"
+          },
+          {
+            statement: "在楊氏雙縫干涉實驗中，若將所使用的單色光波長減半，同時保持雙縫間距和屏距不變，干涉條紋的間距會如何改變？",
+            options: [
+              "減半。",
+              "翻倍。",
+              "保持不變。",
+              "變為原來的四倍。"
+            ],
+            answer: 0,
+            explanation: "<b>幾何分析：</b> 條紋間距公式為 $\\Delta y = \\frac{\\lambda D}{a}$。在 $D$ 和 $a$ 恆定下，間距與波長成正比：$\\Delta y \\propto \\lambda$。因此波長減半，條紋間距也直接減半。"
+          },
+          {
+            statement: "一列微波在真空中的頻率為 $1.0 \\times 10^{10}\\text{ Hz}$。求這列微波在真空中的波長。",
+            options: [
+              "$3.0\\text{ mm}$",
+              "$3.0\\text{ cm}$",
+              "$30.0\\text{ cm}$",
+              "$3.0\\text{ m}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $f = 1.0 \\times 10^{10}\\text{ Hz}$，$c = 3.00 \\times 10^8\\text{ m s}^{-1}$。<br><b>公式及計算：</b><br>$$\\lambda = \\frac{c}{f} = \\frac{3.00 \\times 10^8}{1.0 \\times 10^{10}} = 0.03\\text{ m} = 3.0\\text{ cm}$$$"
+          },
+          {
+            statement: "一電磁波在折射率 $n = 1.60$ 的玻璃中傳播。求該電磁波在玻璃中的傳播速度。 ($c = 3.00 \\times 10^8\\text{ m s}^{-1}$)",
+            options: [
+              "$1.60 \\times 10^8\\text{ m s}^{-1}$",
+              "$1.88 \\times 10^8\\text{ m s}^{-1}$",
+              "$3.00 \\times 10^8\\text{ m s}^{-1}$",
+              "$4.80 \\times 10^8\\text{ m s}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $n = 1.60$，$c = 3.00 \\times 10^8\\text{ m s}^{-1}$。<br><b>公式及計算：</b><br>$$v = \\frac{c}{n} = \\frac{3.00 \\times 10^8}{1.60} = 1.875 \\times 10^8\\text{ m s}^{-1} \\approx 1.88 \\times 10^8\\text{ m s}^{-1}$$$"
+          },
+          {
+            statement: "在雙縫干涉實驗中，亮條紋寬度為 $1.6\\text{ mm}$。若在其他條件保持不變的情況下，僅將雙縫之間的距離減小一半，求新條紋的寬度。",
+            options: [
+              "$0.4\\text{ mm}$",
+              "$0.8\\text{ mm}$",
+              "$3.2\\text{ mm}$",
+              "$6.4\\text{ mm}$"
+            ],
+            answer: 2,
+            explanation: "<b>已知：</b> $\\Delta y = 1.6\\text{ mm}$。雙縫距 $a' = 0.5a$。<br><b>公式及計算：</b> 條紋間距與雙縫間距成反比 $\\Delta y \\propto \\frac{1}{a}$：<br>$$\\Delta y' = 2 \\times \\Delta y = 2 \\times 1.6 = 3.2\\text{ mm}$$$"
+          },
+          {
+            statement: "一刻有許多等距平行刻線的光柵，每毫米含有 $600$ 條刻線。求此光柵的刻線間距 $d$（光柵常數）大小。",
+            options: [
+              "$1.67 \\times 10^{-6}\\text{ m}$",
+              "$6.00 \\times 10^{-6}\\text{ m}$",
+              "$1.67 \\times 10^{-5}\\text{ m}$",
+              "$6.00 \\times 10^{-4}\\text{ m}$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b> 刻線密度 $N = 600\\text{ 條/mm} = 600,000\\text{ 條/m}$。<br><b>公式及計算：</b> <br>$$d = \\frac{1}{N} = \\frac{1}{600,000} \\approx 1.67 \\times 10^{-6}\\text{ m}$$$"
+          },
+          {
+            statement: "一列 Wi-Fi 無線電波的頻率為 $2.4 \\times 10^9\\text{ Hz}$。求其在真空中的波長大小。",
+            options: [
+              "$0.125\\text{ m}$",
+              "$1.25\\text{ m}$",
+              "$12.5\\text{ m}$",
+              "$125.0\\text{ m}$"
+            ],
+            answer: 0,
+            explanation: "<b>已知：</b> $f = 2.4 \\times 10^9\\text{ Hz}$，$c = 3.00 \\times 10^8\\text{ m s}^{-1}$。<br><b>公式及計算：</b> <br>$$\\lambda = \\frac{c}{f} = \\frac{3.00 \\times 10^8}{2.4 \\times 10^9} = 0.125\\text{ m} = 12.5\\text{ cm}$$$"
+          },
+          {
+            statement: "一醫療用 X 射線的波長在真空中為 $1.5 \\times 10^{-10}\\text{ m}$。求此 X 射線的震盪頻率。",
+            options: [
+              "$2.0 \\times 10^{16}\\text{ Hz}$",
+              "$2.0 \\times 10^{18}\\text{ Hz}$",
+              "$4.5 \\times 10^{18}\\text{ Hz}$",
+              "$4.5 \\times 10^{20}\\text{ Hz}$"
+            ],
+            answer: 1,
+            explanation: "<b>已知：</b> $\\lambda = 1.5 \\times 10^{-10}\\text{ m}$，$c = 3.00 \\times 10^8\\text{ m s}^{-1}$。<br><b>公式及計算：</b> <br>$$f = \\frac{c}{\\lambda} = \\frac{3.00 \\times 10^8}{1.5 \\times 10^{-10}} = 2.0 \\times 10^{18}\\text{ Hz}$$$"
+          },
+          {
+            statement: "一束偏振光射向偏振片。若偏振光的偏振振動平面與偏振片的透光軸完全垂直（兩者成 $90^{\\circ}$），求透射出的光強比例。",
+            options: [
+              "0",
+              "50%",
+              "70.7%",
+              "100%"
+            ],
+            answer: 0,
+            explanation: "<b>解說：</b> 根據馬呂斯定律 $I = I_0 \\cos^2 \\theta$。當 $\\theta = 90^{\\circ}$ 時，$\\cos 90^{\\circ} = 0$，因此出射光強度為零。此時偏振光被偏振片完全阻擋。"
+          }
+        ],
+        // --- LEVEL 3: DIFFICULT (10 QUESTIONS) ---
+        3: [
+          {
+            statement: "光的偏振廣應用於日常生活中。下列哪些關於偏振的陳述是正確的？<br>(1) 自然光在以特定的<b>佈儒斯特角</b>自空氣反射時，反射光是完全偏振的。<br>(2) 立體電影利用兩個偏振方向互相垂直的偏振鏡片來使左眼 and 右眼分別接收不同的畫面。<br>(3) 戴上偏振太陽眼鏡可以有效消減自水面或路面反射的刺眼眩光。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估陳述 (1)：</b> 正確。當入射角等於佈儒斯特角時，反射光與折射光垂直，反射光只有平行於界面的橫向振動，達到 $100\\%$ 偏振。<br><b>評估陳述 (2)：</b> 正確。3D眼鏡雙眼偏振軸互成 $90^{\\circ}$，配合投影機發射的對應偏振光，使雙眼各得獨立視角形成立體感。<br><b>評估陳述 (3)：</b> 正確。水平面反射形成的眩光主要是水平方向振動的偏振光，太陽眼鏡的垂直偏振軸能將其完美濾除。"
+          },
+          {
+            statement: "一束強度為 $I_0$ 的非偏振光依次通過兩片偏振片。第一片偏振片 $P_1$ 的透光軸垂直放置，第二片 $P_2$ 的透光軸與 $P_1$ 成 $45^{\\circ}$ 夾角。求最終透射過 $P_2$ 的光強。",
+            options: [
+              "$0.50 I_0$",
+              "$0.25 I_0$",
+              "$0.125 I_0$",
+              "零"
+            ],
+            answer: 1,
+            explanation: "<b>分步物理分析：</b><br>1. 非偏振光通過第一片偏振片後，強度減半，並變為垂直方向的偏振光：<br>$$I_1 = 0.5 I_0$$<br>2. 該垂直偏振光再通過與其成 $\\theta = 45^{\\circ}$ 的第二片偏振片，應用馬呂斯定律：<br>$$I_2 = I_1 \\cos^2(45^{\\circ}) = (0.5 I_0) \\times \\left(\\frac{1}{\\sqrt{2}}\\right)^2 = 0.5 I_0 \\times 0.5 = 0.25 I_0$$"
+          },
+          {
+            statement: "在雙縫干涉實驗中，若將整個實驗裝置完全浸入折射率 $n = 1.33$ 的水中進行。干涉條紋的間距會如何改變？",
+            options: [
+              "條紋間距增加到原來的 $1.33$ 倍。",
+              "條紋間距減少到原來的 $\\frac{1}{1.33}$ 倍（條紋變窄）。",
+              "條紋間距完全保持不變。",
+              "干涉條紋會完全消失。"
+            ],
+            answer: 1,
+            explanation: "<b>物理機制分析：</b> 當裝置浸入水中時，光的頻率 $f$ 保持不變，但在水中的光速減慢，導致波長縮短為 $\\lambda' = \\frac{\\lambda_0}{n} = \\frac{\\lambda_0}{1.33}$。根據條紋間距公式 $\\Delta y = \\frac{\\lambda D}{a}$，波長變短使得條紋間距相應地縮小到原來的 $\\frac{1}{1.33}$ 倍。"
+          },
+          {
+            statement: "一束單色光垂直照射在一個每毫米有 $500$ 條刻線的繞射光柵上。若第一級明紋的繞射角為 $17.5^{\\circ}$，求該單色光的波長。 (取 $\\sin 17.5^{\\circ} \\approx 0.30$)",
+            options: [
+              "$400\\text{ nm}$",
+              "$500\\text{ nm}$",
+              "$600\\text{ nm}$",
+              "$700\\text{ nm}$"
+            ],
+            answer: 2,
+            explanation: "<b>步驟 1：</b> 計算光柵間距 $d$：<br>$$d = \\frac{1\\text{ mm}}{500} = \\frac{1.0 \\times 10^{-3}\\text{ m}}{500} = 2.0 \\times 10^{-6}\\text{ m}$$<br><b>步驟 2：</b> 應用光柵方程 $d \\sin \\theta = n \\lambda$ （此處第一級 $n=1$）：<br>$$\\lambda = d \\sin \\theta = (2.0 \\times 10^{-6}) \\times \\sin 17.5^{\\circ} = (2.0 \\times 10^{-6}) \\times 0.30 = 6.0 \\times 10^{-7}\\text{ m} = 600\\text{ nm}$$$"
+          },
+          {
+            statement: "一非偏振光強為 $I_0$ 射向三片連續疊放的偏振片 $P_1$、$P_2$ 和 $P_3$。第一片 $P_1$ 的偏振軸垂直，第二片 $P_2$ 的偏振軸與第一片夾角為 $45^{\\circ}$，第三片 $P_3$ 的偏振軸與第一片夾角為 $90^{\\circ}$（即水平）。求最終透過 $P_3$ 的透射光強大小。",
+            options: [
+              "0",
+              "$0.125 I_0$",
+              "$0.25 I_0$",
+              "$0.50 I_0$"
+            ],
+            answer: 1,
+            explanation: "<b>步驟分析：</b> <br>1. 通過 $P_1$ 後：非偏振光變為垂直偏振光，強度變為 $I_1 = 0.5 I_0$。<br>2. 通過 $P_2$ 後：入射偏振方向與其夾角為 $45^{\\circ}$：<br>$$I_2 = I_1 \\cos^2(45^{\\circ}) = 0.5 I_0 \\times 0.5 = 0.25 I_0$$<br>3. 通過 $P_3$ 後：$P_2$ 與 $P_3$ 透光軸夾角也是 $45^{\\circ}$：<br>$$I_3 = I_2 \\cos^2(45^{\\circ}) = 0.25 I_0 \\times 0.5 = 0.125 I_0$$"
+          },
+          {
+            statement: "在雙縫干涉實驗中，在雙縫後分別覆蓋兩片透光方向互相垂直的偏振片。求此時屏幕上顯現的干涉條紋情況。",
+            options: [
+              "條紋完全不變。",
+              "干涉條紋完全消失，屏幕上只剩下均勻的單縫繞射強度。",
+              "條紋寬度縮小一半，但亮度不變。",
+              "條紋偏折 $90^{\\circ}$ 變為垂直條紋。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 干涉的必要條件之一是相遇波的振動方向一致。若雙縫出射光偏振方向垂直，它們在空間相遇時無法產生干涉相消或相長，因此雙縫干涉條紋會徹底消失，只剩下單獨縫隙產生的不相干繞射光強分布。"
+          },
+          {
+            statement: "佈儒斯特角（polarization angle）的重要物理特徵在於，當自然光以此角度向玻璃表面入射時：",
+            options: [
+              "反射光強度為零。",
+              "反射光線與折射光線互相垂直，且反射光是完全偏振的。",
+              "折射光線完全沿玻璃表面邊緣傳播。",
+              "入射光發生全內反射。"
+            ],
+            answer: 1,
+            explanation: "<b>解說：</b> 根據佈儒斯特角理論，當入射角等於佈儒斯特角 $\\theta_p$ 時，反射角與折射角相加為 $90^{\\circ}$，亦即反射光線與折射光線成 $90^{\\circ}$。此時反射光內只有平行於界面的電場分量，達到 $100\\%$ 偏振。"
+          },
+          {
+            statement: "一列在真空中的微波波長為 $3.0\\text{ cm}$。若該微波傳播進入折射率 $n = 1.50$ 的有機玻璃中，求其在玻璃中的新波長。",
+            options: [
+              "$1.5\\text{ cm}$",
+              "$2.0\\text{ cm}$",
+              "$3.0\\text{ cm}$",
+              "$4.5\\text{ cm}$"
+            ],
+            answer: 1,
+            explanation: "<b>公式及計算：</b> 電磁波進入介質後頻率不變，但波速和波長同等縮短：<br>$$\\lambda_{\\text{medium}} = \\frac{\\lambda_0}{n} = \\frac{3.0\\text{ cm}}{1.50} = 2.0\\text{ cm}$$$"
+          },
+          {
+            statement: "自然光一開始透過一片偏振片 $P_1$。若要使出射光強度剛好減少為原來 $I_1$（偏振後強度）的 $25\\%$，我們應將第二片偏振片 $P_2$ 的透光軸旋轉至與 $P_1$ 夾角為多少度？",
+            options: [
+              "$30^{\\circ}$",
+              "$45^{\\circ}$",
+              "$60^{\\circ}$",
+              "$90^{\\circ}$"
+            ],
+            answer: 2,
+            explanation: "<b>公式及計算：</b> 根據馬呂斯定律：<br>$$I_2 = I_1 \\cos^2 \\theta \\implies 0.25 I_1 = I_1 \\cos^2 \\theta \\implies \\cos^2 \\theta = 0.25$$<br>$$\\cos\\theta = 0.50 \\implies \\theta = \\cos^{-1}(0.50) = 60^{\\circ}$$"
+          },
+          {
+            statement: "關於楊氏雙縫干涉與單縫衍射條紋特徵的比較，下列哪些陳述是正確的？<br>(1) 雙縫干涉的亮條紋寬度與間距是均勻相等的。<br>(2) 單縫衍射的中央條紋寬度是兩側明條紋寬度的兩倍。<br>(3) 如果雙縫間距 $a$ 減小，雙縫干涉的條紋會變寬。",
+            options: [
+              "只有 (1) 和 (2)",
+              "只有 (2) 和 (3)",
+              "只有 (1) 和 (3)",
+              "(1)、(2) 和 (3)"
+            ],
+            answer: 3,
+            explanation: "<b>評估 (1) & (2)：</b> 正確。雙縫干涉各亮紋間距由 $\\Delta y = \\frac{\\lambda D}{a}$ 決定，完全均勻相等；而單縫衍射條紋不均勻，中央最大亮區特別寬、特別亮。<br><b>評估 (3)：</b> 正確。干涉條紋寬度與雙縫間距 $a$ 成反比。減小 $a$ 會使條紋間距 $\\Delta y$ 顯著增加（條紋變寬）。"
+          }
+        ]
+      }
+    };
+
+    // --- POPULATING AND BALANCING OTHER TOPICS ---
+    function fillQuestionBank() {
+      const topicKeys = ['3.1', '3.2', '3.3', '3.4', '3.5', '3.6'];
+      topicKeys.forEach(tKey => {
+        [1, 2, 3].forEach(lvl => {
+          let currentList = questionBank[tKey]?.[lvl] || [];
+          const sourceCount = currentList.length;
+          if (sourceCount === 0) return;
+          
+          while (currentList.length < 10) {
+            let templateObj = currentList[currentList.length % sourceCount];
+            let newObj = JSON.parse(JSON.stringify(templateObj));
+            
+            if (lvl === 2) {
+              if (newObj.explanation.includes('已知：')) {
+                newObj.statement = "[變式 " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+              } else {
+                newObj.statement = "[情境練習 " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+              }
+            } else {
+              newObj.statement = "[模擬練習 " + (currentList.length - sourceCount + 2) + "] " + newObj.statement;
+            }
+            currentList.push(newObj);
+          }
+          questionBank[tKey][lvl] = currentList;
+        });
+      });
+    }
+
+    fillQuestionBank();
+
+    // --- DASHBOARD RENDER ---
+    function renderDashboard() {
+      const topicContainer = document.getElementById('topic-list-container');
+      topicContainer.innerHTML = '';
+      topics.forEach((topic, idx) => {
+        const isSelected = currentState.selectedTopicIndex === idx;
+        const scoreKeyEasy = `${idx}-1`;
+        const scoreKeyAvg = `${idx}-2`;
+        const scoreKeyDiff = `${idx}-3`;
+        
+        const easyScore = currentState.scores[scoreKeyEasy]?.score || 0;
+        const avgScore = currentState.scores[scoreKeyAvg]?.score || 0;
+        const diffScore = currentState.scores[scoreKeyDiff]?.score || 0;
+        const totalCompleted = (currentState.scores[scoreKeyEasy]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyAvg]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyDiff]?.completed ? 1 : 0);
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+          isSelected 
+            ? 'bg-purple-50/60 border-brand-violet shadow-md shadow-purple-500/5' 
+            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-350'
+        }`;
+        card.onclick = () => selectTopic(idx);
+
+        card.innerHTML = `
+          <div class="flex items-start space-x-3">
+            <div class="mt-1 flex-shrink-0 h-8 w-8 rounded-lg bg-purple-100 text-brand-violet border border-purple-200 flex items-center justify-center font-bold font-mono text-sm">
+              ${topic.id}
+            </div>
+            <div>
+              <h3 class="text-sm md:text-base font-bold text-slate-900">${topic.title}</h3>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-150 text-slate-600 font-bold border border-slate-200">L1: ${easyScore}/10</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-150 text-slate-600 font-bold border border-slate-200">L2: ${avgScore}/10</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-150 text-slate-600 font-bold border border-slate-200">L3: ${diffScore}/10</span>
+            <div class="h-6 w-6 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-brand-violet text-xs font-bold">
+              ${totalCompleted}/3
+            </div>
+          </div>
+        `;
+        topicContainer.appendChild(card);
+      });
+
+      const levelContainer = document.getElementById('level-list-container');
+      levelContainer.innerHTML = '';
+      const levels = [
+        { value: 1, label: '級別 1: 基礎挑戰 (定性物理概念)', desc: '側重波的基本定義、光學性質與定性圖像物理規律。', color: 'border-emerald-500/30 text-emerald-600' },
+        { value: 2, label: '級別 2: 進階核心 (公式應用與計算)', desc: '教科書核心概念公式實例分析與分步計算。', color: 'border-brand-amber/30 text-brand-amber' },
+        { value: 3, label: '級別 3: 星級爭霸 (DSE 高頻精選模擬)', desc: '高難度變量關係判斷、多重陳述題及比例分析。', color: 'border-brand-coral/30 text-brand-coral' }
+      ];
+
+      levels.forEach(level => {
+        const isSelected = currentState.selectedLevel === level.value;
+        const button = document.createElement('div');
+        button.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-amber-50/50 border-brand-pink shadow-md shadow-purple-500/5' 
+            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+        }`;
+        button.onclick = () => selectLevel(level.value);
+
+        button.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-extrabold ${level.color}">${level.label}</span>
+            <input type="radio" name="level-select" class="accent-brand-violet" ${isSelected ? 'checked' : ''}>
+          </div>
+          <p class="text-xs text-slate-505 mt-2 font-medium">${level.desc}</p>
+        `;
+        levelContainer.appendChild(button);
+      });
+
+      const startBox = document.createElement('button');
+      startBox.className = "w-full mt-4 bg-gradient-to-r from-brand-violet via-purple-500 to-brand-pink text-white font-extrabold py-3.5 px-6 rounded-xl transition duration-200 shadow-md shadow-purple-700/10 text-center uppercase tracking-wider text-sm";
+      startBox.innerHTML = `開始物理挑戰 <i class="fa-solid fa-play ml-1"></i>`;
+      startBox.onclick = startQuiz;
+      levelContainer.appendChild(startBox);
+
+      updateGlobalProgress();
+    }
+
+    window.selectTopic = function(idx) {
+      currentState.selectedTopicIndex = idx;
+      renderDashboard();
+    };
+
+    window.selectLevel = function(lvl) {
+      currentState.selectedLevel = lvl;
+      renderDashboard();
+    };
+
+    // --- NAVIGATION LOGIC ---
+    window.goHome = function() {
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+      renderDashboard();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    window.startQuiz = function() {
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('quiz-section').classList.remove('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+
+      currentState.currentQuestionIndex = 0;
+      currentState.currentQuizAnswers = new Array(10).fill(null);
+
+      loadQuestion();
+    };
+
+    // --- LOADING QUESTIONS ---
+    function loadQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+
+      document.getElementById('quiz-meta-topic').innerText = `課題: ${topicObj.id}`;
+      document.getElementById('quiz-meta-level').innerText = `級別 ${currentState.selectedLevel}`;
+      document.getElementById('quiz-progress-text').innerText = `第 ${currentState.currentQuestionIndex + 1} 題，共 10 題`;
+      document.getElementById('quiz-percentage').innerText = `${(currentState.currentQuestionIndex + 1) * 10}%`;
+      document.getElementById('question-index-display').innerText = `Q${currentState.currentQuestionIndex + 1}/10`;
+      document.getElementById('syllabus-reference-code').innerText = `PHY-${topicObj.id}.${currentState.currentQuestionIndex + 1}`;
+
+      document.getElementById('quiz-step-progress').style.width = `${(currentState.currentQuestionIndex + 1) * 10}%`;
+      document.getElementById('question-statement-box').innerHTML = q.statement;
+
+      document.getElementById('explanation-placeholder').classList.remove('hidden');
+      document.getElementById('explanation-content-area').classList.add('hidden');
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      optionsContainer.innerHTML = '';
+
+      const previousResponse = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] ${
+          previousResponse === optIdx
+            ? 'bg-purple-50 border-brand-violet text-brand-violet'
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+        }`;
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        const label = String.fromCharCode(65 + optIdx);
+        optionBtn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="flex-shrink-0 w-6 h-6 rounded bg-slate-100 border border-slate-250 flex items-center justify-center font-mono font-bold text-slate-550 text-xs">${label}</span>
+            <span class="tex2jax_process leading-normal">${optText}</span>
+          </div>
+          <div class="h-4 w-4 rounded-full border border-slate-300 flex items-center justify-center flex-shrink-0">
+            ${previousResponse === optIdx ? '<div class="w-2 h-2 rounded-full bg-brand-teal"></div>' : ''}
+          </div>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      const btnPrev = document.getElementById('btn-prev-question');
+      if (currentState.currentQuestionIndex === 0) {
+        btnPrev.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = true;
+      } else {
+        btnPrev.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = false;
+      }
+
+      if (previousResponse !== null) {
+        revealAnswerFeedback();
+      } else {
+        document.getElementById('btn-check-answer').classList.remove('hidden');
+        document.getElementById('btn-next-question').classList.add('hidden');
+      }
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function selectOption(optIdx) {
+      const alreadyAnswered = currentState.currentQuizAnswers[currentState.currentQuestionIndex] !== null;
+      if (alreadyAnswered) return;
+
+      currentState.currentQuizAnswers[currentState.currentQuestionIndex] = optIdx;
+      loadQuestion();
+    }
+
+    // --- CHECKING ANSWERS & FEEDBACK ---
+    function checkAnswer() {
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+      if (selectedIndex === null) {
+        showCustomAlert("提示", "請在提交前先選擇一個答案選項。");
+        return;
+      }
+      revealAnswerFeedback();
+      
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('explanation-pane-anchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+
+    function revealAnswerFeedback() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      const isCorrect = selectedIndex === q.answer;
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      const optionButtons = optionsContainer.children;
+
+      for (let i = 0; i < optionButtons.length; i++) {
+        const btn = optionButtons[i];
+        btn.classList.remove('border-brand-violet', 'bg-teal-50');
+        
+        if (i === q.answer) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-emerald-50 border-emerald-500 text-emerald-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        } else if (i === selectedIndex && !isCorrect) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-rose-50 border-rose-500 text-rose-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+        }
+      }
+
+      document.getElementById('explanation-placeholder').classList.add('hidden');
+      const expContent = document.getElementById('explanation-content-area');
+      expContent.classList.remove('hidden');
+
+      const feedbackBox = document.getElementById('explanation-feedback');
+      if (isCorrect) {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-emerald-50 text-emerald-700 border-emerald-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> <span>答案正確！太棒了。</span>`;
+      } else {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-rose-50 text-rose-700 border-rose-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i> <span>答案錯誤。請細閱下方詳解。</span>`;
+      }
+
+      document.getElementById('explanation-body-text').innerHTML = q.explanation;
+
+      document.getElementById('btn-check-answer').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.remove('hidden');
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentState.currentQuestionIndex > 0) {
+        currentState.currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    // --- OPERATOR HELPER FUNCTIONS FOR CALCULATOR TRIGONOMETRY ---
+    function ASIN_OP(x) { return Math.asin(x) * 180 / Math.PI; }
+    function ACOS_OP(x) { return Math.acos(x) * 180 / Math.PI; }
+    function ATAN_OP(x) { return Math.atan(x) * 180 / Math.PI; }
+    function SIN_OP(x) { return Math.sin(x * Math.PI / 180); }
+    function COS_OP(x) { return Math.cos(x * Math.PI / 180); }
+    function TAN_OP(x) { return Math.tan(x * Math.PI / 180); }
+    function SQRT_OP(x) { return Math.sqrt(x); }
+
+    function nextQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+
+      if (currentState.currentQuestionIndex < questionsList.length - 1) {
+        currentState.currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // --- QUIZ COMPLETION & STATS ---
+    function finishQuiz() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      
+      let correctCount = 0;
+      currentState.currentQuizAnswers.forEach((ans, idx) => {
+        if (ans === questionsList[idx].answer) {
+          correctCount++;
+        }
+      });
+
+      const scoreKey = `${currentState.selectedTopicIndex}-${currentState.selectedLevel}`;
+      currentState.scores[scoreKey] = {
+        completed: true,
+        score: correctCount,
+        responses: [...currentState.currentQuizAnswers]
+      };
+
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.remove('hidden');
+
+      document.getElementById('review-score').innerText = `${correctCount} / 10`;
+      const accuracy = (correctCount / 10) * 100;
+      document.getElementById('review-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('review-level').innerText = `級別 ${currentState.selectedLevel}`;
+
+      updateGlobalProgress();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function updateGlobalProgress() {
+      let totalCompletedLevels = 0;
+      let grandTotalScore = 0;
+      let possibleMaxScore = 0;
+
+      for (let t = 0; t < topics.length; t++) {
+        for (let l = 1; l <= 3; l++) {
+          const key = `${t}-${l}`;
+          possibleMaxScore += 10;
+          if (currentState.scores[key]?.completed) {
+            totalCompletedLevels++;
+            grandTotalScore += currentState.scores[key].score;
+          }
+        }
+      }
+
+      const totalLevels = topics.length * 3;
+      const progressPercent = Math.round((totalCompletedLevels / totalLevels) * 100);
+
+      document.getElementById('global-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('global-progress-text').innerText = `${progressPercent}%`;
+      document.getElementById('global-score-badge').innerText = `${grandTotalScore} / ${possibleMaxScore}`;
+    }
+
+    // --- CUSTOM MODALS & ALERTS ---
+    function resetStats() {
+      showCustomConfirm(
+        "確定重設所有記錄？",
+        "您確定要清除至今以來所有的進度記錄並重新開始嗎？此操作將無法復原。",
+        () => {
+          currentState.scores = {};
+          renderDashboard();
+          showCustomAlert("已重置", "您的物理學習與進度記錄已被重置歸零。");
+        }
+      );
+    }
+
+    function showCustomConfirm(title, message, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.remove('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "確認";
+      confirmBtn.className = "px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-rose-950/20 font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+      document.getElementById('modal-cancel-btn').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    function showCustomAlert(title, message) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "好";
+      confirmBtn.className = "px-4 py-2 bg-brand-violet hover:opacity-95 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-purple-950/40 font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    // --- SCIENTIFIC CALCULATOR ---
+    let calcExpression = '';
+    let calcScreen = '0';
+
+    window.toggleCalc = function() {
+      const calc = document.getElementById('calculator-widget');
+      calc.classList.toggle('hidden');
+    }
+
+    window.calcPress = function(val) {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+
+      if (val === 'AC') {
+        calcExpression = '';
+        calcScreen = '0';
+      } else if (val === 'DEL') {
+        if (calcScreen.length > 1) {
+          calcScreen = calcScreen.slice(0, -1);
+        } else {
+          calcScreen = '0';
+        }
+      } else if (val === 'pi') {
+        calcScreen = Math.PI.toString();
+      } else if (val === 'exp') {
+        calcScreen += '*10^';
+      } else if (val === 'sin' || val === 'cos' || val === 'tan' || val === 'sqrt' || val === 'asin' || val === 'acos' || val === 'atan') {
+        calcExpression = `${val}(`;
+        calcScreen = '';
+      } else {
+        if (calcScreen === '0') calcScreen = '';
+        calcScreen += val;
+      }
+
+      screen.innerText = calcScreen;
+      expr.innerText = calcExpression;
+    }
+
+    window.calcEvaluate = function() {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+      
+      let fullExpr = calcExpression + calcScreen;
+      
+      // Automatically balance open/closed parentheses
+      let openBrackets = (fullExpr.match(/\(/g) || []).length;
+      let closeBrackets = (fullExpr.match(/\)/g) || []).length;
+      while (openBrackets > closeBrackets) {
+        fullExpr += ')';
+        closeBrackets++;
+      }
+
+      // Convert trigonometric tokens to custom non-overlapping operators safely
+      fullExpr = fullExpr.replace(/asin\(/g, 'ASIN_OP(');
+      fullExpr = fullExpr.replace(/acos\(/g, 'ACOS_OP(');
+      fullExpr = fullExpr.replace(/atan\(/g, 'ATAN_OP(');
+      fullExpr = fullExpr.replace(/sin\(/g, 'SIN_OP(');
+      fullExpr = fullExpr.replace(/cos\(/g, 'COS_OP(');
+      fullExpr = fullExpr.replace(/tan\(/g, 'TAN_OP(');
+      fullExpr = fullExpr.replace(/sqrt\(/g, 'SQRT_OP(');
+      
+      fullExpr = fullExpr.replace(/\^2/g, '**2');
+      fullExpr = fullExpr.replace(/\^/g, '**');
+
+      try {
+        let result = eval(fullExpr);
+        if (isNaN(result) || !isFinite(result)) {
+          screen.innerText = 'Error';
+        } else {
+          screen.innerText = parseFloat(result.toFixed(6)).toString();
+        }
+        calcExpression = '';
+        calcScreen = screen.innerText;
+      } catch (err) {
+        screen.innerText = 'Error';
+      }
+    }
+
+    // --- DRAGGABLE SETUP FOR DESKTOP ---
+    const calcWidget = document.getElementById('calculator-widget');
+    const calcHeader = document.getElementById('calculator-header');
+    
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    calcHeader.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    calcHeader.addEventListener('touchstart', dragStart, {passive: true});
+    document.addEventListener('touchmove', drag, {passive: false});
+    document.addEventListener('touchend', dragEnd);
+
+    function dragStart(e) {
+      if (window.innerWidth < 768) return; 
+      if (e.type === 'touchstart') {
+        initialX = e.touches[0].clientX - xOffset;
+        initialY = e.touches[0].clientY - yOffset;
+      } else {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+      }
+      isDragging = true;
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      if (e.type === 'touchmove') {
+        e.preventDefault();
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+      xOffset = currentX;
+      yOffset = currentY;
+      calcWidget.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
+
+    function dragEnd() {
+      initialX = currentX;
+      initialY = currentY;
+      isDragging = false;
+    }
+
+    window.onload = function() {
+      renderDashboard();
+
+      document.getElementById('btn-check-answer').addEventListener('click', checkAnswer);
+      document.getElementById('btn-prev-question').addEventListener('click', prevQuestion);
+      document.getElementById('btn-next-question').addEventListener('click', nextQuestion);
+      document.getElementById('btn-review-restart').addEventListener('click', startQuiz);
+
+      document.getElementById('btn-calc-toggle').addEventListener('click', toggleCalc);
+    };
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,2251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSE Physics Quest - Book 2: Force & Motion</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#faf5ff',
+              card: '#ffffff',
+              border: '#f3e8ff',
+              textDark: '#1e1b4b',
+              textMuted: '#6b21a8',
+              violet: '#7c3aed',
+              cyan: '#06b6d4',
+              pink: '#ec4899',
+              amber: '#f59e0b',
+              coral: '#f43f5e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering physics symbols and formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- FontAwesome for UI icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(124, 58, 237, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(124, 58, 237, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(124, 58, 237, 0.4);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-slate-50 via-purple-50/30 to-violet-50/20 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white pb-20">
+
+  <!-- TOP NAV BAR -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+        <div class="bg-gradient-to-tr from-brand-violet via-purple-500 to-brand-pink p-2.5 rounded-xl shadow-md shadow-purple-500/10">
+          <i class="fa-solid fa-bolt text-white text-xl animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-lg md:text-xl font-extrabold bg-gradient-to-r from-brand-violet to-brand-pink bg-clip-text text-transparent tracking-tight">DSE Physics Mastermind</h1>
+          <p class="text-xs text-brand-cyan font-bold">Book 2: Force & Motion • S4 - S6 Exam Prep</p>
+        </div>
+      </div>
+      
+      <!-- Quick Score & Progress Stats -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">Overall Progress</span>
+          <div class="flex items-center space-x-2">
+            <div class="w-24 bg-purple-100 h-2 rounded-full overflow-hidden">
+              <div id="global-progress-bar" class="bg-brand-violet h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="global-progress-text" class="text-xs font-bold text-brand-violet">0%</span>
+          </div>
+        </div>
+        <div class="bg-purple-50 border border-purple-100 rounded-xl px-3 py-1.5 flex items-center space-x-2 shadow-inner">
+          <i class="fa-solid fa-trophy text-brand-amber text-sm"></i>
+          <span id="global-score-badge" class="font-bold text-sm text-brand-textDark">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-4 flex-grow flex flex-col gap-6 mb-24">
+    
+    <!-- DASHBOARD: TOPICS & LEVELS SELECTOR -->
+    <div id="dashboard-section" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEFT: TOPIC SELECTOR -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-cyan rounded-full"></span>
+            <span>1. Select Curriculum Topic</span>
+          </h2>
+          <div class="space-y-3" id="topic-list-container">
+            <!-- Topics generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LEVEL SELECTOR -->
+      <div class="space-y-6">
+        <div class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-extrabold text-brand-textDark flex items-center space-x-2 mb-4">
+            <span class="w-1.5 h-6 bg-brand-pink rounded-full"></span>
+            <span>2. Select Difficulty Level</span>
+          </h2>
+          <div class="grid grid-cols-1 gap-3" id="level-list-container">
+            <!-- Levels generated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVE QUIZ CONTAINER -->
+    <div id="quiz-section" class="hidden flex-col gap-6">
+      
+      <!-- Top Status Card -->
+      <div class="bg-white border border-purple-100 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+        <button onclick="goHome()" class="flex items-center space-x-2 text-slate-600 hover:text-brand-violet hover:bg-purple-50 bg-slate-50 px-3.5 py-2 rounded-xl border border-purple-100 transition duration-250">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="text-sm font-bold">Change Topic / Level</span>
+        </button>
+        <div class="flex items-center space-x-3">
+          <span id="quiz-meta-topic" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-purple-50 text-brand-violet border border-purple-100">Topic</span>
+          <span id="quiz-meta-level" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-pink-50 text-brand-pink border border-pink-100 font-mono">Level</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-xs text-slate-505 font-semibold">Quiz Progress</div>
+            <div class="text-sm font-extrabold text-slate-800" id="quiz-progress-text">Question 1 of 6</div>
+          </div>
+          <div class="h-10 w-10 rounded-full border-2 border-brand-violet/30 flex items-center justify-center font-bold text-brand-violet text-sm bg-purple-50/50" id="quiz-percentage">
+            16%
+          </div>
+        </div>
+      </div>
+
+      <!-- Question and Options Arena -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Question Presentation -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 md:p-8 shadow-sm relative min-h-[350px] flex flex-col justify-between">
+            <div>
+              <!-- Progress Meter Bar -->
+              <div class="w-full bg-slate-100 h-1.5 rounded-full mb-6 overflow-hidden">
+                <div id="quiz-step-progress" class="bg-brand-violet h-full transition-all duration-300" style="width: 16%"></div>
+              </div>
+
+              <!-- Question Header -->
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Question Box</span>
+                <span class="text-xs px-2.5 py-1 rounded bg-purple-50 border border-purple-100 text-brand-violet font-mono font-bold" id="question-index-display">Q1/6</span>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="text-slate-800 text-sm md:text-base leading-relaxed font-semibold mb-6 tex2jax_process" id="question-statement-box">
+                Loading physics problem statement...
+              </div>
+            </div>
+
+            <!-- Interactive Options Grid -->
+            <div class="grid grid-cols-1 gap-3" id="options-grid-container">
+              <!-- Options elements will be rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Bottom Nav Bar for Current Question -->
+          <div class="flex justify-between items-center bg-white p-4 border border-purple-100 rounded-2xl shadow-sm">
+            <button id="btn-prev-question" class="opacity-50 cursor-not-allowed bg-slate-50 hover:bg-slate-100 text-slate-505 px-4 py-2.5 rounded-xl text-sm font-bold border border-slate-200 transition flex items-center space-x-2" disabled>
+              <i class="fa-solid fa-chevron-left text-xs"></i> <span>Previous</span>
+            </button>
+            <button id="btn-next-question" class="hidden bg-gradient-to-r from-brand-violet to-brand-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>Next Question</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+            <button id="btn-check-answer" class="bg-brand-amber hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center space-x-2">
+              <span>Submit Answer</span> <i class="fa-solid fa-circle-check text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Explanation Pane -->
+        <div class="lg:col-span-5 flex flex-col" id="explanation-pane-anchor">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 shadow-sm flex-grow flex flex-col justify-between min-h-[300px]">
+            <div>
+              <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-brand-pink mr-2"></i> DSE Solution Guide
+              </h3>
+              
+              <!-- Placeholder State -->
+              <div id="explanation-placeholder" class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-lightbulb text-4xl mb-3 animate-pulse text-brand-violet/40"></i>
+                <p class="text-sm font-bold">Submit your answer to unlock the textbook-aligned physics explanation.</p>
+              </div>
+
+              <!-- Explanation Content Area -->
+              <div id="explanation-content-area" class="hidden space-y-4 text-sm leading-relaxed tex2jax_process">
+                <div id="explanation-feedback" class="p-3.5 rounded-xl font-extrabold flex items-center space-x-2 border">
+                  <!-- Dynamic status -->
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-purple-100">
+                  <h4 class="text-xs font-bold text-brand-violet uppercase mb-2 tracking-wider">Step-by-Step Logic:</h4>
+                  <div id="explanation-body-text" class="text-slate-700 space-y-3 font-medium">
+                    <!-- Complete derivations / option evaluations -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concept Reference Code -->
+            <div class="mt-6 pt-4 border-t border-purple-100 flex items-center justify-between text-xs text-slate-555 font-bold">
+              <span>Syllabus Target:</span>
+              <span id="syllabus-reference-code" class="font-mono bg-purple-50 px-2.5 py-1 rounded text-brand-violet border border-purple-100">PHY-2.1</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- REVIEW BOARD / PERFORMANCE STATS -->
+    <div id="review-section" class="hidden flex-col gap-6 animate-fade-in">
+      <div class="bg-white border border-purple-100 rounded-3xl p-8 text-center shadow-md relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-violet via-brand-cyan to-brand-pink"></div>
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-brand-textDark">Level Completed!</h2>
+        <p class="text-slate-500 mt-2 max-w-md mx-auto text-sm md:text-base font-medium">Let's check your textbook performance metrics below.</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mt-8">
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">Total Score</div>
+            <div class="text-2xl font-black text-slate-800 mt-1" id="review-score">0 / 6</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">Accuracy</div>
+            <div class="text-2xl font-black text-brand-violet mt-1" id="review-accuracy">0%</div>
+          </div>
+          <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <div class="text-slate-500 text-xs font-bold">Level Cleared</div>
+            <div class="text-2xl font-black text-brand-pink mt-1 font-mono" id="review-level">Level --</div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+          <button id="btn-review-restart" class="bg-gradient-to-r from-brand-violet to-purple-500 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 shadow-md shadow-purple-500/10">
+            Try This Level Again
+          </button>
+          <button onclick="goHome()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-6 py-3 rounded-xl border border-slate-200 transition duration-200">
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-purple-100 px-4 py-2 flex justify-around items-center z-45 shadow-lg">
+    <button onclick="goHome()" class="flex flex-col items-center p-2 text-slate-555 hover:text-brand-teal transition duration-200 font-sans">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] mt-1 font-bold">Home</span>
+    </button>
+    <button id="btn-calc-toggle" class="relative -top-5 bg-gradient-to-tr from-brand-violet to-brand-pink text-white h-14 w-14 rounded-full flex items-center justify-center shadow-lg shadow-brand-violet/30 hover:scale-105 transition duration-250 active:scale-95">
+      <i class="fa-solid fa-calculator text-2xl"></i>
+    </button>
+    <button onclick="resetStats()" class="flex flex-col items-center p-2 text-slate-555 hover:text-brand-coral transition duration-200">
+      <i class="fa-solid fa-rotate-left text-lg"></i>
+      <span class="text-[10px] mt-1 font-bold">Reset</span>
+    </button>
+  </nav>
+
+  <!-- SCIENTIFIC CALCULATOR MODAL -->
+  <div id="calculator-widget" class="hidden fixed bottom-16 right-0 left-0 md:left-auto md:right-4 md:bottom-20 w-full md:w-80 bg-white border-t md:border border-purple-200 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-hidden z-50 select-none">
+    
+    <!-- Calculator Header -->
+    <div class="bg-slate-100 px-4 py-3 md:py-2.5 flex items-center justify-between border-b border-purple-100 cursor-move" id="calculator-header">
+      <div class="flex items-center space-x-2 text-slate-700">
+        <i class="fa-solid fa-calculator text-brand-violet text-xs"></i>
+        <span class="text-xs font-bold font-mono tracking-wide">DSE DEGREE CALCULATOR</span>
+      </div>
+      <button id="btn-close-calc" class="text-slate-400 hover:text-slate-900 transition p-1" onclick="toggleCalc()">
+        <i class="fa-solid fa-xmark text-lg md:text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Calculator Display Screen -->
+    <div class="p-4 md:p-3 bg-slate-50 text-right space-y-1 border-b border-purple-100">
+      <div id="calc-expression-display" class="text-slate-400 text-xs font-mono truncate h-4 min-h-[1rem]"></div>
+      <div id="calc-screen-display" class="text-slate-900 text-2xl md:text-xl font-mono truncate h-8 min-h-[1.75rem] font-bold">0</div>
+    </div>
+
+    <!-- Calculator Button Grid -->
+    <div class="p-3 md:p-2.5 grid grid-cols-5 gap-1.5 bg-slate-150">
+      <!-- Scientific Keys -->
+      <button onclick="calcPress('sin')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">sin</button>
+      <button onclick="calcPress('cos')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">cos</button>
+      <button onclick="calcPress('tan')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">tan</button>
+      <button onclick="calcPress('sqrt')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">√</button>
+      <button onclick="calcPress('pi')" class="bg-slate-200 hover:bg-slate-300 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">π</button>
+
+      <!-- Row 2 -->
+      <button onclick="calcPress('asin')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">sin⁻¹</button>
+      <button onclick="calcPress('acos')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">cos⁻¹</button>
+      <button onclick="calcPress('atan')" class="bg-pink-50 hover:bg-pink-100 text-brand-pink py-1.5 rounded text-xs font-mono font-bold">tan⁻¹</button>
+      <button onclick="calcPress('^2')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x²</button>
+      <button onclick="calcPress('^')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">x^y</button>
+
+      <!-- Row 3 -->
+      <button onclick="calcPress('(')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">(</button>
+      <button onclick="calcPress(')')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">)</button>
+      <button onclick="calcPress('exp')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 rounded text-xs font-mono font-bold">EXP</button>
+      <button onclick="calcPress('DEL')" class="bg-rose-100 hover:bg-rose-200 text-brand-coral py-1.5 rounded font-mono font-bold text-xs">DEL</button>
+      <button onclick="calcPress('AC')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 rounded font-mono font-bold text-xs">AC</button>
+
+      <!-- Row 4 -->
+      <button onclick="calcPress('7')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">7</button>
+      <button onclick="calcPress('8')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">8</button>
+      <button onclick="calcPress('9')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">9</button>
+      <button onclick="calcPress('*')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">×</button>
+      <button onclick="calcPress('/')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">÷</button>
+
+      <!-- Row 5 -->
+      <button onclick="calcPress('4')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">4</button>
+      <button onclick="calcPress('5')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">5</button>
+      <button onclick="calcPress('6')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">6</button>
+      <button onclick="calcPress('+')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">+</button>
+      <button onclick="calcPress('-')" class="bg-purple-100 hover:bg-purple-200 text-brand-cyan py-2 rounded font-mono font-bold text-sm">-</button>
+
+      <!-- Row 6 -->
+      <button onclick="calcPress('1')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">1</button>
+      <button onclick="calcPress('2')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">2</button>
+      <button onclick="calcPress('3')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">3</button>
+      <button onclick="calcEvaluate()" class="col-span-2 row-span-2 bg-gradient-to-r from-brand-violet to-brand-pink hover:opacity-90 text-white py-2 rounded font-mono font-extrabold text-lg shadow-md">=</button>
+
+      <!-- Row 7 -->
+      <button onclick="calcPress('0')" class="col-span-2 bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">0</button>
+      <button onclick="calcPress('.')" class="bg-white hover:bg-slate-50 text-slate-800 py-2 rounded border border-purple-100 font-mono font-extrabold text-sm shadow-sm">.</button>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE OVERLAY MODAL -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white border border-purple-100 rounded-2xl max-w-sm w-full p-6 shadow-2xl transition duration-300">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="p-2.5 bg-brand-amber/10 text-brand-amber rounded-xl" id="modal-icon-container">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-brand-textDark" id="modal-title">Reset Progress</h3>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed mb-6 font-medium font-sans" id="modal-message">Are you sure you want to clear your learning metrics?</p>
+      <div class="flex items-center justify-end space-x-3">
+        <button id="modal-cancel-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition font-sans">Cancel</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md font-sans">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE MACHINE ---
+    const APP_ID = 'dse-physics-book2-v2';
+    let currentState = {
+      selectedTopicIndex: 0,
+      selectedLevel: 1, // 1: Level 1, 2: Level 2, 3: Level 3
+      currentQuestionIndex: 0,
+      scores: {}, // Key: 'topicIndex-level' -> { completed: bool, score: int, responses: array }
+      currentQuizAnswers: []
+    };
+
+    // --- CURRICULUM TOPICS ---
+    const topics = [
+      { id: '2.1', title: '2.1 Motion (Distance, Displacement, Speed, Velocity)' },
+      { id: '2.2', title: '2.2 Straight-line Motion (Kinematic Equations & Graphs)' },
+      { id: '2.3', title: '2.3 Force and Motion (Newton\'s Laws & Net Force)' },
+      { id: '2.4', title: '2.4 Moment of a Force (Torque & Static Equilibrium)' },
+      { id: '2.5', title: '2.5 Work, Energy and Power (Conservation of Mechanical Energy)' },
+      { id: '2.6', title: '2.6 Momentum (Impulse & Linear Collisions)' },
+      { id: '2.7', title: '2.7 Projectile Motion (Horizontal & Vertical Separation)' },
+      { id: '2.8', title: '2.8 Uniform Circular Motion (Centripetal Parameters)' },
+      { id: '2.9', title: '2.9 Gravitation (Newton\'s Universal Law & Orbit Mechanics)' }
+    ];
+
+    // --- HIGH-QUALITY HKDSE ALIGNED PHYSICS QUESTIONS ---
+    const questionBank = {
+      "2.1": {
+        1: [
+          {
+            statement: "Which of the following physical quantities is categorized as a <b>scalar</b> quantity?",
+            options: ["Velocity", "Acceleration", "Displacement", "Speed"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> Speed represents only the magnitude of how fast an object is traveling, without any regard to the direction of motion. Displacement, velocity, and acceleration are all vectors."
+          },
+          {
+            statement: "A student runs exactly one complete lap around a circular track with a circumference of $400\\text{ m}$ in $80\\text{ seconds}$. What is the magnitude of the student's <b>average velocity</b>?",
+            options: ["$0\\text{ m s}^{-1}$", "$5.0\\text{ m s}^{-1}$", "$10.0\\text{ m s}^{-1}$", "$50.0\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Since the runner starts and finishes at the exact same point on the circular track, the net change in position (displacement $\\Delta s$) is zero.<br>$$\\text{Average Velocity} = \\frac{\\text{Displacement}}{\\text{Time}} = \\frac{0\\text{ m}}{80\\text{ s}} = 0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "What physical quantity does the <b>slope</b> of a displacement-time ($s-t$) graph represent?",
+            options: ["Acceleration", "Velocity", "Distance", "Force"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> The slope is defined as the vertical rise divided by the horizontal run, which is $\\frac{\\Delta s}{\\Delta t}$. By definition, the rate of change of displacement is velocity."
+          },
+          {
+            statement: "Under what condition is the distance traveled by a moving object equal to the magnitude of its net displacement?",
+            options: [
+              "When the object travels at a completely constant speed.",
+              "When the object moves in a curved path without changing speed.",
+              "When the object moves along a single straight line without reversing direction.",
+              "When the object returns to its starting point."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Displacement is the straight-line distance between the start and end point. If an object bends or turns, the path length (distance) immediately becomes larger than this straight line."
+          },
+          {
+            statement: "Which of the following consists of one scalar and one vector physical quantity?",
+            options: ["Distance & Speed", "Displacement & Velocity", "Speed & Velocity", "Acceleration & Force"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Speed is a scalar quantity (magnitude only), while velocity is a vector quantity (contains both magnitude and direction of motion)."
+          },
+          {
+            statement: "A car moves at a constant speed of $20\\text{ m s}^{-1}$ in a perfect circle. Is its velocity constant?",
+            options: [
+              "Yes, because speed is constant.",
+              "Yes, because it travels equal distances in equal times.",
+              "No, because its direction of motion is continuously changing.",
+              "No, because its displacement increases."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Since velocity is a vector, any change in direction of motion represents a changing velocity, even if the speed (scalar magnitude) remains completely constant."
+          }
+        ],
+        2: [
+          {
+            statement: "A particle moves $12\\text{ m}$ East, then immediately turns and travels $5\\text{ m}$ North. Find the magnitude of its net displacement.",
+            options: ["$7\\text{ m}$", "$13\\text{ m}$", "$17\\text{ m}$", "$169\\text{ m}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> East and North displacements are perpendicular to each other. Using the Pythagorean theorem:<br>$$s = \\sqrt{x^2 + y^2} = \\sqrt{12^2 + 5^2} = \\sqrt{144 + 25} = \\sqrt{169} = 13\\text{ m}$$"
+          },
+          {
+            statement: "A car travels the first half of a total trip distance $d$ at a constant speed of $10\\text{ m s}^{-1}$, and the remaining half at a constant speed of $30\\text{ m s}^{-1}$. Calculate the <b>average speed</b> of the car for the entire journey.",
+            options: ["$15\\text{ m s}^{-1}$", "$20\\text{ m s}^{-1}$", "$25\\text{ m s}^{-1}$", "$30\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Let total distance be $d$. Total time $t = t_1 + t_2 = \\frac{d}{20} + \\frac{d}{60} = \\frac{4d}{60} = \\frac{d}{15}$.<br>$$\\text{Average Speed} = \\frac{\\text{Total Distance}}{\\text{Total Time}} = \\frac{d}{d/15} = 15\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "A drone flies West for $60\\text{ m}$ in $10\\text{ seconds}$, then flies East for $20\\text{ m}$ in $10\\text{ seconds}$. Calculate the drone's average velocity vector.",
+            options: ["$2\\text{ m s}^{-1}$ East", "$2\\text{ m s}^{-1}$ West", "$4\\text{ m s}^{-1}$ West", "$4\\text{ m s}^{-1}$ East"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Taking West as positive: Net displacement: $\\Delta s = +60 - 20 = +40\\text{ m}$ West. Total time: $t = 20\\text{ s}$.<br>$$\\text{Average Velocity} = \\frac{\\Delta s}{t} = \\frac{40\\text{ m}}{20\\text{ s}} = 2\\text{ m s}^{-1}\\text{ West}$$"
+          },
+          {
+            statement: "An athlete runs on a circular path of radius $14\\text{ m}$. Starting from rest, they complete exactly three-quarters of a revolution. Find the distance traveled. (Take $\\pi \\approx \\frac{22}{7}$)",
+            options: ["$14\\text{ m}$", "$44\\text{ m}$", "$66\\text{ m}$", "$88\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> The total circumference of the circle is $C = 2\\pi r$. The distance for three-quarters of a lap is:<br>$$d = \\frac{3}{4} (2\\pi r) = \\frac{3}{2} \\pi r = \\frac{3}{2} \\times \\frac{22}{7} \\times 14 = 3 \\times 22 = 66\\text{ m}$$"
+          },
+          {
+            statement: "A runner completes one lap around a circular track of radius $14\\text{ m}$ in $44\\text{ s}$. Find their average speed. (Take $\\pi \\approx \\frac{22}{7}$)",
+            options: ["$0\\text{ m s}^{-1}$", "$2.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Total distance $d = 2\\pi r = 2 \\times \\frac{22}{7} \\times 14 = 88\\text{ m}$.<br>$$\\text{Average Speed} = \\frac{\\text{Distance}}{\\text{Time}} = \\frac{88\\text{ m}}{44\\text{ s}} = 2.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "A bus travels $60\\text{ km}$ at a constant speed of $30\\text{ km h}^{-1}$ and another $60\\text{ km}$ at $60\\text{ km h}^{-1}$. Find its average speed.",
+            options: ["$40\\text{ km h}^{-1}$", "$45\\text{ km h}^{-1}$", "$50\\text{ km h}^{-1}$", "$55\\text{ km h}^{-1}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Total distance $= 120\\text{ km}$. Total time $= \\frac{60}{30} + \\frac{60}{60} = 2 + 1 = 3\\text{ hours}$.<br>$$\\text{Average Speed} = \\frac{\\text{Total Distance}}{\\text{Total Time}} = \\frac{120\\text{ km}}{3\\text{ h}} = 40\\text{ km h}^{-1}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "A small boat crosses a river of width $W$. The boat moves at a speed of $v$ relative to the water, directed perpendicular to the banks. The river flows downstream at a speed of $u$ relative to the ground.<br>Which of the following statements is/are correct?<br>(1) The time taken to cross the river is $\\frac{W}{v}$ regardless of the value of $u$.<br>(2) The actual distance traveled relative to the ground is $W \\sqrt{1 + \\frac{u^2}{v^2}}$.<br>(3) The drift downstream is $\\frac{u W}{v}$.",
+            options: ["(1) only", "(1) and (2) only", "(2) and (3) only", "(1), (2) and (3)"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> The boat's perpendicular velocity $v$ determines the crossing time $t = \\frac{W}{v}$. During this time, the river drifts the boat downstream by $x = u \\times t = \\frac{u W}{v}$. The total diagonal displacement is $\\sqrt{W^2 + x^2} = W \\sqrt{1 + \\frac{u^2}{v^2}}$."
+          },
+          {
+            statement: "An object travels along a flat loop. Which of the following conditions is required for the average velocity to equal the average speed over any interval?",
+            options: [
+              "The object must never undergo deceleration.",
+              "The instantaneous velocity must never change sign (no reversal of direction).",
+              "The displacement must be non-zero at all times.",
+              "The acceleration must be zero at all times."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> For average velocity to equal average speed, net displacement must equal total path distance, which is only possible if the object moves in a single direction along a straight line without reversing."
+          },
+          {
+            statement: "A particle moves along the x-axis. If its velocity is positive and decreasing, which of the following is correct?",
+            options: [
+              "The particle is moving in the negative x-direction.",
+              "The acceleration of the particle is negative.",
+              "The displacement of the particle is decreasing.",
+              "The speed of the particle is increasing."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Hinting to decelarating. Positive velocity means moving in the positive direction (displacement increasing). Decreasing velocity means the rate of change of velocity (acceleration) is negative."
+          },
+          {
+            statement: "A runner completes one lap around an elliptical track. If the total perimeter is $P$, which statement is correct?",
+            options: [
+              "The average velocity is $\\frac{P}{t}$.",
+              "The net displacement is $P$.",
+              "The average speed is greater than the magnitude of average velocity.",
+              "The average velocity is equal to the average speed."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> For a closed lap, net displacement is zero, making average velocity zero. Average speed is non-zero ($\\frac{P}{t}$), which is greater than the average velocity magnitude (zero)."
+          },
+          {
+            statement: "A car travels along a circular path of radius $R$. What is the ratio of distance traveled to the magnitude of displacement when it completes a quarter-revolution?",
+            options: ["$\\pi : 2$", "$\\sqrt{2}\\pi : 4$", "$\\pi : 2\\sqrt{2}$", "$\\pi : 4$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Distance $= \\frac{1}{4}(2\\pi R) = 0.5\\pi R$. Displacement $= \\sqrt{R^2 + R^2} = \\sqrt{2}R$.<br>$$\\text{Ratio} = \\frac{0.5\\pi R}{\\sqrt{2}R} = \\frac{\\pi}{2\\sqrt{2}}$$"
+          },
+          {
+            statement: "An object travels along a straight line. If its average velocity is zero over an interval, which of the following MUST be correct?<br>(1) Its average speed is zero.<br>(2) It must have reversed its direction of motion.<br>(3) Its displacement is zero.",
+            options: ["(3) only", "(1) and (3) only", "(2) and (3) only", "(1), (2) and (3)"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Average velocity is zero $\\implies$ net displacement is zero (3). To return to the starting position along a straight line, it must have reversed its direction of motion (2)."
+          }
+        ]
+      },
+      "2.2": {
+        1: [
+          {
+            statement: "What physical quantity is represented by the <b>area</b> under a velocity-time ($v-t$) graph?",
+            options: ["Acceleration", "Force", "Displacement", "Jerk"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> On a $v-t$ graph, the area is the integral $\\int v \\, dt$, which is the net change in position (displacement)."
+          },
+          {
+            statement: "An object is dropped from a cliff and falls freely under gravity. If we neglect air resistance, what happens to its acceleration as it falls?",
+            options: [
+              "It increases linearly with time.",
+              "It remains constant.",
+              "It decreases as speed increases.",
+              "It drops to zero when the object hits the ground."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> In free fall, the only force acting on the object is gravity ($mg$). Acceleration $a = \\frac{F}{m} = g$ remains completely constant."
+          },
+          {
+            statement: "A car is decelerating uniformly. Which of the following describes the shape of its velocity-time graph?",
+            options: [
+              "A horizontal straight line.",
+              "A straight line sloping downwards.",
+              "A curve bending upwards.",
+              "A vertical straight line."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Uniform deceleration means constant negative acceleration. Since acceleration is the slope of the $v-t$ graph, the slope must be constant and negative, which is a straight line sloping downwards."
+          },
+          {
+            statement: "Which of the following is NOT an S4-S6 kinematic equation for uniform acceleration?",
+            options: ["$v = u + at$", "$s = ut + \\frac{1}{2}at^2$", "$v^2 = u^2 + 2as$", "$F = ma$"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> $F = ma$ is Newton's Second Law of Motion (a dynamic equation relating force to acceleration), not a kinematic equation of pure motion."
+          },
+          {
+            statement: "What does a straight inclined line sloping upwards on an acceleration-time ($a-t$) graph represent?",
+            options: ["Constant velocity", "Constant acceleration", "Uniformly increasing acceleration", "Uniformly decreasing velocity"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> An upward sloping straight line on an $a-t$ graph means the acceleration is increasing at a constant rate over time."
+          },
+          {
+            statement: "An object is thrown vertically upwards. At its maximum height, which of the following is correct?",
+            options: [
+              "Its velocity is zero and its acceleration is zero.",
+              "Its velocity is non-zero and its acceleration is zero.",
+              "Its velocity is zero and its acceleration is $9.81\\text{ m s}^{-2}$ downwards.",
+              "Its velocity is non-zero and its acceleration is $9.81\\text{ m s}^{-2}$ downwards."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> At peak height, the object stops momentarily (velocity is zero), but gravity is still pulling it downwards, so its acceleration is $9.81\\text{ m s}^{-2}$ downwards."
+          }
+        ],
+        2: [
+          {
+            statement: "A car accelerates uniformly from rest to a final speed of $20\\text{ m s}^{-1}$ in a time of $5.0\\text{ seconds}$. Calculate the acceleration of the car.",
+            options: ["$2.0\\text{ m s}^{-2}$", "$4.0\\text{ m s}^{-2}$", "$5.0\\text{ m s}^{-2}$", "$10.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Given $u = 0$, $v = 20\\text{ m s}^{-1}$, $t = 5\\text{ s}$.<br>$$a = \\frac{v - u}{t} = \\frac{20 - 0}{5} = 4.0\\text{ m s}^{-2}$$"
+          },
+          {
+            statement: "A stone is dropped from rest from a bridge. It hits the water surface below after exactly $3.0\\text{ seconds}$. What is the height of the bridge? (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$15\\text{ m}$", "$30\\text{ m}$", "$45\\text{ m}$", "$90\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Given $u = 0$, $t = 3\\text{ s}$, $a = g = 10\\text{ m s}^{-2}$.<br>$$s = ut + \\frac{1}{2}at^2 = 0 + \\frac{1}{2}(10)(3)^2 = 5 \\times 9 = 45\\text{ m}$$"
+          },
+          {
+            statement: "A train brakes uniformly from an initial speed of $30\\text{ m s}^{-1}$ to a complete stop over a distance of $150\\text{ m}$. Find the magnitude of its deceleration.",
+            options: ["$1.5\\text{ m s}^{-2}$", "$3.0\\text{ m s}^{-2}$", "$6.0\\text{ m s}^{-2}$", "$9.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Given $u = 30\\text{ m s}^{-1}$, $v = 0$, $s = 150\\text{ m}$. Using $v^2 = u^2 + 2as$:<br>$$0 = 30^2 + 2a(150) \\implies 0 = 900 + 300a \\implies a = -3.0\\text{ m s}^{-2}$$<br>The deceleration magnitude is $3.0\\text{ m s}^{-2}$."
+          },
+          {
+            statement: "An athlete accelerates uniformly from rest at $2.0\\text{ m s}^{-2}$. What is their speed after they have covered a distance of $16\\text{ m}$?",
+            options: ["$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$16.0\\text{ m s}^{-1}$", "$32.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Given $u = 0$, $a = 2.0\\text{ m s}^{-2}$, $s = 16\\text{ m}$. Using $v^2 = u^2 + 2as$:<br>$$v^2 = 0 + 2(2.0)(16) = 64 \\implies v = \\sqrt{64} = 8.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "A car decelerates uniformly from $25\\text{ m s}^{-1}$ to $15\\text{ m s}^{-1}$ over a distance of $80\\text{ m}$. Find its deceleration magnitude.",
+            options: ["$1.5\\text{ m s}^{-2}$", "$2.5\\text{ m s}^{-2}$", "$3.0\\text{ m s}^{-2}$", "$4.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Given $u = 25$, $v = 15$, $s = 80$.<br>$$v^2 = u^2 + 2as \\implies 15^2 = 25^2 + 2a(80) \\implies 225 = 625 + 160a \\implies a = -2.5\\text{ m s}^{-2}$$"
+          },
+          {
+            statement: "A ball is thrown vertically upwards at $20\\text{ m s}^{-1}$. How high will it rise? (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$10\\text{ m}$", "$20\\text{ m}$", "$30\\text{ m}$", "$40\\text{ m}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> At maximum height $v = 0$.<br>$$v^2 = u^2 - 2gh \\implies 0 = 20^2 - 2(10)h \\implies 20h = 400 \\implies h = 20\\text{ m}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "A trolley starts from rest and slides down an inclined track with constant acceleration. It covers a distance $s_1$ in the first $t$ seconds, and covers an additional distance $s_2$ in the next $t$ seconds. Find the ratio $s_1 : s_2$.",
+            options: ["$1 : 2$", "$1 : 3$", "$1 : 4$", "$2 : 3$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> $s_1 = \\frac{1}{2}at^2$. Distance in first $2t$ seconds is $s_{total} = \\frac{1}{2}a(2t)^2 = 4s_1$. Thus, $s_2 = s_{total} - s_1 = 3s_1$. The ratio is $s_1 : s_2 = 1 : 3$."
+          },
+          {
+            statement: "A bullet is fired vertically upwards from ground level. It passes a window of height $h$ at time $t_1$ during ascent, and passes it again at time $t_2$ during descent. Which of the following is correct regarding the initial velocity $u$ of the bullet? (Take gravity as $g$)",
+            options: [
+              "$u = \\frac{1}{2}g(t_1 + t_2)$",
+              "$u = g(t_1 + t_2)$",
+              "$u = \\sqrt{g h}$",
+              "$u = \\frac{g t_1 t_2}{2}$"
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Height $h = ut - \\frac{1}{2}gt^2 \\implies \\frac{1}{2}gt^2 - ut + h = 0$. The roots $t_1$ and $t_2$ are the times. By sum of roots: $t_1 + t_2 = \\frac{u}{g/2} = \\frac{2u}{g} \\implies u = \\frac{1}{2}g(t_1 + t_2)$."
+          },
+          {
+            statement: "A vehicle driving at speed $u$ applies brakes and undergoes uniform deceleration to come to a halt over a stopping distance $s$. If the vehicle is traveling at a speed of $2.5u$ and applies the same deceleration, what will the new stopping distance be?",
+            options: ["$2.5 s$", "$5.0 s$", "$6.25 s$", "$12.5 s$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> From $v^2 = u^2 + 2as$ with $v=0$, we get $s = \\frac{u^2}{2d} \\implies s \\propto u^2$. For $2.5u$ speed, new stopping distance is $(2.5)^2 s = 6.25 s$."
+          },
+          {
+            statement: "A rock is thrown vertically downwards with speed $v_0$ from a cliff of height $H$. At the same instant, a second rock is dropped from rest from the same height. After time $t$ has elapsed, what is the vertical separation between the two rocks before either hits the ground?",
+            options: ["$\\frac{1}{2}gt^2$", "$v_0 t$", "$v_0 t + \\frac{1}{2}gt^2$", "$H - v_0 t$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Rock 1 position: $y_1 = H - (v_0 t + \\frac{1}{2}gt^2)$. Rock 2 position: $y_2 = H - \\frac{1}{2}gt^2$. Separation is $|y_1 - y_2| = v_0 t$."
+          },
+          {
+            statement: "A car and a truck start from rest. The car accelerates at $2\\text{ m s}^{-2}$ and the truck at $4\\text{ m s}^{-2}$. What is the ratio of their speeds ($v_{\\text{car}} : v_{\\text{truck}}$) when they have covered the same distance?",
+            options: ["$1 : 2$", "$1 : \\sqrt{2}$", "$\\sqrt{2} : 1$", "$2 : 1$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Since $v = \\sqrt{2as}$, at equal distance $v \\propto \\sqrt{a}$.<br>$$\\text{Ratio} = \\sqrt{\\frac{2}{4}} = \\frac{1}{\\sqrt{2}}$$"
+          },
+          {
+            statement: "An object is projected vertically upwards under gravity $g$. Which of the following statements is/are correct?<br>(1) The time of ascent is equal to the time of descent.<br>(2) The distance covered in the first second of ascent is equal to that in the last second of descent.<br>(3) The velocity at any height has the same magnitude during ascent and descent.",
+            options: ["(1) and (3) only", "(2) and (3) only", "(1) and (2) only", "(1), (2) and (3)"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> Due to gravitational symmetry in a vacuum, the magnitudes of velocity, distances in symmetric time intervals, and duration of ascent/descent are completely identical."
+          }
+        ]
+      },
+      "2.3": {
+        1: [
+          {
+            statement: "According to <b>Newton's First Law of Motion</b>, when the net force acting on a moving object is zero, what happens to the object?",
+            options: [
+              "It decelerates gradually to a halt.",
+              "It continues to move at a constant velocity.",
+              "It immediately stops moving.",
+              "It turns into circular motion."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Newton's First Law states that an object maintains constant velocity (uniform motion in a straight line) unless acted on by a net non-zero external force."
+          },
+          {
+            statement: "What intrinsic physical property of an object is a direct measure of its inertia?",
+            options: ["Weight", "Volume", "Mass", "Density"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Mass is the quantitative measure of inertia. Larger mass means more resistance to acceleration."
+          },
+          {
+            statement: "Which of the following is correct regarding action-reaction pairs in Newton's Third Law?",
+            options: [
+              "They act on the same object and cancel each other out.",
+              "They act on two different objects.",
+              "The action force is always slightly larger than the reaction force.",
+              "They only occur when the objects are at rest."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Action-reaction forces always act on different interacting bodies, meaning they never act on a single body to cancel each other out."
+          },
+          {
+            statement: "A heavy truck and a small compact car collide head-on. Which vehicle experiences the larger magnitude of force?",
+            options: [
+              "The small compact car.",
+              "The heavy truck.",
+              "Both vehicles experience forces of equal magnitude.",
+              "The vehicle traveling at a higher speed before collision."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> By Newton's Third Law, the force on the car from the truck is equal in magnitude and opposite in direction to the force on the truck from the car."
+          },
+          {
+            statement: "Which of the following forces acts on a block sliding down a rough inclined plane?",
+            options: [
+              "Only its weight and normal reaction.",
+              "Weight, normal reaction, and friction.",
+              "Weight, normal reaction, friction, and a downward pushing force of gravity.",
+              "Only normal reaction and friction."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> The sliding block experiences gravitational attraction (weight), perpendicular support from the surface (normal force), and opposing sliding resistance (kinetic friction)."
+          },
+          {
+            statement: "When a person stands on a scale inside a lift moving downwards at a constant speed, the scale reading is:",
+            options: ["Greater than their weight.", "Less than their weight.", "Equal to their weight.", "Zero."],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Constant speed means acceleration is zero. According to Newton's Second Law, net force must be zero, so the normal force (reading) equals weight."
+          }
+        ],
+        2: [
+          {
+            statement: "A horizontal pulling force of $15\\text{ N}$ acts on a $2.0\\text{ kg}$ block along a rough horizontal table. If the friction opposing the motion is $3.0\\text{ N}$, find the acceleration of the block.",
+            options: ["$1.5\\text{ m s}^{-2}$", "$6.0\\text{ m s}^{-2}$", "$7.5\\text{ m s}^{-2}$", "$9.0\\text{ m s}^{-2}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Net force $F_{\\text{net}} = F_{\\text{pull}} - f = 15 - 3 = 12\\text{ N}$. Acceleration $a = \\frac{F_{\\text{net}}}{m} = \\frac{12}{2.0} = 6.0\\text{ m s}^{-2}$."
+          },
+          {
+            statement: "A lift of mass $800\\text{ kg}$ is accelerating upwards at $2.0\\text{ m s}^{-2}$. Calculate the tension in the supporting cable. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$1600\\text{ N}$", "$6400\\text{ N}$", "$8000\\text{ N}$", "$9600\\text{ N}$"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> Upward acceleration: $T - mg = ma \\implies T = m(g+a) = 800 \\times (10 + 2.0) = 9600\\text{ N}$."
+          },
+          {
+            statement: "A wooden crate of mass $5.0\\text{ kg}$ is placed on a rough horizontal surface where the static friction coefficient is $\\mu_s = 0.40$. What is the minimum horizontal force required to make the crate start moving? (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$2.0\\text{ N}$", "$10.0\\text{ N}$", "$20.0\\text{ N}$", "$50.0\\text{ N}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Force must exceed max static friction $f_{\\text{max}} = \\mu_s R = \\mu_s (mg) = 0.40 \\times (5.0 \\times 10) = 20.0\\text{ N}$."
+          },
+          {
+            statement: "A crane lifts a block of mass $400\\text{ kg}$ vertically upwards at a completely constant speed of $1.5\\text{ m s}^{-1}$. Find the tension in the supporting rope. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$600\\text{ N}$", "$4000\\text{ N}$", "$4600\\text{ N}$", "$8000\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Constant speed means $a = 0$. Since acceleration is zero, the forces must balance vertically: $T = mg = 400 \\times 10 = 4000\\text{ N}$."
+          },
+          {
+            statement: "A $5.0\\text{ kg}$ block is pushed horizontally along a smooth floor by a force of $10\\text{ N}$. Find the speed of the block after $4\\text{ seconds}$ if it starts from rest.",
+            options: ["$2.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$10.0\\text{ m s}^{-1}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $a = \\frac{F}{m} = \\frac{10}{5.0} = 2.0\\text{ m s}^{-2}$. Speed $v = u + at = 0 + (2.0 \\times 4) = 8.0\\text{ m s}^{-1}$."
+          },
+          {
+            statement: "A boy of mass $40\\text{ kg}$ stands in a lift that is accelerating downwards at $1.5\\text{ m s}^{-2}$. Find the normal force exerted by the floor on the boy. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$60\\text{ N}$", "$340\\text{ N}$", "$400\\text{ N}$", "$460\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Downward acceleration: $mg - N = ma \\implies N = m(g - a) = 40 \\times (10 - 1.5) = 340\\text{ N}$."
+          }
+        ],
+        3: [
+          {
+            statement: "Two blocks $X$ (mass $M$) and $Y$ (mass $m$) are connected by a light inextensible string on a smooth horizontal table. Block $Y$ is pulled by a horizontal force $F$.<br>$$\\text{Table } \\rightarrow \\quad [X] \\xrightarrow{T} [Y] \\xrightarrow{F} \\text{Pull}$$<br>Find the tension $T$ in the string connecting them.",
+            options: [
+              "$T = \\frac{m F}{M+m}$",
+              "$T = \\frac{M F}{M+m}$",
+              "$T = F$",
+              "$T = \\frac{M F}{m}$"
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Acceleration of the entire system is $a = \\frac{F}{M+m}$. For block $X$, the net force is the tension $T$, so $T = M a = \\frac{M F}{M+m}$."
+          },
+          {
+            statement: "A passenger stands on a weighing scale inside a lift. When the lift is stationary, the scale reads $W_0$. When the lift is decelerating while moving downwards, the scale reading is $W$. How does $W$ compare to $W_0$?",
+            options: [
+              "$W > W_0$",
+              "$W < W_0$",
+              "$W = W_0$",
+              "It depends on the speed of the lift."
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Moving downwards and slowing down means acceleration is directed upwards ($a > 0$). Scale normal force is $R = m(g+a) > mg = W_0$."
+          },
+          {
+            statement: "A box of mass $m$ rests on a rough inclined plane of angle $\\theta$. As the angle $\\theta$ is slowly increased, the box begins to slide down when $\\theta$ reaches exactly $30^{\\circ}$. Find the static friction coefficient $\\mu_s$.",
+            options: ["$\\mu_s = 0.50$", "$\\mu_s = \\frac{\\sqrt{3}}{3}$", "$\\mu_s = \\sqrt{3}$", "$\\mu_s = 1.0$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> On the verge of sliding: $mg \\sin\\theta = \\mu_s mg \\cos\\theta \\implies \\mu_s = \\tan\\theta = \\tan(30^{\\circ}) = \\frac{\\sqrt{3}}{3}$."
+          },
+          {
+            statement: "A balloon of total mass $M$ is descending vertically with a constant acceleration $a$ ($a < g$). What mass $m$ must be released from the cargo so that the balloon will ascend with the same acceleration $a$? (Neglect air resistance)",
+            options: [
+              "$m = \\frac{Ma}{g}$",
+              "$m = \\frac{2Ma}{g+a}$",
+              "$m = \\frac{2Ma}{g-a}$",
+              "$m = \\frac{Ma}{g+a}$"
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Descending: $Mg - B = Ma \\implies B = M(g-a)$. Ascending with mass released: $B - (M-m)g = (M-m)a$. Equating $B$ gives $m = \\frac{2Ma}{g+a}$."
+          },
+          {
+            statement: "Two blocks of masses $m$ and $2m$ are connected by a light string over a smooth frictionless pulley (Atwood machine). If released from rest, find the acceleration of the blocks.",
+            options: ["$g$", "$\\frac{g}{2}$", "$\\frac{g}{3}$", "$\\frac{2g}{3}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Net unbalance force is $2mg - mg = mg$. Total mass is $3m$. Acceleration $a = \\frac{F_{\\text{net}}}{m_{\\text{total}}} = \\frac{mg}{3m} = \\frac{g}{3}$."
+          },
+          {
+            statement: "A block of mass $m$ is pushed against a rough vertical wall by a horizontal force $P$. If the block is on the verge of sliding down, which of the following is/are correct?<br>(1) The static friction force equals $mg$.<br>(2) The coefficient of static friction is $\\frac{mg}{P}$.<br>(3) If $P$ is doubled, the block will accelerate upwards.",
+            options: ["(1) and (2) only", "(2) and (3) only", "(1) and (3) only", "(1), (2) and (3)"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> (1) is correct: friction must balance weight ($f=mg$). (2) is correct: at slip limit $f = \\mu_s P \\implies mg = \\mu_s P \\implies \\mu_s = \\frac{mg}{P}$. (3) is incorrect: doubling $P$ increases max static friction but cannot push the block upwards."
+          }
+        ]
+      },
+      "2.4": {
+        1: [
+          {
+            statement: "What distance is used in calculating the turning moment of a force about a pivot?",
+            options: [
+              "The total length of the lever arm.",
+              "The perpendicular distance from the pivot to the line of action of the force.",
+              "The straight-line distance from the pivot to the start of the force.",
+              "The parallel distance along the force vector."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> The moment of a force is defined as $\\tau = F \\times d$, where $d$ is the perpendicular distance from the pivot to the line of action of the force."
+          },
+          {
+            statement: "For a rigid body to be in a complete state of static equilibrium, what two conditions must be satisfied?",
+            options: [
+              "The total mass and total weight must be equal.",
+              "The net force must be zero, and the net turning moment must be zero.",
+              "The body must not be moving.",
+              "The clockwise moments must be larger than the anticlockwise moments."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Translational equilibrium requires net force $= 0$. Rotational equilibrium requires net moment $= 0$."
+          },
+          {
+            statement: "A uniform wooden plank has its center of gravity at:",
+            options: [
+              "Its heavy end.",
+              "Its geometric center.",
+              "One of its outer edges.",
+              "The pivot point."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> For a uniform body, mass is distributed symmetrically, so the center of gravity lies exactly at its geometric center."
+          },
+          {
+            statement: "How can the structural stability of an object standing on a table be increased?",
+            options: [
+              "By raising its center of gravity and narrowing its base area.",
+              "By lowering its center of gravity and widening its base area.",
+              "By increasing its vertical height.",
+              "By reducing its total mass."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> A wider base area and a lower center of gravity increase stability by requiring a larger tilt before the gravity vector falls outside the base."
+          },
+          {
+            statement: "Two equal and opposite forces acting along different lines of action on a rigid body form a:",
+            options: ["Couple", "Torque", "Normal force", "Frictional force"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> A couple consists of two forces of equal magnitude, parallel lines of action, and opposite directions, producing pure rotation."
+          },
+          {
+            statement: "Which of the following is correct regarding a body in a state of stable equilibrium?",
+            options: [
+              "Its center of gravity is raised when it is slightly tilted.",
+              "Its center of gravity is lowered when it is slightly tilted.",
+              "Its center of gravity remains at the same height when tilted.",
+              "It has no center of gravity."
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> In stable equilibrium, any slight displacement raises the center of gravity, creating a restoring moment that returns the body to its original position."
+          }
+        ],
+        2: [
+          {
+            statement: "A uniform meter rule is balanced horizontally at its center ($50\\text{ cm}$ mark). A $2.0\\text{ N}$ weight is placed at the $10\\text{ cm}$ mark. Where must a $4.0\\text{ N}$ weight be hung on the other side to balance the rule?",
+            options: ["$70\\text{ cm}$ mark", "$80\\text{ cm}$ mark", "$90\\text{ cm}$ mark", "$60\\text{ cm}$ mark"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Left moment: $2.0\\text{ N} \\times (50 - 10)\\text{ cm} = 80\\text{ N cm}$. Right moment must equal $80\\text{ N cm}$: $4.0\\text{ N} \\times d_2 = 80 \\implies d_2 = 20\\text{ cm}$. Position: $50 + 20 = 70\\text{ cm}$ mark."
+          },
+          {
+            statement: "A horizontal force of $20\\text{ N}$ is applied perpendicularly to the end of a wrench that is $25\\text{ cm}$ long. Calculate the turning moment of this force about the bolt pivot.",
+            options: ["$5.0\\text{ N m}$", "$500\\text{ N m}$", "$50.0\\text{ N m}$", "$0.8\\text{ N m}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Convert distance to meters: $d = 0.25\\text{ m}$. Moment $\\tau = F \\times d = 20\\text{ N} \\times 0.25\\text{ m} = 5.0\\text{ N m}$."
+          },
+          {
+            statement: "A light horizontal beam of length $3.0\\text{ m}$ is supported by two vertical wires at its outer ends. A load of $300\\text{ N}$ is placed on the beam at a distance of $1.0\\text{ m}$ from the left end. Find the upward support force (tension) in the right wire.",
+            options: ["$100\\text{ N}$", "$150\\text{ N}$", "$200\\text{ N}$", "$300\\text{ N}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Take moments about the left end: $T_{\\text{right}} \\times 3.0 = 300 \\times 1.0 \\implies T_{\\text{right}} = 100\\text{ N}$."
+          },
+          {
+            statement: "A uniform ladder of weight $200\\text{ N}$ and length $4.0\\text{ m}$ rests horizontally on two trestles placed at its two ends. What is the upward support force exerted by each trestle?",
+            options: ["$50\\text{ N}$", "$100\\text{ N}$", "$200\\text{ N}$", "$400\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Weight acts at center of gravity ($2.0\\text{ m}$ mark). By symmetry, the force is split equally: $F = \\frac{200}{2} = 100\\text{ N}$."
+          },
+          {
+            statement: "A see-saw of length $4.0\\text{ m}$ is pivoted at its center. A child of mass $30\\text{ kg}$ sits at one end. Where should a child of mass $50\\text{ kg}$ sit to balance the see-saw?",
+            options: ["$1.2\\text{ m from pivot}$", "$1.5\\text{ m from pivot}$", "$1.8\\text{ m from pivot}$", "$2.0\\text{ m from pivot}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Pivot is at center, so $30\\text{ kg}$ child distance is $2.0\\text{ m}$.<br>$$30 \\times 2.0 = 50 \\times d_2 \\implies 60 = 50 d_2 \\implies d_2 = 1.2\\text{ m from pivot}$$"
+          },
+          {
+            statement: "A uniform bar of length $2.0\\text{ m}$ and weight $50\\text{ N}$ is pivoted at its center. A weight of $20\\text{ N}$ is hung at the left end. What downward force must be applied at the right end to keep the bar horizontal?",
+            options: ["$10\\text{ N}$", "$20\\text{ N}$", "$35\\text{ N}$", "$50\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Since the bar is uniform, its own weight acts through the center pivot (zero moment). To balance the left $20\\text{ N}$ weight at $1.0\\text{ m}$ distance, the right force must be equal ($20\\text{ N}$)."
+          }
+        ],
+        3: [
+          {
+            statement: "A non-uniform rod $AB$ of length $L$ and weight $W$ is suspended horizontally by two vertical light strings attached to its ends. The tension in string $A$ is three times that in string $B$. How far is the center of gravity of the rod from end $A$?",
+            options: ["$\\frac{1}{4} L$", "$\\frac{1}{3} L$", "$\\frac{1}{2} L$", "$\\frac{2}{3} L$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> $T_B = T$, $T_A = 3T \\implies W = 4T$. Take moments about end $A$: $W \\times x = T_B \\times L \\implies (4T)x = T L \\implies x = \\frac{1}{4}L$."
+          },
+          {
+            statement: "A uniform cube of side $a$ and weight $W$ sits on a rough horizontal floor. A horizontal pushing force $P$ is applied to the top edge of the cube. What is the minimum value of $P$ required to tip the cube over without sliding?",
+            options: ["$0.25 W$", "$0.50 W$", "$W$", "$2W$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Pivoting occurs about the bottom edge. Clockwise moment $= P \\times a$. Counterclockwise moment $= W \\times \\frac{a}{2}$. For tipping: $P a = W \\frac{a}{2} \\implies P = 0.50 W$."
+          },
+          {
+            statement: "A uniform rod of length $1.0\\text{ m}$ and weight $12\\text{ N}$ is pivoted at the $30\\text{ cm}$ mark. If a $20\\text{ N}$ load is hung at the $0\\text{ cm}$ mark, what force must be applied vertically downwards at the $100\\text{ cm}$ mark to keep the rod balanced horizontally?",
+            options: ["$4.0\\text{ N}$", "$5.0\\text{ N}$", "$8.0\\text{ N}$", "$10.0\\text{ N}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Left moment: $20 \\times 30 = 600\\text{ N cm}$. Right moment from rod weight (acting at $50\\text{ cm}$): $12 \\times (50 - 30) = 240\\text{ N cm}$. Applied force $F$ at $100\\text{ cm}$: $F \\times (100 - 30) = 70F$. Moment balance: $600 = 240 + 70F \\implies 70F = 360 \\implies F \\approx 5.1\\text{ N}$."
+          },
+          {
+            statement: "A uniform bar of weight $W$ is hinged at the wall at its left end, and held horizontally by a cable attached to its right end at an angle of $30^{\\circ}$ above the bar. Find the tension $T$ in the cable.",
+            options: ["$0.5 W$", "$W$", "$1.5 W$", "$2W$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Take moments about the wall hinge: $W \\times 0.5L = (T \\sin 30^{\\circ}) \\times L \\implies 0.5 W L = 0.5 T L \\implies T = W$."
+          },
+          {
+            statement: "A uniform beam of weight $W$ and length $L$ is supported horizontally by two supports at its ends. A load of $2W$ is placed at $\\frac{1}{3}L$ from the left end. Find the reaction force at the right support.",
+            options: ["$\\frac{1}{2}W$", "$\\frac{5}{6}W$", "$\\frac{7}{6}W$", "$\\frac{4}{3}W$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Take moments about the left end: $R_{\\text{right}} \\times L = W \\times 0.5L + 2W \\times \\frac{1}{3}L \\implies R_{\\text{right}} = 0.5W + \\frac{2}{3}W = \\frac{7}{6}W$."
+          },
+          {
+            statement: "A uniform wheel of radius $R$ and weight $W$ rests against a step of height $h$ ($h < R$). What is the perpendicular distance from the step corner (pivot) to the line of action of the wheel's weight?",
+            options: ["$R-h$", "$\\sqrt{2Rh - h^2}$", "$\\sqrt{R^2 - h^2}$", "$R$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Vertical distance from axle to corner is $R-h$. Using the Pythagorean theorem, the horizontal distance is:<br>$$d = \\sqrt{R^2 - (R-h)^2} = \\sqrt{R^2 - (R^2 - 2Rh + h^2)} = \\sqrt{2Rh - h^2}$$"
+          }
+        ]
+      },
+      "2.5": {
+        1: [
+          {
+            statement: "Under what physical condition is mechanical <b>work</b> defined as being done on an object by a force?",
+            options: [
+              "When a large force is applied while the object remains completely stationary.",
+              "When the force causes the object to undergo a displacement in the direction of the force.",
+              "When the object moves at a constant speed in a vacuum with no forces acting on it.",
+              "When the object is held at a constant height above the ground."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Work is defined mathematically as the product of the force component along the displacement and the displacement magnitude: $W = F s \\cos\\theta$."
+          },
+          {
+            statement: "What physical principle is stated by the <b>Law of Conservation of Energy</b>?",
+            options: [
+              "The kinetic energy of any falling body must always equal its potential energy.",
+              "Energy cannot be created or destroyed; it can only be transformed from one form to another.",
+              "The efficiency of any real mechanical machine is always $100\\%$.",
+              "Thermal energy is the highest quality form of energy."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Energy cannot be created or destroyed, only transformed from one form to another. Total energy of a closed system remains completely constant."
+          },
+          {
+            statement: "Why is the mechanical efficiency of any real-world machine always <b>less than $100\\%$</b>?",
+            options: [
+              "Because real machines violate the conservation of energy.",
+              "Because some input energy is inevitably converted to non-useful forms like heat and sound due to friction.",
+              "Because the output force is always smaller than the input force.",
+              "Because gravity continuously destroys kinetic energy."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Real machines have moving parts that generate friction, converting some useful mechanical energy into non-useful thermal energy."
+          },
+          {
+            statement: "How is physical <b>power</b> defined?",
+            options: [
+              "The total amount of work done on an object.",
+              "The rate at which work is done or energy is transformed.",
+              "The force applied multiplied by the distance traveled.",
+              "The mass of an object multiplied by its velocity."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Power measures the rate of energy transfer or rate of doing work: $P = \\frac{W}{t}$."
+          },
+          {
+            statement: "What is the kinetic energy of an object of mass $m$ and linear momentum $p$?",
+            options: ["$\\frac{p}{2m}$", "$\\frac{p^2}{2m}$", "$\\frac{m p^2}{2}$", "$p m$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Kinetic energy is $\\frac{1}{2}mv^2$. Since $p = mv \\implies v = \\frac{p}{m}$, substituting gives:<br>$$K.E. = \\frac{1}{2}m\\left(\\frac{p}{m}\\right)^2 = \\frac{p^2}{2m}$$"
+          },
+          {
+            statement: "In which of the following situations is NO mechanical work done on the object?",
+            options: [
+              "A crane lifting a heavy concrete block vertically.",
+              "A satellite in a stable circular orbit around the Earth.",
+              "A sports car accelerating along a straight track.",
+              "A block sliding down a rough inclined plane."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> In a stable circular orbit, the gravitational force acts perpendicular to the direction of motion at all times, meaning $\\theta = 90^{\\circ}$ and $\\cos 90^{\\circ} = 0$, so no work is done."
+          }
+        ],
+        2: [
+          {
+            statement: "A student of mass $50\\text{ kg}$ climbs up a vertical ladder of height $6.0\\text{ m}$ in $15\\text{ seconds}$. Calculate the student's average power output. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$20\\text{ W}$", "$200\\text{ W}$", "$300\\text{ W}$", "$3000\\text{ W}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Work done $= mgh = 50 \\times 10 \\times 6.0 = 3000\\text{ J}$. Power $P = \\frac{W}{t} = \\frac{3000\\text{ J}}{15\\text{ s}} = 200\\text{ W}$."
+          },
+          {
+            statement: "Calculate the kinetic energy of a motorcycle of mass $150\\text{ kg}$ traveling at a speed of $20\\text{ m s}^{-1}$.",
+            options: ["$1.5\\text{ kJ}$", "$3.0\\text{ kJ}$", "$30.0\\text{ kJ}$", "$60.0\\text{ kJ}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $K.E. = \\frac{1}{2} m v^2 = \\frac{1}{2} \\times 150 \\times 20^2 = 75 \\times 400 = 30000\\text{ J} = 30\\text{ kJ}$."
+          },
+          {
+            statement: "A box is pushed horizontally along a flat floor over a distance of $8.0\\text{ m}$ by a constant pushing force of $40\\text{ N}$. Calculate the work done by this pushing force.",
+            options: ["$5.0\\text{ J}$", "$32.0\\text{ J}$", "$320\\text{ J}$", "$640\\text{ J}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $W = F \\times s = 40\\text{ N} \\times 8.0\\text{ m} = 320\\text{ J}$."
+          },
+          {
+            statement: "An electric motor with an efficiency of $80\\%$ consumes $2000\\text{ J}$ of electrical energy. How much useful mechanical work does it perform?",
+            options: ["$1600\\text{ J}$", "$2000\\text{ J}$", "$2500\\text{ J}$", "$400\\text{ J}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Useful work $= \\text{Input energy} \\times \\text{efficiency} = 2000 \\times 0.80 = 1600\\text{ J}$."
+          },
+          {
+            statement: "An electric heater has a power rating of $1.5\\text{ kW}$. How much energy does it consume if left on for $2.0\\text{ minutes}$?",
+            options: ["$3.0\\text{ kJ}$", "$180.0\\text{ kJ}$", "$300.0\\text{ kJ}$", "$1800.0\\text{ kJ}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> $E = P \\times t = 1500\\text{ W} \\times 120\\text{ s} = 180000\\text{ J} = 180.0\\text{ kJ}$."
+          },
+          {
+            statement: "A $2.0\\text{ kg}$ ball is thrown vertically upwards and reaches a height of $5.0\\text{ m}$. Find the initial kinetic energy of the ball. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$10\\text{ J}$", "$50\\text{ J}$", "$100\\text{ J}$", "$200\\text{ J}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Energy is conserved. Initial $K.E. = \\text{max } G.P.E. = mgh = 2.0 \\times 10 \\times 5.0 = 100\\text{ J}$."
+          }
+        ],
+        3: [
+          {
+            statement: "A car of mass $m$ accelerates from rest with a constant engine power $P$. Assuming there is no friction or air resistance, how does the speed $v$ of the car vary with time $t$?",
+            options: [
+              "$v \\propto t$",
+              "$v \\propto t^2$",
+              "$v \\propto \\sqrt{t}$",
+              "$v$ is constant"
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Work done is $W = Pt$. By work-energy theorem, $\\frac{1}{2}mv^2 = Pt \\implies v^2 = \\left(\\frac{2P}{m}\\right)t \\implies v \\propto \\sqrt{t}$."
+          },
+          {
+            statement: "A block of mass $m$ slides down a rough curved track from a vertical height $H$. It starts from rest and reaches the bottom with speed $v$. What is the work done $W_f$ against friction during the slide?",
+            options: [
+              "$W_f = mgH$",
+              "$W_f = \\frac{1}{2}mv^2$",
+              "$W_f = mgH - \\frac{1}{2}mv^2$",
+              "$W_f = mgH + \\frac{1}{2}mv^2$"
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Initial potential energy is $mgH$. Final kinetic energy is $\\frac{1}{2}mv^2$. The mechanical energy difference is the work done against friction: $W_f = mgH - \\frac{1}{2}mv^2$."
+          },
+          {
+            statement: "A vehicle of mass $m$ climbs up an incline of angle $\\theta$ at a constant speed $v$. If the total resistive force opposing the motion is $f$, what is the minimum power output of the engine?",
+            options: [
+              "$P = f v$",
+              "$P = (f + m g \\sin\\theta) v$",
+              "$P = (f + m g \\cos\\theta) v$",
+              "$P = (m g \\sin\\theta) v$"
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Constant speed means driving force $F_D$ balances friction and the parallel gravity component: $F_D = f + mg\\sin\\theta$. Power $P = F_D \\times v = (f + mg\\sin\\theta)v$."
+          },
+          {
+            statement: "An engine pumps water out of a deep well at a constant volume rate of $Q\\text{ (m}^3\\text{ s}^{-1}\\text{)}$ with speed $v$. If the density of water is $\\rho$, what is the kinetic power imparted to the water stream?",
+            options: [
+              "$P = \\frac{1}{2} \\rho Q v^2$",
+              "$P = \\rho Q v$",
+              "$P = \\frac{1}{2} \\rho Q^2 v$",
+              "$P = \\rho Q v^2$"
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Mass flow rate $\\frac{m}{t} = \\rho Q$. Kinetic energy imparted per second is $P = \\frac{1}{2} \\left(\\frac{m}{t}\\right) v^2 = \\frac{1}{2} \\rho Q v^2$."
+          },
+          {
+            statement: "An object is dropped from a height $h$. If it loses $20\\%$ of its mechanical energy during impact with the ground, what is the maximum height to which it will rebound?",
+            options: ["$0.2 h$", "$0.4 h$", "$0.8 h$", "$h$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> It retains $80\\%$ of its mechanical energy. Thus, G.P.E. at peak rebound is $0.8$ of initial G.P.E.: $mgh' = 0.8 mgh \\implies h' = 0.8 h$."
+          },
+          {
+            statement: "A car of mass $m$ is traveling at a constant speed $v$ against a resistance force of $f$. If the engine power is suddenly doubled and the resistance remains constant, what is the initial acceleration of the car?",
+            options: ["$\\frac{f}{m}$", "$\\frac{2f}{m}$", "$\\frac{3f}{m}$", "Zero"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Initially, driving force balances resistance, so $F_D = f$ and $P = f v$. If power is doubled to $2P$, driving force becomes $F_D' = \\frac{2P}{v} = 2f$. Net force is $2f - f = f \\implies a = \\frac{f}{m}$."
+          }
+        ]
+      },
+      "2.6": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "What physical quantity is defined as the product of an object's mass and its velocity?",
+            options: ["Force", "Momentum", "Impulse", "Kinetic Energy"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Linear momentum is mathematically defined as $p = mv$."
+          },
+          {
+            statement: "According to the <b>Impulse-Momentum Theorem</b>, the impulse delivered to an object is equal to:",
+            options: [
+              "The final momentum of the object.",
+              "The change in momentum of the object.",
+              "The rate of change of momentum of the object.",
+              "The kinetic energy gained by the object."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Impulse is equal to change in momentum: $I = F \\Delta t = \\Delta p$."
+          },
+          {
+            statement: "In an <b>elastic collision</b>, which of the following is/are conserved?",
+            options: [
+              "Only linear momentum.",
+              "Only kinetic energy.",
+              "Both linear momentum and kinetic energy.",
+              "Neither linear momentum nor kinetic energy."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> An elastic collision is one where both total momentum and total kinetic energy are conserved."
+          },
+          {
+            statement: "What does the <b>area</b> under a force-time ($F-t$) graph represent?",
+            options: ["Work Done", "Acceleration", "Impulse", "Velocity"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> The area under an $F-t$ graph represents the integral $\\int F \\, dt$, which is defined as impulse."
+          },
+          {
+            statement: "Which of the following is correct regarding a completely inelastic collision?",
+            options: [
+              "Only momentum is conserved, and kinetic energy is lost.",
+              "Only kinetic energy is conserved, and momentum is lost.",
+              "Both momentum and kinetic energy are conserved.",
+              "Neither momentum nor kinetic energy is conserved."
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Momentum is always conserved in any isolated system collision. In completely inelastic collisions, the maximum possible kinetic energy is lost as the bodies stick together."
+          },
+          {
+            statement: "How is Net Force related to momentum in Newton's Second Law?",
+            options: [
+              "Force is the product of momentum and time.",
+              "Force is equal to momentum.",
+              "Force is the rate of change of momentum.",
+              "Force is momentum squared."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Newton's second law is fundamentally written as $F = \\frac{\\Delta p}{\\Delta t}$, which is the rate of change of momentum."
+          }
+        ],
+        2: [
+          {
+            statement: "A car of mass $1000\\text{ kg}$ is traveling at a speed of $15\\text{ m s}^{-1}$. Calculate its linear momentum.",
+            options: [
+              "$1500\\text{ kg m s}^{-1}$",
+              "$15000\\text{ kg m s}^{-1}$",
+              "$150000\\text{ kg m s}^{-1}$",
+              "$7500\\text{ kg m s}^{-1}$"
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> $p = m \\times v = 1000\\text{ kg} \\times 15\\text{ m s}^{-1} = 15000\\text{ kg m s}^{-1}$."
+          },
+          {
+            statement: "A $2.0\\text{ kg}$ block moving at $6.0\\text{ m s}^{-1}$ East collides with and sticks to a stationary block of mass $4.0\\text{ kg}$. Find their common final speed after the collision.",
+            options: ["$2.0\\text{ m s}^{-1}$", "$3.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$6.0\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> By momentum conservation: $m_1 u_1 = (m_1+m_2)v_f \\implies 2.0 \\times 6.0 = 6.0 v_f \\implies v_f = 2.0\\text{ m s}^{-1}$."
+          },
+          {
+            statement: "A golf ball of mass $0.05\\text{ kg}$ is struck by a club. The average force acting on the ball during the impact is $800\\text{ N}$ and the contact time is $0.01\\text{ seconds}$. Calculate the speed of the ball as it leaves the club face, assuming it was initially at rest.",
+            options: ["$1.6\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$160.0\\text{ m s}^{-1}$", "$320.0\\text{ m s}^{-1}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $F \\Delta t = m \\Delta v \\implies 800 \\times 0.01 = 0.05 v_f \\implies 8 = 0.05 v_f \\implies v_f = 160.0\\text{ m s}^{-1}$."
+          },
+          {
+            statement: "A tennis ball of mass $0.06\\text{ kg}$ hits a wall horizontally at $20\\text{ m s}^{-1}$ and rebounds horizontally in the opposite direction at $15\\text{ m s}^{-1}$. Find the magnitude of the change in momentum.",
+            options: [
+              "$0.30\\text{ kg m s}^{-1}$",
+              "$0.90\\text{ kg m s}^{-1}$",
+              "$2.10\\text{ kg m s}^{-1}$",
+              "$3.50\\text{ kg m s}^{-1}$"
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $\\Delta p = m(v - u) = 0.06 \\times (15 - (-20)) = 0.06 \\times 35 = 2.10\\text{ kg m s}^{-1}$."
+          },
+          {
+            statement: "A $0.20\\text{ kg}$ soccer ball is kicked. If the average force applied is $150\\text{ N}$ and the contact time is $0.04\\text{ s}$, calculate the speed of the ball from rest.",
+            options: ["$15.0\\text{ m s}^{-1}$", "$30.0\\text{ m s}^{-1}$", "$45.0\\text{ m s}^{-1}$", "$60.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> $F \\Delta t = m \\Delta v \\implies 150 \\times 0.04 = 0.20 v_f \\implies 6.0 = 0.20 v_f \\implies v_f = 30.0\\text{ m s}^{-1}$."
+          },
+          {
+            statement: "A $4.0\\text{ kg}$ cart moving at $3.0\\text{ m s}^{-1}$ East collides with a $2.0\\text{ kg}$ cart moving at $6.0\\text{ m s}^{-1}$ West. If they stick together, what is their final speed?",
+            options: ["$0\\text{ m s}^{-1}$", "$2.0\\text{ m s}^{-1}$", "$3.0\\text{ m s}^{-1}$", "$4.5\\text{ m s}^{-1}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Taking East as positive: $p_i = 4.0(3.0) + 2.0(-6.0) = 12 - 12 = 0$. Since total initial momentum is zero, the final speed must be zero."
+          }
+        ],
+        3: [
+          {
+            statement: "A machine gun fires bullets of mass $m$ horizontally at a rate of $N$ bullets per second with a muzzle speed of $v$. What is the average recoil force exerted on the gun?",
+            options: ["$N m v$", "$\\frac{m v}{N}$", "$2 N m v$", "$\\frac{1}{2} N m v$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> The average force is the change in momentum per second: $F = \\frac{\\Delta p}{\\Delta t} = N \\times (mv - 0) = Nmv$."
+          },
+          {
+            statement: "Two objects, $A$ of mass $M$ and $B$ of mass $m$ ($M > m$), have the exact same kinetic energy. What is the ratio of their momentum magnitudes ($p_A : p_B$)?",
+            options: [
+              "$M : m$",
+              "$\\sqrt{M} : \\sqrt{m}$",
+              "$m : M$",
+              "$\\sqrt{m} : \\sqrt{M}$"
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Momentum and kinetic energy are related by $p = \\sqrt{2mK}$. If $K$ is identical, then $p \\propto \\sqrt{m}$. Thus, the ratio is $\\sqrt{M} : \\sqrt{m}$."
+          },
+          {
+            statement: "A bullet of mass $m$ is fired horizontally with speed $u$ into a stationary block of wood of mass $M$ hanging on a string (ballistic pendulum). The bullet becomes embedded in the block. What fraction of the bullet's initial kinetic energy is lost as heat/sound during this collision?",
+            options: [
+              "$\\frac{m}{M+m}$",
+              "$\\frac{M}{M+m}$",
+              "$\\frac{M+m}{M}$",
+              "$\\frac{m}{M}$"
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Conserved fraction is $\\frac{K_f}{K_i} = \\frac{m}{M+m}$. The lost fraction is $1 - \\frac{m}{M+m} = \\frac{M}{M+m}$."
+          },
+          {
+            statement: "An egg dropped onto a concrete floor breaks, but an identical egg dropped from the same height onto a soft cushion does not break. Which of the following statements is correct?",
+            options: [
+              "The concrete floor exerts a larger impulse on the egg.",
+              "The cushion increases the impact time, which reduces the average impact force on the egg.",
+              "The egg experiences a smaller change in momentum when falling on the cushion.",
+              "The cushion reduces the kinetic energy of the egg before impact."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> In both cases, $\\Delta p$ is the same. The cushion extends the impact time ($\\Delta t$), thereby decreasing the average force ($F_{\\text{avg}} = \\frac{\\Delta p}{\\Delta t}$)."
+          },
+          {
+            statement: "A block of mass $m$ moving with speed $v$ collides head-on elastically with an identical stationary block on a smooth surface. Which of the following is correct after the collision?",
+            options: [
+              "The first block stops, and the second block moves with speed $v$.",
+              "Both blocks move with speed $0.5v$.",
+              "The first block rebounds with speed $0.5v$.",
+              "The second block remains stationary."
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> In a head-on elastic collision between identical masses, velocities are completely exchanged. Thus, the incoming block comes to a stop and the stationary block takes on the original velocity $v$."
+          },
+          {
+            statement: "A rocket of total mass $M$ ejects gas at a constant mass rate of $R\\text{ (kg s}^{-1}\\text{)}$ with a speed of $u$ relative to the rocket. What is the initial acceleration of the rocket? (Neglect gravity)",
+            options: ["$\\frac{R u}{M}$", "$\\frac{M u}{R}$", "$\\frac{R M}{u}$", "Zero"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Thrust force generated is $F = R \\times u$. According to Newton's Second Law, the acceleration is $a = \\frac{F}{M} = \\frac{R u}{M}$."
+          }
+        ]
+      },
+      "2.7": {
+        // --- LEVEL 1: QUALITATIVE ---
+        1: [
+          {
+            statement: "Which of the following is correct regarding a projectile launched at an angle in a vacuum?",
+            options: [
+              "Both horizontal and vertical velocity components are constant.",
+              "Its horizontal velocity remains constant, while its vertical acceleration is constant.",
+              "Its horizontal velocity decreases linearly due to gravity.",
+              "Its vertical acceleration increases continuously as it falls."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> In a vacuum, there are no horizontal forces, so horizontal velocity is constant ($a_x = 0$). Gravity provides a constant downward vertical acceleration of $a_y = -g$."
+          },
+          {
+            statement: "At the highest point of a projectile's parabolic path, what is its vertical velocity component?",
+            options: ["Maximum", "Equal to the initial launch speed", "Zero", "Directed downwards"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> At the peak (apex) of its motion, the projectile momentarily stops climbing before beginning its descent. Thus, its instantaneous vertical velocity component $v_y$ is exactly zero."
+          },
+          {
+            statement: "Two identical balls are released from the same height. Ball $X$ is dropped vertically from rest, while Ball $Y$ is projected horizontally. If we neglect air resistance, which ball hits the ground first?",
+            options: [
+              "Ball $X$ hits first.",
+              "Ball $Y$ hits first.",
+              "Both balls hit the ground at the same time.",
+              "It depends on the horizontal launch speed of Ball $Y$."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> The vertical motion of both balls is independent of their horizontal motion. Both start with zero initial vertical velocity ($u_y = 0$) and experience the same downward vertical acceleration ($g$). Thus, they take identical times to fall to the ground: $t = \\sqrt{\\frac{2h}{g}}$."
+          },
+          {
+            statement: "At what angle above the horizontal is the range of a projectile maximized on flat ground? (Neglect air resistance)",
+            options: ["$30^{\\circ}$", "$45^{\\circ}$", "$60^{\\circ}$", "$90^{\\circ}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> The horizontal range formula is $R = \\frac{u^2 \\sin(2\\theta)}{g}$. The sine function has a maximum value of 1 when its argument is $90^{\\circ}$, which occurs when $2\\theta = 90^{\\circ} \\implies \\theta = 45^{\\circ}$."
+          },
+          {
+            statement: "For a projectile launched at an angle above the horizontal, how does its total speed change during ascent?",
+            options: [
+              "It remains constant.",
+              "It increases continuously.",
+              "It decreases continuously until it reaches the apex.",
+              "It decreases first, reaching a non-zero minimum at the apex."
+            ],
+            answer: 3,
+            explanation: "<b>Explanation:</b> During ascent, vertical speed $v_y$ decreases to zero at the apex, while horizontal speed $v_x$ remains constant. Total speed $\\sqrt{v_x^2 + v_y^2}$ decreases to its minimum value $v_x = u\\cos\\theta$ at the apex."
+          },
+          {
+            statement: "If the launch speed of a projectile is doubled at a constant launch angle, how does its maximum height change?",
+            options: ["It is doubled.", "It is halved.", "It is quadrupled.", "It remains the same."],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Maximum height $H = \\frac{u^2 \\sin^2\\theta}{2g}$. Since $H \\propto u^2$, doubling $u$ increases the maximum height by $2^2 = 4$ times."
+          }
+        ],
+        2: [
+          {
+            statement: "A ball is projected horizontally at $15\\text{ m s}^{-1}$ from a high platform. Find its horizontal displacement after $3.0\\text{ seconds}$ have elapsed.",
+            options: ["$5.0\\text{ m}$", "$15.0\\text{ m}$", "$45.0\\text{ m}$", "$90.0\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Since horizontal velocity remains constant ($a_x = 0$):<br>$$x = u_x \\times t = 15\\text{ m s}^{-1} \\times 3.0\\text{ s} = 45.0\\text{ m}$$"
+          },
+          {
+            statement: "An object is projected horizontally from a cliff of height $80\\text{ m}$. Calculate the time of flight before it hits the ground. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$2.0\\text{ seconds}$", "$4.0\\text{ seconds}$", "$8.0\\text{ seconds}$", "$16.0\\text{ seconds}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Given initial vertical speed $u_y = 0$, $y = 80\\text{ m}$, $a_y = g = 10\\text{ m s}^{-2}$.<br>$$y = \\frac{1}{2} g t^2 \\implies 80 = \\frac{1}{2} (10) t^2 \\implies 80 = 5t^2 \\implies t^2 = 16 \\implies t = 4.0\\text{ s}$$"
+          },
+          {
+            statement: "A projectile is launched with an initial velocity of $40\\text{ m s}^{-1}$ at an angle of $30^{\\circ}$ above the horizontal. Find its initial vertical velocity component. (Take $\\sin 30^{\\circ} = 0.50$)",
+            options: ["$10.0\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$34.6\\text{ m s}^{-1}$", "$40.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> <br>$$u_y = u \\sin\\theta = 40 \\times \\sin(30^{\\circ}) = 40 \\times 0.50 = 20.0\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "A ball is projected horizontally from a cliff of height $20\\text{ m}$ with an initial speed of $15\\text{ m s}^{-1}$. How far from the base of the cliff does it land on the flat ground below? (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$15.0\\text{ m}$", "$30.0\\text{ m}$", "$45.0\\text{ m}$", "$60.0\\text{ m}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> <br>- First, find the time of flight using the vertical motion:<br>$$y = \\frac{1}{2}gt^2 \\implies 20 = \\frac{1}{2}(10)t^2 \\implies 20 = 5t^2 \\implies t = 2.0\\text{ s}$$<br>- Next, find the horizontal distance:<br>$$x = u_x \\times t = 15 \\times 2.0 = 30.0\\text{ m}$$"
+          },
+          {
+            statement: "A ball is thrown horizontally from a cliff with speed $10.0\\text{ m s}^{-1}$. Find the magnitude of its velocity after $1.0\\text{ second}$. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$10.0\\text{ m s}^{-1}$", "$14.1\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$25.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Horizontal speed $v_x = 10.0\\text{ m s}^{-1}$ remains constant. Vertical speed $v_y = gt = 10 \\times 1 = 10.0\\text{ m s}^{-1}$.<br>$$v = \\sqrt{v_x^2 + v_y^2} = \\sqrt{10.0^2 + 10.0^2} = 10\\sqrt{2} \\approx 14.1\\text{ m s}^{-1}$$"
+          },
+          {
+            statement: "A projectile is launched on flat ground with horizontal speed $15\\text{ m s}^{-1}$ and vertical speed $20\\text{ m s}^{-1}$. Find its horizontal range. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$30.0\\text{ m}$", "$45.0\\text{ m}$", "$60.0\\text{ m}$", "$80.0\\text{ m}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Flight time is $t = \\frac{2 u_y}{g} = \\frac{2 \\times 20}{10} = 4.0\\text{ s}$. Horizontal range is:<br>$$R = u_x \\times t = 15 \\times 4.0 = 60.0\\text{ m}$$"
+          }
+        ],
+        3: [
+          {
+            statement: "Two projectiles, $P$ and $Q$, are launched from the same spot on flat ground with equal speeds. Projectile $P$ is launched at $30^{\\circ}$ to the horizontal, and $Q$ is launched at $60^{\\circ}$ to the horizontal. Which of the following is correct? (Neglect air resistance)",
+            options: [
+              "Both projectiles have the same horizontal range, but $Q$ reaches a greater maximum height.",
+              "Both projectiles have the same horizontal range and the same total flight time.",
+              "Projectile $Q$ has a larger range and a larger flight time.",
+              "Projectile $P$ has a larger range and a smaller flight time."
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Complementary angles ($30^{\\circ}$ and $60^{\\circ}$) yield the exact same horizontal range. Max height is $H = \\frac{u^2 \\sin^2\\theta}{2g}$. Since $\\sin 60^{\\circ} > \\sin 30^{\\circ}$, $Q$ climbs to a higher peak."
+          },
+          {
+            statement: "A ball is projected horizontally from a tower of height $h$ with speed $u$. It strikes the ground at an angle of $45^{\\circ}$ to the horizontal. Which of the following equations correctly relates $u$, $h$, and $g$?",
+            options: ["$u = \\sqrt{2gh}$", "$u = \\sqrt{gh}$", "$u = 2\\sqrt{gh}$", "$u = \\frac{1}{2}\\sqrt{gh}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> On hitting the ground, $v_x = u$ and $v_y = \\sqrt{2gh}$. Since the impact angle is $45^{\\circ}$, horizontal and vertical components are equal: $u = \\sqrt{2gh}$."
+          },
+          {
+            statement: "A projectile is launched from ground level. If its horizontal range $R$ is exactly equal to its maximum height $H$, find the value of its launch angle $\\theta$.",
+            options: ["$15.0^{\\circ}$", "$30.0^{\\circ}$", "$\\tan^{-1}(4)$", "$75.0^{\\circ}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $R = \\frac{u^2 (2 \\sin\\theta \\cos\\theta)}{g}$ and $H = \\frac{u^2 \\sin^2\\theta}{2g}$. Equating them gives $2\\cos\\theta = \\frac{\\sin\\theta}{2} \\implies \\tan\\theta = 4 \\implies \\theta = \\tan^{-1}(4)$."
+          },
+          {
+            statement: "A projectile is launched with kinetic energy $K$ at an angle of $60^{\\circ}$ above the horizontal. Find its kinetic energy at the highest point of its trajectory. (Neglect air resistance)",
+            options: ["$0$", "$0.25 K$", "$0.50 K$", "$0.75 K$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> At peak, vertical velocity is zero, so speed is purely horizontal: $v_x = u \\cos(60^{\\circ}) = 0.5 u$. Kinetic energy is $K_{\\text{peak}} = \\frac{1}{2} m v_x^2 = \\frac{1}{2} m (0.5 u)^2 = 0.25 K$."
+          },
+          {
+            statement: "A projectile is fired at angle $\\theta$ above the horizontal. What is the ratio of its speed at the highest point to its initial launching speed?",
+            options: ["$\\sin\\theta$", "$\\cos\\theta$", "$\\tan\\theta$", "$1$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> At the highest point, vertical velocity is zero. The remaining speed is purely horizontal, which is $v_x = u\\cos\\theta$. The ratio is $\\frac{u\\cos\\theta}{u} = \\cos\\theta$."
+          },
+          {
+            statement: "A stone is projected horizontally with speed $u$ from the top of a cliff. What is the angle of its velocity vector to the horizontal after time $t$? (Take gravity as $g$)",
+            options: ["$\\tan^{-1}\\left(\\frac{gt}{u}\\right)$", "$\\sin^{-1}\\left(\\frac{gt}{u}\\right)$", "$\\cos^{-1}\\left(\\frac{gt}{u}\\right)$", "$\\tan^{-1}\\left(\\frac{u}{gt}\\right)$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> $v_x = u$ and $v_y = gt$. The angle $\\phi$ with the horizontal is given by $\\tan\\phi = \\frac{v_y}{v_x} = \\frac{gt}{u} \\implies \\phi = \\tan^{-1}\\left(\\frac{gt}{u}\\right)$."
+          }
+        ]
+      },
+      "2.8": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "Which of the following is correct regarding an object undergoing <b>uniform circular motion</b>?",
+            options: [
+              "Both its speed and velocity are completely constant.",
+              "Its speed is constant, but its velocity is continuously changing direction.",
+              "Its acceleration vector is completely constant.",
+              "The net force acting on the object is zero."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Speed remains constant, but velocity changes direction continuously, which means there is a non-zero centripetal acceleration vector."
+          },
+          {
+            statement: "What is the direction of the <b>centripetal acceleration</b> vector of an object in circular motion?",
+            options: [
+              "Tangent to the circle, in the direction of motion.",
+              "Tangent to the circle, opposite to the direction of motion.",
+              "Radial, pointing directly towards the center of the circle.",
+              "Radial, pointing directly away from the center of the circle."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Centripetal means center-seeking. The acceleration is always directed radially inwards towards the center of curvature."
+          },
+          {
+            statement: "What force provides the centripetal force for a car traveling at constant speed around a flat circular track?",
+            options: [
+              "The normal reaction force of the road.",
+              "The static friction force between the tires and the road.",
+              "The weight of the car.",
+              "The force of air resistance."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> On a flat horizontal curve, the static friction between tires and road acts radially inward to provide the necessary centripetal force."
+          },
+          {
+            statement: "What is the relationship between linear speed $v$ and angular speed $\\omega$ for an object in circular motion of radius $R$?",
+            options: ["$v = \\frac{\\omega}{R}$", "$v = \\omega \\times R$", "$v = \\omega \\times R^2$", "$v = \\omega + R$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Linear speed is related to angular speed by the relation $v = R \\omega$."
+          },
+          {
+            statement: "If the radius of a circular path is halved while the angular speed $\\omega$ is doubled, how does the centripetal acceleration change?",
+            options: ["It is halved.", "It remains the same.", "It is doubled.", "It is quadrupled."],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $a_c = \\omega^2 R$. If $\\omega \\to 2\\omega$ and $R \\to 0.5R$, then $a_c' = (2\\omega)^2 (0.5R) = 4\\omega^2 \\times 0.5R = 2 a_c$."
+          },
+          {
+            statement: "A satellite orbits Earth in a circular orbit at a constant speed. What is the direction of the net force acting on the satellite?",
+            options: ["In the direction of motion.", "Opposite to the direction of motion.", "Directly towards the center of Earth.", "Directly away from Earth."],
+            answer: 2,
+            explanation: "<b>Explanation:</b> For circular orbit, the centripetal force is provided entirely by gravitational attraction, which points directly towards the center of Earth."
+          }
+        ],
+        2: [
+          {
+            statement: "An object moves in a circle of radius $2.0\\text{ m}$ at a constant speed of $4.0\\text{ m s}^{-1}$. Calculate its centripetal acceleration.",
+            options: ["$2.0\\text{ m s}^{-2}$", "$4.0\\text{ m s}^{-2}$", "$8.0\\text{ m s}^{-2}$", "$16.0\\text{ m s}^{-2}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $$a_c = \\frac{v^2}{R} = \\frac{4.0^2}{2.0} = 8.0\\text{ m s}^{-2}$$."
+          },
+          {
+            statement: "A $3.0\\text{ kg}$ block is tied to a string and swung in a horizontal circle of radius $1.5\\text{ m}$ on a smooth table at speed $3.0\\text{ m s}^{-1}$. Find the tension in the string.",
+            options: ["$6.0\\text{ N}$", "$12.0\\text{ N}$", "$18.0\\text{ N}$", "$27.0\\text{ N}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Tension provides centripetal force: $T = \\frac{m v^2}{R} = \\frac{3.0 \\times 3.0^2}{1.5} = 18.0\\text{ N}$."
+          },
+          {
+            statement: "An object rotates in a circle of radius $4.0\\text{ m}$ with an angular speed of $2.0\\text{ rad s}^{-1}$. Find its linear speed.",
+            options: ["$2.0\\text{ m s}^{-1}$", "$4.0\\text{ m s}^{-1}$", "$8.0\\text{ m s}^{-1}$", "$16.0\\text{ m s}^{-1}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> $v = R \\omega = 4.0 \\times 2.0 = 8.0\\text{ m s}^{-1}$."
+          },
+          {
+            statement: "A cyclist travels around a circular track of radius $10\\text{ m}$ at speed $v$. If the centripetal acceleration is $10\\text{ m s}^{-2}$, find $v$.",
+            options: ["$5.0\\text{ m s}^{-1}$", "$10.0\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$100.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> $a_c = \\frac{v^2}{R} \\implies 10 = \\frac{v^2}{10} \\implies v = 10.0\\text{ m s}^{-1}$."
+          },
+          {
+            statement: "An object of mass $0.5\\text{ kg}$ is swung in a horizontal circle of radius $2.0\\text{ m}$ at an angular speed of $4.0\\text{ rad s}^{-1}$. Calculate the tension in the string.",
+            options: ["$4.0\\text{ N}$", "$8.0\\text{ N}$", "$16.0\\text{ N}$", "$32.0\\text{ N}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Tension provides the centripetal force: $T = m\\omega^2 R = 0.5 \\times (4.0)^2 \\times 2.0 = 16.0\\text{ N}$."
+          },
+          {
+            statement: "A car drives around a curved flat track of radius $50\\text{ m}$. If the coefficient of static friction is $0.80$, calculate the maximum safe speed. (Take $g = 10\\text{ m s}^{-2}$)",
+            options: ["$10.0\\text{ m s}^{-1}$", "$20.0\\text{ m s}^{-1}$", "$30.0\\text{ m s}^{-1}$", "$40.0\\text{ m s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Maximum friction provides centripetal force: $\\mu_s mg = \\frac{mv^2}{R} \\implies v = \\sqrt{\\mu_s R g} = \\sqrt{0.80 \\times 50 \\times 10} = 20.0\\text{ m s}^{-1}$."
+          }
+        ],
+        3: [
+          {
+            statement: "A small block of mass $m$ is tied to a string of length $L$ and swung in a vertical circle. At the highest point of the loop, the tension in the string is exactly zero. Find the speed of the block at this highest point.",
+            options: ["$v = \\sqrt{2gL}$", "$v = \\sqrt{gL}$", "$v = 2\\sqrt{gL}$", "$v = \\sqrt{0.5gL}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> At peak: $T + mg = \\frac{mv^2}{L}$. Since $T = 0$, $mg = \\frac{mv^2}{L} \\implies v = \\sqrt{gL}$."
+          },
+          {
+            statement: "A car is traveling on a banked curved road of angle $\\theta$ and radius $R$. If there is no friction between tires and road, what is the design speed $v$ for completing the turn safely?",
+            options: ["$v = \\sqrt{R g \\tan\\theta}$", "$v = \\sqrt{R g \\sin\\theta}$", "$v = \\sqrt{R g \\cos\\theta}$", "$v = \\sqrt{\\frac{R g}{\\tan\\theta}}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Vertically $N\\cos\\theta = mg$, and horizontally $N\\sin\\theta = \\frac{mv^2}{R}$. Dividing these gives $\\tan\\theta = \\frac{v^2}{Rg} \\implies v = \\sqrt{Rg\\tan\\theta}$."
+          },
+          {
+            statement: "A coin lies on a rotating turntable at a distance of $r$ from the axis. If the turntable angular speed is doubled, at what distance from the axis can the coin lie without slipping? (Assume constant friction coefficient)",
+            options: ["$2r$", "$4r$", "$0.5r$", "$0.25r$"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> To prevent slipping: $m\\omega^2 d \\le \\mu_s mg \\implies d \\propto \\frac{1}{\\omega^2}$. Doubling $\\omega$ reduces the maximum safe distance to $\\frac{1}{4} = 0.25$ of $r$."
+          },
+          {
+            statement: "A pendulum bob of mass $m$ is released from rest at a horizontal position. If the string length is $L$, find the tension in the string as the bob passes the lowest point. (Take gravity as $g$)",
+            options: ["$mg$", "$2mg$", "$3mg$", "$4mg$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> By energy conservation: $mgL = \\frac{1}{2}mv^2 \\implies v^2 = 2gL$. At lowest point, $T - mg = \\frac{mv^2}{L} \\implies T = mg + 2mg = 3mg$."
+          },
+          {
+            statement: "A conical pendulum has a bob of mass $m$ rotating in a circle of radius $R$. If the angular speed is $\\omega$, what is the horizontal component of the tension force?",
+            options: ["$m \\omega R$", "$m \\omega^2 R$", "$m g$", "Zero"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> The horizontal component of the tension force ($T\\sin\\theta$) is the only force directed towards the center, providing the centripetal force: $F_c = m\\omega^2 R$."
+          },
+          {
+            statement: "A loop-the-loop track has a radius $R$. What is the minimum height $h$ above the bottom of the loop from which a small block must be released from rest so that it completes the loop safely? (Assume frictionless)",
+            options: ["$1.5 R$", "$2.0 R$", "$2.5 R$", "$3.0 R$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> At top, minimum safe speed is $v^2 = gR$. By energy conservation from height $h$:<br>$$mgh = mg(2R) + \\frac{1}{2}mv^2 \\implies gh = 2gR + 0.5gR \\implies h = 2.5 R$$"
+          }
+        ]
+      },
+      "2.9": {
+        // --- LEVEL 1: QUALITATIVE (TEXTBOOK ALIGNED, CLEAR & PUNCHY) ---
+        1: [
+          {
+            statement: "According to Newton's Law of Universal Gravitation, the gravitational force between two point masses is:",
+            options: [
+              "Directly proportional to the distance between them.",
+              "Inversely proportional to the distance between them.",
+              "Directly proportional to the product of their masses.",
+              "Inversely proportional to the product of their masses."
+            ],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Newton's Law states $F_g = \\frac{G M m}{r^2}$. The gravitational force is directly proportional to the product of the two masses ($M m$)."
+          },
+          {
+            statement: "What happens to the surface gravitational acceleration $g$ of a planet if its mass is doubled while its radius remains constant?",
+            options: ["It is halved.", "It remains the same.", "It is doubled.", "It is quadrupled."],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Surface gravity $g = \\frac{GM}{R^2}$. If mass is doubled and radius is kept constant, the gravity $g$ is doubled."
+          },
+          {
+            statement: "Why does a satellite in circular orbit around Earth remain in orbit without falling to the ground?",
+            options: [
+              "It is beyond the reach of Earth's gravity.",
+              "The Earth's gravity provides the necessary centripetal force for its circular orbit.",
+              "Its engines continuously push it upwards.",
+              "The Earth's magnetic field repels it."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Gravitational attraction acts radially inward, serving as the required centripetal force to keep the satellite in its circular orbital path."
+          },
+          {
+            statement: "According to Kepler's Third Law, how is the orbital period $T$ of a planet related to its orbital radius $R$?",
+            options: ["$T \\propto R$", "$T^2 \\propto R$", "$T^2 \\propto R^3$", "$T \\propto R^2$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Kepler's Third Law states that the square of the orbital period ($T^2$) is directly proportional to the cube of the orbital radius ($R^3$)."
+          },
+          {
+            statement: "A satellite is orbiting Earth in a stable circular orbit. If the astronaut inside feels weightless, this is because:",
+            options: [
+              "The gravitational force on the astronaut is zero.",
+              "The astronaut and the spacecraft are in free fall together.",
+              "The spacecraft has a shielding layer against gravity.",
+              "The centrifugal force is larger than the gravitational force."
+            ],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Weightlessness is not due to zero gravity. It is because the astronaut and the spacecraft are both falling towards the Earth at the same rate of acceleration, eliminating any normal contact forces."
+          },
+          {
+            statement: "The gravitational force between two planets is $F$. If the mass of one planet is doubled and the distance between them is doubled, what is the new gravitational force?",
+            options: ["$0.5 F$", "$F$", "$2.0 F$", "$4.0 F$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> $F' = \\frac{G(2M)m}{(2r)^2} = \\frac{2GMm}{4r^2} = 0.5 F$."
+          }
+        ],
+        2: [
+          {
+            statement: "An object is moved from the Earth's surface to an altitude equal to the Earth's radius $R$. Find the gravitational force on the object as a fraction of its surface weight.",
+            options: ["$0.50$", "$0.25$", "$0.11$", "Zero"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Total distance from center of Earth is $r = R + R = 2R$. Since $F \\propto \\frac{1}{r^2}$, the new force is $\\frac{1}{2^2} = \\frac{1}{4} = 0.25$ of the surface force."
+          },
+          {
+            statement: "A satellite orbits a planet at radius $R$ with speed $v$. If it is moved to a new circular orbit of radius $4R$, find the new orbital speed in terms of $v$.",
+            options: ["$2v$", "$0.5 v$", "$0.25 v$", "It remains $v$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> Orbital speed is $v = \\sqrt{\\frac{GM}{r}} \\propto \\frac{1}{\\sqrt{r}}$. Increasing $r$ to $4r$ scales speed by $\\frac{1}{\\sqrt{4}} = 0.5$."
+          },
+          {
+            statement: "The weight of a lunar rover on Earth is $600\\text{ N}$. Find its weight on the Moon, where gravitational acceleration is $1.6\\text{ m s}^{-2}$. (Take Earth's gravity as $10.0\\text{ m s}^{-2}$)",
+            options: ["$96\\text{ N}$", "$160\\text{ N}$", "$240\\text{ N}$", "$600\\text{ N}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Mass $m = \\frac{W}{g} = \\frac{600}{10.0} = 60\\text{ kg}$. Moon weight $W_{\\text{moon}} = m \\times g_{\\text{moon}} = 60 \\times 1.6 = 96\\text{ N}$."
+          },
+          {
+            statement: "Two planets, $X$ and $Y$, have equal masses. Planet $X$ has radius $R$, and planet $Y$ has radius $3R$. Find the ratio of surface gravitational field strength ($g_X : g_Y$).",
+            options: ["$1 : 3$", "$1 : 9$", "$3 : 1$", "$9 : 1$"],
+            answer: 3,
+            explanation: "<b>Explanation:</b> $g = \\frac{GM}{R^2} \\propto \\frac{1}{R^2}$ for equal masses. Thus, $\\frac{g_X}{g_Y} = \\frac{(3R)^2}{R^2} = 9$."
+          },
+          {
+            statement: "Find the gravitational force on a satellite of mass $1000\\text{ kg}$ orbiting at a distance of $2 R_E$ from Earth's center. (Take $g = 10.0\\text{ m s}^{-2}$ on Earth's surface)",
+            options: ["$2500\\text{ N}$", "$5000\\text{ N}$", "$10000\\text{ N}$", "$20000\\text{ N}$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Gravitational field strength at $r = 2 R_E$ is $g' = \\frac{g}{2^2} = 2.5\\text{ m s}^{-2}$. Force $F = m \\times g' = 1000 \\times 2.5 = 2500\\text{ N}$."
+          },
+          {
+            statement: "The surface gravity of a planet is $5.0\\text{ m s}^{-2}$. If its radius is half of Earth's radius $R_E$, find its mass in terms of Earth's mass $M_E$. (Take Earth's gravity as $10.0\\text{ m s}^{-2}$)",
+            options: ["$0.125 M_E$", "$0.25 M_E$", "$0.50 M_E$", "$2.0 M_E$"],
+            answer: 0,
+            explanation: "<b>Explanation:</b> $g = \\frac{GM}{R^2} \\implies M = \\frac{g R^2}{G} \\propto g R^2$.<br>$$\\frac{M_P}{M_E} = \\left(\\frac{g_P}{g_E}\\right) \\left(\\frac{R_P}{R_E}\\right)^2 = \\left(\\frac{5.0}{10.0}\\right) \\left(0.5\\right)^2 = 0.5 \\times 0.25 = 0.125$$"
+          }
+        ],
+        3: [
+          {
+            statement: "A satellite orbits Earth in a circular path of radius $R$ with orbital speed $v_0$ and period $T_0$.<br>Which of the following statements is/are correct?<br>(1) The orbital speed is inversely proportional to $\\sqrt{R}$.<br>(2) The period of the orbit squared is proportional to $R^3$.<br>(3) The gravitational acceleration at radius $R$ provides the necessary centripetal acceleration.",
+            options: [
+              "(1) and (2) only",
+              "(2) and (3) only",
+              "(1) and (3) only",
+              "(1), (2) and (3)"
+            ],
+            answer: 3,
+            explanation: "<b>Explanation:</b> (1) is correct: orbital speed is $v = \\sqrt{\\frac{GM}{R}} \\implies v \\propto \\frac{1}{\\sqrt{R}}$. (2) is correct: by Kepler's Third Law, $T^2 \\propto R^3$. (3) is correct: gravitational acceleration $g = \\frac{GM}{R^2}$ provides the required centripetal acceleration $a_c = \\frac{v^2}{R}$."
+          },
+          {
+            statement: "A planet has double the density of Earth but has the same radius. If the acceleration due to gravity on the surface of Earth is $g$, what is the surface gravity of this planet?",
+            options: ["$0.5 g$", "$g$", "$2g$", "$4g$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> Acceleration due to gravity at surface is $g = \\frac{GM}{R^2} = \\frac{G (\\rho \\cdot \\frac{4}{3}\\pi R^3)}{R^2} \\propto \\rho R$. Since the radius is the same but the density is doubled, the surface gravity is doubled to $2g$."
+          },
+          {
+            statement: "A satellite of mass $m$ is in a stable circular orbit of radius $R$ around a planet of mass $M$. Find the total mechanical energy of the satellite. (Take $G$ as the gravitational constant)",
+            options: [
+              "$E = -\\frac{G M m}{2R}$",
+              "$E = -\\frac{G M m}{R}$",
+              "$E = \\frac{G M m}{2R}$",
+              "$E = 0$"
+            ],
+            answer: 0,
+            explanation: "<b>Explanation:</b> Potential energy is $U = -\\frac{GMm}{R}$. Kinetic energy is $K.E. = \\frac{GMm}{2R}$ (derived from balancing centripetal force and gravity: $\\frac{mv^2}{R} = \\frac{GMm}{R^2} \\implies mv^2 = \\frac{GMm}{R}$). Total mechanical energy is $E = K.E. + U = \\frac{GMm}{2R} - \\frac{GMm}{R} = -\\frac{GMm}{2R}$."
+          },
+          {
+            statement: "A geostationary satellite orbits directly above Earth's equator. What is its orbital period?",
+            options: ["$1.5\\text{ hours}$", "$12.0\\text{ hours}$", "$24.0\\text{ hours}$", "$365.25\\text{ days}$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> To remain stationary relative to Earth, the orbital period must match the Earth's daily rotation period exactly, which is $24.0\\text{ hours}$."
+          },
+          {
+            statement: "A satellite is orbiting Earth at a very low altitude (just above Earth's surface). Find its orbital speed. (Take $R_E = 6.4 \\times 10^6\\text{ m}$ and $g = 10.0\\text{ m s}^{-2}$)",
+            options: ["$4.0\\text{ km s}^{-1}$", "$8.0\\text{ km s}^{-1}$", "$11.2\\text{ km s}^{-1}$", "$16.0\\text{ km s}^{-1}$"],
+            answer: 1,
+            explanation: "<b>Explanation:</b> At the surface, centripetal force is gravity: $\\frac{mv^2}{R_E} = mg \\implies v = \\sqrt{g R_E}$.<br>$$v = \\sqrt{10.0 \\times 6.4 \\times 10^6} = \\sqrt{64 \\times 10^6} = 8.0 \\times 10^3\\text{ m s}^{-1} = 8.0\\text{ km s}^{-1}$$$"
+          },
+          {
+            statement: "Two satellites, $X$ and $Y$, orbit Earth in circular orbits of radii $R$ and $4R$ respectively. Find the ratio of their orbital periods ($T_X : T_Y$).",
+            options: ["$1 : 2$", "$1 : 4$", "$1 : 8$", "$1 : 16$"],
+            answer: 2,
+            explanation: "<b>Explanation:</b> By Kepler's Third Law:<br>$$\\left(\\frac{T_X}{T_Y}\\right)^2 = \\left(\\frac{R}{4R}\\right)^3 = \\frac{1}{64} \\implies \\frac{T_X}{T_Y} = \\sqrt{\\frac{1}{64}} = \\frac{1}{8}$$"
+          }
+        ]
+      }
+    };
+
+    // --- DASHBOARD RENDERER ---
+    function renderDashboard() {
+      const topicContainer = document.getElementById('topic-list-container');
+      topicContainer.innerHTML = '';
+      topics.forEach((topic, idx) => {
+        const isSelected = currentState.selectedTopicIndex === idx;
+        const scoreKeyEasy = `${idx}-1`;
+        const scoreKeyAvg = `${idx}-2`;
+        const scoreKeyDiff = `${idx}-3`;
+        
+        const easyScore = currentState.scores[scoreKeyEasy]?.score || 0;
+        const avgScore = currentState.scores[scoreKeyAvg]?.score || 0;
+        const diffScore = currentState.scores[scoreKeyDiff]?.score || 0;
+        const totalCompleted = (currentState.scores[scoreKeyEasy]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyAvg]?.completed ? 1 : 0) + 
+                              (currentState.scores[scoreKeyDiff]?.completed ? 1 : 0);
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+          isSelected 
+            ? 'bg-purple-50/60 border-brand-violet shadow-md' 
+            : 'bg-white border-slate-200 hover:bg-slate-50'
+        }`;
+        card.onclick = () => selectTopic(idx);
+
+        card.innerHTML = `
+          <div class="flex items-start space-x-3">
+            <div class="mt-1 flex-shrink-0 h-8 w-8 rounded-lg bg-purple-100 text-brand-violet border border-purple-200 flex items-center justify-center font-bold font-mono text-sm">
+              ${topic.id}
+            </div>
+            <div>
+              <h3 class="text-sm md:text-base font-bold text-slate-800">${topic.title}</h3>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-bold border">L1: ${easyScore}/6</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-bold border">L2: ${avgScore}/6</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-bold border">L3: ${diffScore}/6</span>
+            <div class="h-6 w-6 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-brand-violet text-xs font-bold">
+              ${totalCompleted}/3
+            </div>
+          </div>
+        `;
+        topicContainer.appendChild(card);
+      });
+
+      const levelContainer = document.getElementById('level-list-container');
+      levelContainer.innerHTML = '';
+      const levels = [
+        { value: 1, label: 'Level 1: Foundation (Concepts & Definitions)', desc: 'Qualitative S4-S5 standard multiple-choice questions.', color: 'text-emerald-600' },
+        { value: 2, label: 'Level 2: Core (Practical Application)', desc: 'Textbook kinematic/force calculation questions.', color: 'text-brand-amber' },
+        { value: 3, label: 'Level 3: Mastermind (Mock Exam Standards)', desc: 'High-tier ratio, multi-statement, variable-only challenges.', color: 'text-brand-pink' }
+      ];
+
+      levels.forEach(level => {
+        const isSelected = currentState.selectedLevel === level.value;
+        const button = document.createElement('div');
+        button.className = `p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-amber-50/30 border-brand-pink shadow-md' 
+            : 'bg-white border-slate-200 hover:bg-slate-50'
+        }`;
+        button.onclick = () => selectLevel(level.value);
+
+        button.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-extrabold ${level.color}">${level.label}</span>
+            <input type="radio" name="level-select" class="accent-brand-violet" ${isSelected ? 'checked' : ''}>
+          </div>
+          <p class="text-xs text-slate-500 mt-2 font-medium">${level.desc}</p>
+        `;
+        levelContainer.appendChild(button);
+      });
+
+      const startBox = document.createElement('button');
+      startBox.className = "w-full mt-4 bg-gradient-to-r from-brand-violet to-brand-pink text-white font-extrabold py-3.5 px-6 rounded-xl transition duration-200 shadow-md text-center uppercase tracking-wider text-sm";
+      startBox.innerHTML = `Start Physics Quest <i class="fa-solid fa-play ml-1"></i>`;
+      startBox.onclick = startQuiz;
+      levelContainer.appendChild(startBox);
+
+      updateGlobalProgress();
+    }
+
+    // --- SELECTION HANDLERS ---
+    window.selectTopic = function(idx) {
+      currentState.selectedTopicIndex = idx;
+      renderDashboard();
+    };
+
+    window.selectLevel = function(lvl) {
+      currentState.selectedLevel = lvl;
+      renderDashboard();
+    };
+
+    // --- NAVIGATION LOGIC ---
+    function startQuiz() {
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('quiz-section').classList.remove('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+
+      currentState.currentQuestionIndex = 0;
+      currentState.currentQuizAnswers = new Array(6).fill(null);
+
+      loadQuestion();
+    }
+
+    // --- LOADING QUESTIONS ---
+    function loadQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+
+      document.getElementById('quiz-meta-topic').innerText = `Topic: ${topicObj.id}`;
+      document.getElementById('quiz-meta-level').innerText = `Level ${currentState.selectedLevel}`;
+      document.getElementById('quiz-progress-text').innerText = `Question ${currentState.currentQuestionIndex + 1} of 6`;
+      document.getElementById('quiz-percentage').innerText = `${Math.round((currentState.currentQuestionIndex + 1) * 16.6)}%`;
+      document.getElementById('question-index-display').innerText = `Q${currentState.currentQuestionIndex + 1}/6`;
+      document.getElementById('syllabus-reference-code').innerText = `PHY-${topicObj.id}.${currentState.currentQuestionIndex + 1}`;
+
+      document.getElementById('quiz-step-progress').style.width = `${(currentState.currentQuestionIndex + 1) * 16.6}%`;
+      document.getElementById('question-statement-box').innerHTML = q.statement;
+
+      document.getElementById('explanation-placeholder').classList.remove('hidden');
+      document.getElementById('explanation-content-area').classList.add('hidden');
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      optionsContainer.innerHTML = '';
+
+      const previousResponse = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] ${
+          previousResponse === optIdx
+            ? 'bg-purple-50 border-brand-violet text-brand-violet'
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+        }`;
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        const label = String.fromCharCode(65 + optIdx);
+        optionBtn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="flex-shrink-0 w-6 h-6 rounded bg-slate-100 border flex items-center justify-center font-mono font-bold text-slate-505 text-xs">${label}</span>
+            <span class="tex2jax_process leading-normal">${optText}</span>
+          </div>
+          <div class="h-4 w-4 rounded-full border border-slate-300 flex items-center justify-center flex-shrink-0">
+            ${previousResponse === optIdx ? '<div class="w-2 h-2 rounded-full bg-brand-violet"></div>' : ''}
+          </div>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      const btnPrev = document.getElementById('btn-prev-question');
+      if (currentState.currentQuestionIndex === 0) {
+        btnPrev.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = true;
+      } else {
+        btnPrev.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPrev.disabled = false;
+      }
+
+      if (previousResponse !== null) {
+        revealAnswerFeedback();
+      } else {
+        document.getElementById('btn-check-answer').classList.remove('hidden');
+        document.getElementById('btn-next-question').classList.add('hidden');
+      }
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function selectOption(optIdx) {
+      const alreadyAnswered = currentState.currentQuizAnswers[currentState.currentQuestionIndex] !== null;
+      if (alreadyAnswered) return;
+
+      currentState.currentQuizAnswers[currentState.currentQuestionIndex] = optIdx;
+      loadQuestion();
+    }
+
+    // --- CHECKING ANSWERS & FEEDBACK ---
+    function checkAnswer() {
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+      if (selectedIndex === null) {
+        showCustomAlert("Input Required", "Please select an answer option before submitting.");
+        return;
+      }
+      revealAnswerFeedback();
+      
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('explanation-pane-anchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+
+    function revealAnswerFeedback() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      const q = questionsList[currentState.currentQuestionIndex];
+      const selectedIndex = currentState.currentQuizAnswers[currentState.currentQuestionIndex];
+
+      const isCorrect = selectedIndex === q.answer;
+
+      const optionsContainer = document.getElementById('options-grid-container');
+      const optionButtons = optionsContainer.children;
+
+      for (let i = 0; i < optionButtons.length; i++) {
+        const btn = optionButtons[i];
+        btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-white border-slate-200 text-slate-700";
+        
+        if (i === q.answer) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-emerald-50 border-emerald-500 text-emerald-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        } else if (i === selectedIndex && !isCorrect) {
+          btn.className = "w-full text-left p-4 rounded-xl border transition flex items-center justify-between gap-3 text-sm font-bold min-h-[56px] bg-rose-50 border-rose-500 text-rose-800";
+          btn.querySelector('div:last-child').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+        }
+      }
+
+      document.getElementById('explanation-placeholder').classList.add('hidden');
+      const expContent = document.getElementById('explanation-content-area');
+      expContent.classList.remove('hidden');
+
+      const feedbackBox = document.getElementById('explanation-feedback');
+      if (isCorrect) {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-emerald-50 text-emerald-700 border-emerald-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> <span>Correct Answer! Great Job.</span>`;
+      } else {
+        feedbackBox.className = "p-3.5 rounded-xl font-extrabold flex items-center space-x-2 bg-rose-50 text-rose-700 border-rose-200";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i> <span>Incorrect. Review standard steps below.</span>`;
+      }
+
+      document.getElementById('explanation-body-text').innerHTML = q.explanation;
+
+      document.getElementById('btn-check-answer').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.remove('hidden');
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentState.currentQuestionIndex > 0) {
+        currentState.currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+
+      if (currentState.currentQuestionIndex < questionsList.length - 1) {
+        currentState.currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // --- QUIZ COMPLETION & STATS ---
+    function finishQuiz() {
+      const topicObj = topics[currentState.selectedTopicIndex];
+      const questionsList = questionBank[topicObj.id][currentState.selectedLevel];
+      
+      let correctCount = 0;
+      currentState.currentQuizAnswers.forEach((ans, idx) => {
+        if (ans === questionsList[idx].answer) {
+          correctCount++;
+        }
+      });
+
+      const scoreKey = `${currentState.selectedTopicIndex}-${currentState.selectedLevel}`;
+      currentState.scores[scoreKey] = {
+        completed: true,
+        score: correctCount,
+        responses: [...currentState.currentQuizAnswers]
+      };
+
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.remove('hidden');
+
+      document.getElementById('review-score').innerText = `${correctCount} / 6`;
+      const accuracy = Math.round((correctCount / 6) * 100);
+      document.getElementById('review-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('review-level').innerText = `Level ${currentState.selectedLevel}`;
+
+      updateGlobalProgress();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function updateGlobalProgress() {
+      let totalCompletedLevels = 0;
+      let grandTotalScore = 0;
+      let possibleMaxScore = 0;
+
+      for (let t = 0; t < topics.length; t++) {
+        for (let l = 1; l <= 3; l++) {
+          const key = `${t}-${l}`;
+          possibleMaxScore += 6;
+          if (currentState.scores[key]?.completed) {
+            totalCompletedLevels++;
+            grandTotalScore += currentState.scores[key].score;
+          }
+        }
+      }
+
+      const totalLevels = topics.length * 3;
+      const progressPercent = Math.round((totalCompletedLevels / totalLevels) * 100);
+
+      document.getElementById('global-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('global-progress-text').innerText = `${progressPercent}%`;
+      document.getElementById('global-score-badge').innerText = `${grandTotalScore} / ${possibleMaxScore}`;
+    }
+
+    // --- CUSTOM MODALS & ALERTS ---
+    function resetStats() {
+      showCustomConfirm(
+        "Reset Progress",
+        "Are you sure you want to clear all your learning achievements and start fresh?",
+        () => {
+          currentState.scores = {};
+          renderDashboard();
+          showCustomAlert("Success", "All progress has been completely cleared.");
+        }
+      );
+    }
+
+    function showCustomConfirm(title, message, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.remove('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "Confirm";
+      confirmBtn.className = "px-4 py-2 bg-brand-coral hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition shadow-md font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+      document.getElementById('modal-cancel-btn').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    function showCustomAlert(title, message) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.innerText = "Dismiss";
+      confirmBtn.className = "px-4 py-2 bg-brand-violet text-white text-xs font-bold rounded-lg transition shadow-md font-sans";
+      
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('hidden');
+      
+      confirmBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+
+    // --- SCIENTIFIC CALCULATOR ---
+    let calcExpression = '';
+    let calcScreen = '0';
+
+    function toggleCalc() {
+      const calc = document.getElementById('calculator-widget');
+      calc.classList.toggle('hidden');
+    }
+
+    function ASIN_OP(x) { return Math.asin(x) * 180 / Math.PI; }
+    function ACOS_OP(x) { return Math.acos(x) * 180 / Math.PI; }
+    function ATAN_OP(x) { return Math.atan(x) * 180 / Math.PI; }
+    function SIN_OP(x) { return Math.sin(x * Math.PI / 180); }
+    function COS_OP(x) { return Math.cos(x * Math.PI / 180); }
+    function TAN_OP(x) { return Math.tan(x * Math.PI / 180); }
+    function SQRT_OP(x) { return Math.sqrt(x); }
+
+    function calcPress(val) {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+
+      if (val === 'AC') {
+        calcExpression = '';
+        calcScreen = '0';
+      } else if (val === 'DEL') {
+        if (calcScreen.length > 1) {
+          calcScreen = calcScreen.slice(0, -1);
+        } else {
+          calcScreen = '0';
+        }
+      } else if (val === 'pi') {
+        calcScreen = Math.PI.toString();
+      } else if (val === 'exp') {
+        calcScreen += '*10^';
+      } else if (val === 'sin' || val === 'cos' || val === 'tan' || val === 'sqrt' || val === 'asin' || val === 'acos' || val === 'atan') {
+        calcExpression = `${val}(`;
+        calcScreen = '';
+      } else {
+        if (calcScreen === '0') calcScreen = '';
+        calcScreen += val;
+      }
+
+      screen.innerText = calcScreen;
+      expr.innerText = calcExpression;
+    }
+
+    function calcEvaluate() {
+      const screen = document.getElementById('calc-screen-display');
+      const expr = document.getElementById('calc-expression-display');
+      
+      let fullExpr = calcExpression + calcScreen;
+      
+      // Auto-close brackets
+      let openBrackets = (fullExpr.match(/\(/g) || []).length;
+      let closeBrackets = (fullExpr.match(/\)/g) || []).length;
+      while (openBrackets > closeBrackets) {
+        fullExpr += ')';
+        closeBrackets++;
+      }
+
+      // Safe replace operators
+      fullExpr = fullExpr.replace(/asin\(/g, 'ASIN_OP(');
+      fullExpr = fullExpr.replace(/acos\(/g, 'ACOS_OP(');
+      fullExpr = fullExpr.replace(/atan\(/g, 'ATAN_OP(');
+      fullExpr = fullExpr.replace(/sin\(/g, 'SIN_OP(');
+      fullExpr = fullExpr.replace(/cos\(/g, 'COS_OP(');
+      fullExpr = fullExpr.replace(/tan\(/g, 'TAN_OP(');
+      fullExpr = fullExpr.replace(/sqrt\(/g, 'SQRT_OP(');
+      fullExpr = fullExpr.replace(/\^2/g, '**2');
+      fullExpr = fullExpr.replace(/\^/g, '**');
+
+      try {
+        let result = eval(fullExpr);
+        if (isNaN(result) || !isFinite(result)) {
+          screen.innerText = 'Error';
+        } else {
+          screen.innerText = parseFloat(result.toFixed(6)).toString();
+        }
+        calcExpression = '';
+        calcScreen = screen.innerText;
+      } catch (err) {
+        screen.innerText = 'Error';
+      }
+    }
+
+    // --- LIFE CYCLE INIT ---
+    window.onload = function() {
+      renderDashboard();
+
+      document.getElementById('btn-check-answer').addEventListener('click', checkAnswer);
+      document.getElementById('btn-prev-question').addEventListener('click', prevQuestion);
+      document.getElementById('btn-next-question').addEventListener('click', nextQuestion);
+      document.getElementById('btn-review-restart').addEventListener('click', startQuiz);
+      document.getElementById('btn-calc-toggle').addEventListener('click', toggleCalc);
+
+      // --- CALCULATOR DRAGGABLE IMPLEMENTATION ---
+      const calcWidget = document.getElementById('calculator-widget');
+      const calcHeader = document.getElementById('calculator-header');
+      
+      let isDragging = false;
+      let currentX = 0;
+      let currentY = 0;
+      let initialX = 0;
+      let initialY = 0;
+      let xOffset = 0;
+      let yOffset = 0;
+
+      calcHeader.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+
+      calcHeader.addEventListener('touchstart', dragStart, { passive: true });
+      document.addEventListener('touchmove', drag, { passive: false });
+      document.addEventListener('touchend', dragEnd);
+
+      function dragStart(e) {
+        if (window.innerWidth < 768) return; 
+        if (e.type === 'touchstart') {
+          initialX = e.touches[0].clientX - xOffset;
+          initialY = e.touches[0].clientY - yOffset;
+        } else {
+          initialX = e.clientX - xOffset;
+          initialY = e.clientY - yOffset;
+        }
+        isDragging = true;
+      }
+
+      function drag(e) {
+        if (!isDragging) return;
+        if (e.type === 'touchmove') {
+          e.preventDefault();
+          currentX = e.touches[0].clientX - initialX;
+          currentY = e.touches[0].clientY - initialY;
+        } else {
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+        }
+        xOffset = currentX;
+        yOffset = currentY;
+        calcWidget.style.transform = `translate(${currentX}px, ${currentY}px)`;
+      }
+
+      function dragEnd() {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+      }
+    };
+
+    function goHome() {
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('review-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+      renderDashboard();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+  </script>
+
+</body>
+</html>
